@@ -19,7 +19,6 @@ require('resl')({
       th[i] = newton(x => arcLength(x) - l[i], l[i]);
     }
 
-    // Draw each frame:
     regl.frame(regl({
       vert: `
         uniform float aspect, t;
