@@ -23,5 +23,8 @@
     "newton-raphson-method": "^1.0.0",
     "regl": "^1.2.1",
     "resl": "^1.0.3"
+  },
+  "metadataify": {
+    "image": "screenshot.png"
   }
 }
