@@ -25,6 +25,6 @@
     "resl": "^1.0.3"
   },
   "metadataify": {
-    "image": "screenshot.png"
+    "image": "https://cdn.rawgit.com/rreusser/demos/master/schrodinger/screenshot.png"
   }
 }
