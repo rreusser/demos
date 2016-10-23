@@ -19,7 +19,6 @@
     "uglify-js": "^2.7.3"
   },
   "dependencies": {
-    "babel-preset-es2040": "^1.1.1",
     "newton-raphson-method": "^1.0.0",
     "regl": "^1.2.1",
     "resl": "^1.0.3"
