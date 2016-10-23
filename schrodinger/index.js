@@ -16,7 +16,7 @@ require('resl')({
     const loops = 25;
     for (var i = 0, l = [], th = []; i < n; i++) {
       l[i] = i / (n - 1) * arcLength(loops * Math.PI * 2);
-      th[i] = newton((x) => (arcLength(x) - l[i]), l[i]);
+      th[i] = newton(x => (arcLength(x) - l[i]), l[i]);
     }
 
     // Draw each frame:
@@ -45,7 +45,7 @@ require('resl')({
       uniforms: {
         image: regl.texture(erwin),
         t: regl.context('time'),
-        aspect: (d) => d.viewportWidth / d.viewportHeight
+        aspect: d => d.viewportWidth / d.viewportHeight
       },
       attributes: {th, l},
       count: th.length,
