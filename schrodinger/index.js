@@ -16,7 +16,7 @@ require('resl')({
     const loops = 25;
     for (var i = 0, l = [], th = []; i < n; i++) {
       l[i] = i / (n - 1) * arcLength(loops * Math.PI * 2);
-      th[i] = newton(x => (arcLength(x) - l[i]), l[i]);
+      th[i] = newton(x => arcLength(x) - l[i], l[i]);
     }
 
     // Draw each frame:
