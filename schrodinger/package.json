@@ -24,12 +24,15 @@
     "uglify-js": "^2.7.3"
   },
   "dependencies": {
-    "github-cornerify": "^1.0.1",
+    "github-cornerify": "^1.0.5",
     "newton-raphson-method": "^1.0.0",
     "regl": "^1.2.1",
     "resl": "^1.0.3"
   },
   "metadataify": {
     "image": "https://cdn.rawgit.com/rreusser/demos/master/schrodinger/screenshot.png"
+  },
+  "github-corner": {
+    "url": "https://github.com/rreusser/demos/blob/master/schrodinger/index.js"
   }
 }
