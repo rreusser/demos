@@ -1227,8 +1227,8 @@ getpass@^0.1.1:
     assert-plus "^1.0.0"
 
 github-cornerify:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/github-cornerify/-/github-cornerify-1.0.5.tgz#5965101329ed1a68e5a6d505f6ffda12373ddc90"
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/github-cornerify/-/github-cornerify-1.0.6.tgz#b0900a34bee6b9d829a3590a52287fcf3945c7c8"
   dependencies:
     hyperstream "^1.2.2"
     minimist "^1.2.0"
