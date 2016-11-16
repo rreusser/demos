@@ -7,8 +7,7 @@ This demo computes the lorenz attractor on the GPU using a [cwise](https://githu
 // Initialize a context for 1000 points:
 const gpu = require('./gpuwise')(regl, 1000);
 
-// Instantiate two texture variables. We'll bounce back and forth
-// between them as we update:
+// Instantiate two texture variables. We'll bounce back and forth as we update:
 var y1 = gpu.variable(i => [Math.random(), Math.random(), Math.random(), 1]);
 var y2 = gpu.variable();
 
@@ -30,11 +29,14 @@ var lorenz = gpu.operation({
 // Execute the operation:
 lorenz(y2, y1, 0.001);
 
+// Again, swapping src and dest buffers:
+lorenz(y1, y2, 0.001);
+
 // Read the values:
 var result = y2.read();
 
 // Or use them elsewhere within webgl/regl:
-var texture = y2.texture
+var texture = y2.getTexture();
 var fbo = y2.getFramebuffer();
 ```
 

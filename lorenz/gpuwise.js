@@ -47,6 +47,11 @@ module.exports = function (regl, baseSize) {
         fbo;
     }
 
+    // For the sake of a nice API:
+    function getTexture () {
+      return tex;
+    }
+
     function read () {
       let a;
       getFramebuffer().use(() => a = regl.read());
@@ -65,8 +70,8 @@ module.exports = function (regl, baseSize) {
     }
 
     return {
-      texture: tex,
       read: read,
+      getTexture: getTexture,
       getFramebuffer: getFramebuffer,
       destroy: destroy
     }
@@ -133,7 +138,7 @@ module.exports = function (regl, baseSize) {
       for (i = 1; i < arguments.length; i++) {
         var arg = args[i - 1];
         if (arg.kind === 'array') {
-          params[arg.uniformName] = arguments[i].texture;
+          params[arg.uniformName] = arguments[i].getTexture();
         } else {
           params[arg.uniformName] = arguments[i];
         }

@@ -60,7 +60,7 @@ const draw = require('./draw-points')(regl, gpu.width, gpu.height);
 regl.frame(({tick}) => {
   iterate(2);
   regl.clear({color: [0, 0, 0, 1]});
-  camera(() => draw({points: y1.texture}));
+  camera(() => draw({points: y1.getTexture()}));
 });
 
 document.querySelector('canvas').addEventListener('wheel', function (e) {e.preventDefault();});

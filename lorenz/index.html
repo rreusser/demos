@@ -101,6 +101,11 @@ module.exports = function (regl, baseSize) {
       }) : fbo;
     }
 
+    // For the sake of a nice API:
+    function getTexture() {
+      return tex;
+    }
+
     function read() {
       var a = void 0;
       getFramebuffer().use(function () {
@@ -121,8 +126,8 @@ module.exports = function (regl, baseSize) {
     }
 
     return {
-      texture: tex,
       read: read,
+      getTexture: getTexture,
       getFramebuffer: getFramebuffer,
       destroy: destroy
     };
@@ -171,7 +176,7 @@ module.exports = function (regl, baseSize) {
       for (i = 1; i < arguments.length; i++) {
         var arg = args[i - 1];
         if (arg.kind === 'array') {
-          params[arg.uniformName] = arguments[i].texture;
+          params[arg.uniformName] = arguments[i].getTexture();
         } else {
           params[arg.uniformName] = arguments[i];
         }
@@ -228,7 +233,7 @@ regl.frame(function (_ref) {
   iterate(2);
   regl.clear({ color: [0, 0, 0, 1] });
   camera(function () {
-    return draw({ points: y1.texture });
+    return draw({ points: y1.getTexture() });
   });
 });
 
