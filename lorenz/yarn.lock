@@ -1349,6 +1349,10 @@ github-cornerify@^1.0.6:
     util-extend "^1.0.3"
     wrap-stream "^2.0.0"
 
+gl-mat4@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/gl-mat4/-/gl-mat4-1.1.4.tgz#1e895b55892e56a896867abd837d38f37a178086"
+
 glob-base@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/glob-base/-/glob-base-0.3.0.tgz#dbb164f6221b1c0b1ccf82aea328b497df0ea3c4"
@@ -1393,6 +1397,20 @@ global@~4.3.0:
 globals@^9.0.0:
   version "9.12.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-9.12.0.tgz#992ce90828c3a55fa8f16fada177adb64664cf9d"
+
+glsl-parser:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/glsl-parser/-/glsl-parser-2.0.0.tgz#30a6a70aedf49a5a774e2ca85edb63bf34a869a4"
+  dependencies:
+    glsl-tokenizer "^2.0.0"
+    through "2.3.4"
+    through2 "^0.6.3"
+
+glsl-tokenizer, glsl-tokenizer@^2.0.0:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/glsl-tokenizer/-/glsl-tokenizer-2.1.2.tgz#720307522e03c57af35c00551950c4a70ef2dfb9"
+  dependencies:
+    through2 "^0.6.3"
 
 graceful-fs@^4.1.2:
   version "4.1.10"
@@ -1724,7 +1742,7 @@ is-property@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/is-property/-/is-property-1.0.2.tgz#57fe1c4e48474edd65b09911f26b1cd4095dda84"
 
-is-typedarray@~1.0.0:
+is-typedarray, is-typedarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/is-typedarray/-/is-typedarray-1.0.0.tgz#e479c80858df0c1b11ddda6940f96011fcda4a9a"
 
@@ -2011,6 +2029,24 @@ module-deps@^4.0.8:
     through2 "^2.0.0"
     xtend "^4.0.0"
 
+mouse-change@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/mouse-change/-/mouse-change-1.3.0.tgz#20f14b6bc04ef2c852c418199e923ceeef1843bc"
+  dependencies:
+    mouse-event "^1.0.0"
+
+mouse-event@^1.0.0:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/mouse-event/-/mouse-event-1.0.5.tgz#b3789edb7109997d5a932d1d01daa1543a501732"
+
+mouse-wheel@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/mouse-wheel/-/mouse-wheel-1.2.0.tgz#6d2903b1ea8fb48e61f1b53b9036773f042cdb5c"
+  dependencies:
+    right-now "^1.0.0"
+    signum "^1.0.0"
+    to-px "^1.0.1"
+
 ms@0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-0.7.1.tgz#9cd13c03adbff25b65effde7ce864ee952017098"
@@ -2233,6 +2269,10 @@ parse-json@^2.2.0:
 parse-ms@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/parse-ms/-/parse-ms-1.0.1.tgz#56346d4749d78f23430ca0c713850aef91aa361d"
+
+parse-unit@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/parse-unit/-/parse-unit-1.0.1.tgz#7e1bb6d5bef3874c28e392526a2541170291eecf"
 
 parseurl@~1.3.0, parseurl@~1.3.1:
   version "1.3.1"
@@ -2521,6 +2561,14 @@ regex-cache@^0.4.2:
     is-equal-shallow "^0.1.3"
     is-primitive "^2.0.0"
 
+regl-camera:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/regl-camera/-/regl-camera-1.1.0.tgz#c78e3ba63e63cf50a9abb46d018f7a2db90a010c"
+  dependencies:
+    gl-mat4 "^1.1.4"
+    mouse-change "^1.3.0"
+    mouse-wheel "^1.2.0"
+
 regl@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/regl/-/regl-1.3.0.tgz#ccde82eff8a8a068a559581ceacbef1afea78ebd"
@@ -2680,6 +2728,10 @@ shell-quote@^1.4.2, shell-quote@^1.4.3:
 signal-exit@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.1.tgz#5a4c884992b63a7acd9badb7894c3ee9cfccad81"
+
+signum@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/signum/-/signum-1.0.0.tgz#74a7d2bf2a20b40eba16a92b152124f1d559fa77"
 
 simple-html-index@^1.4.0:
   version "1.5.0"
@@ -2963,12 +3015,23 @@ term-color@^1.0.1:
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
 
+through@2.3.4:
+  version "2.3.4"
+  resolved "https://registry.yarnpkg.com/through/-/through-2.3.4.tgz#495e40e8d8a8eaebc7c275ea88c2b8fc14c56455"
+
 through2@^0.4.1, through2@^0.4.2, through2@~0.4.1:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/through2/-/through2-0.4.2.tgz#dbf5866031151ec8352bb6c4db64a2292a840b9b"
   dependencies:
     readable-stream "~1.0.17"
     xtend "~2.1.1"
+
+through2@^0.6.3, through2@~0.6.1:
+  version "0.6.5"
+  resolved "https://registry.yarnpkg.com/through2/-/through2-0.6.5.tgz#41ab9c67b29d57209071410e1d7a7a968cd3ad48"
+  dependencies:
+    readable-stream ">=1.0.33-1 <1.1.0-0"
+    xtend ">=4.0.0 <4.1.0-0"
 
 through2@^1.0.0:
   version "1.1.1"
@@ -2990,13 +3053,6 @@ through2@~0.5.1:
   dependencies:
     readable-stream "~1.0.17"
     xtend "~3.0.0"
-
-through2@~0.6.1:
-  version "0.6.5"
-  resolved "https://registry.yarnpkg.com/through2/-/through2-0.6.5.tgz#41ab9c67b29d57209071410e1d7a7a968cd3ad48"
-  dependencies:
-    readable-stream ">=1.0.33-1 <1.1.0-0"
-    xtend ">=4.0.0 <4.1.0-0"
 
 timers-browserify@^1.0.1:
   version "1.4.2"
@@ -3022,6 +3078,12 @@ to-arraybuffer@^1.0.0:
 to-fast-properties@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-1.0.2.tgz#f3f5c0c3ba7299a7ef99427e44633257ade43320"
+
+to-px@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/to-px/-/to-px-1.0.1.tgz#5bbaed5e5d4f76445bcc903c293a2307dd324646"
+  dependencies:
+    parse-unit "^1.0.1"
 
 tough-cookie@~2.3.0:
   version "2.3.2"
