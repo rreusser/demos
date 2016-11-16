@@ -38,13 +38,14 @@ module.exports = function (regl, baseSize) {
     });
 
     function getFramebuffer () {
-      return fbo === undefined ?
-        regl.framebuffer({
+      if (fbo === undefined) {
+        fbo = regl.framebuffer({
           color: tex,
           colorFormat: 'rgba',
           colorType: 'float',
-        }) :
-        fbo;
+        });
+      }
+      return fbo;
     }
 
     // For the sake of a nice API:
