@@ -41,5 +41,5 @@ var fbo = y2.getFramebuffer();
 ```
 
 ## License
-&copy 2016 Ricky Reusser. MIT License.
+&copy; 2016 Ricky Reusser. MIT License.
 
