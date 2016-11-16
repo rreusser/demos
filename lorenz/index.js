@@ -1,20 +1,20 @@
 const regl = require('regl')({
   extensions: ['OES_texture_float'],
-  pixelRatio: 1
+  pixelRatio: 1.0
 });
 
 const n = 500000;
-const gpu = require('./gpuwise')(regl, n);
+const ctx = require('./gpuwise')(regl, {n: n});
 
-var y1 = gpu.variable();
-var y2 = gpu.variable(i => [
+var y1 = ctx.variable();
+var y2 = ctx.variable(i => [
   2 + (Math.random() * 2 - 1) * 0.1,
   2 + (Math.random() * 2 - 1) * 0.1,
   28 + (Math.random() * 2 - 1) * 0.1,
   1.0
 ]);
 
-var lorenz = gpu.operation({
+var lorenz = ctx.operation({
   args: ['array', 'scalar'],
   body: `
     const float s = 10.0;
@@ -55,12 +55,22 @@ const camera = require('regl-camera')(regl, {
   damping: 0
 });
 
-const draw = require('./draw-points')(regl, gpu.width, gpu.height);
+const drawPointsFromTexture = require('./draw-points')(regl);
+const samplerCoords = ctx.getSamplerCoords();
 
 regl.frame(({tick}) => {
   iterate();
+
   regl.clear({color: [0, 0, 0, 1]});
-  camera(() => draw({points: y1.getTexture()}));
+
+  camera(() => {
+    drawPointsFromTexture({
+      count: n,
+      data: y1.getTexture(),
+      sampleAt: samplerCoords,
+      color: [0.3, 0.7, 1.0, 0.05]
+    });
+  });
 });
 
 document.querySelector('canvas').addEventListener('wheel', function (e) {e.preventDefault();});

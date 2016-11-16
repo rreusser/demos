@@ -1,8 +1,12 @@
 var isTypedArray = require('is-typedarray');
 var parse = require('./parse');
 
-module.exports = function (regl, baseSize) {
+module.exports = function (regl, opts) {
+  opts = opts || {};
+  var baseSize = opts.n === undefined ? 1 : opts.n;
   var wh = Math.ceil(Math.sqrt(baseSize));
+  var width = wh;
+  var height = wh;
 
   function variable (input) {
     var n, data, tex, fbo;
@@ -78,6 +82,23 @@ module.exports = function (regl, baseSize) {
     }
   }
 
+  var samplerCoordBuffer;
+
+  function getSamplerCoords () {
+    if (!samplerCoordBuffer) {
+      let xy = [];
+      for (let i = 0; i < wh * wh; i++) {
+        xy.push([
+          (i % width) / Math.max(1, width - 1),
+          Math.floor(i / width) / Math.max(1, height - 1)
+        ]);
+      }
+      samplerCoordBuffer = regl.buffer(xy);
+    }
+    return samplerCoordBuffer;
+  }
+
+
   function operation (params) {
     let i;
 
@@ -152,6 +173,7 @@ module.exports = function (regl, baseSize) {
     width: wh,
     height: wh,
     variable: variable,
-    operation: operation
+    operation: operation,
+    getSamplerCoords: getSamplerCoords
   }
 };

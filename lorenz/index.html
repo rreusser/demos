@@ -29,36 +29,35 @@
 </a></body>
 <script>
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-module.exports = function (regl, width, height) {
-  var n = width * height;
-  var x = new Float32Array(new Array(n).fill(0).map(function (d, i) {
-    return i % width / Math.max(1, width - 1);
-  }));
-  var y = new Float32Array(new Array(n).fill(0).map(function (d, i) {
-    return Math.floor(i / width) / Math.max(1, height - 1);
-  }));
-
+module.exports = function (regl, samplerCoords) {
   return regl({
-    frag: 'void main() {\n      gl_FragColor = vec4(0.3, 0.7, 1.0, 0.05);\n    }',
-    vert: '\n      precision mediump float;\n      attribute float x, y;\n      uniform sampler2D points;\n      uniform mat4 projection, view;\n      void main() {\n        vec4 pt = texture2D(points, vec2(x, y)).xzyw;\n        gl_Position = projection * view * pt;\n        gl_PointSize = 1.0;\n      }\n    ',
-    attributes: { x: x, y: y },
+    frag: '\n      precision mediump float;\n      uniform vec4 color;\n      void main() {\n        gl_FragColor = color;\n      }\n    ',
+    vert: '\n      precision mediump float;\n      attribute vec2 xy;\n      uniform sampler2D points;\n      uniform mat4 projection, view;\n      void main() {\n        vec4 pt = texture2D(points, xy).xzyw;\n        gl_Position = projection * view * pt;\n        gl_PointSize = 1.0;\n      }\n    ',
+    attributes: { xy: regl.prop('sampleAt') },
     blend: {
       enable: true,
       func: { srcRGB: 'src alpha', srcAlpha: 1, dstRGB: 1, dstAlpha: 1 },
       equation: { rgb: 'add', alpha: 'add' }
     },
-    uniforms: { points: regl.prop('points') },
+    uniforms: {
+      points: regl.prop('data'),
+      color: regl.prop('color')
+    },
     depth: { enable: false },
     primitive: 'points',
-    count: n
+    count: regl.prop('count')
   });
 };
 },{}],2:[function(require,module,exports){
 var isTypedArray = require('is-typedarray');
 var parse = require('./parse');
 
-module.exports = function (regl, baseSize) {
+module.exports = function (regl, opts) {
+  opts = opts || {};
+  var baseSize = opts.n === undefined ? 1 : opts.n;
   var wh = Math.ceil(Math.sqrt(baseSize));
+  var width = wh;
+  var height = wh;
 
   function variable(input) {
     var n, data, tex, fbo;
@@ -136,6 +135,19 @@ module.exports = function (regl, baseSize) {
     };
   }
 
+  var samplerCoordBuffer;
+
+  function getSamplerCoords() {
+    if (!samplerCoordBuffer) {
+      var xy = [];
+      for (var i = 0; i < wh * wh; i++) {
+        xy.push([i % width / Math.max(1, width - 1), Math.floor(i / width) / Math.max(1, height - 1)]);
+      }
+      samplerCoordBuffer = regl.buffer(xy);
+    }
+    return samplerCoordBuffer;
+  }
+
   function operation(params) {
     var i = void 0;
 
@@ -192,24 +204,25 @@ module.exports = function (regl, baseSize) {
     width: wh,
     height: wh,
     variable: variable,
-    operation: operation
+    operation: operation,
+    getSamplerCoords: getSamplerCoords
   };
 };
 },{"./parse":26,"is-typedarray":18}],3:[function(require,module,exports){
 var regl = require('regl')({
   extensions: ['OES_texture_float'],
-  pixelRatio: 1
+  pixelRatio: 1.0
 });
 
 var n = 500000;
-var gpu = require('./gpuwise')(regl, n);
+var ctx = require('./gpuwise')(regl, { n: n });
 
-var y1 = gpu.variable();
-var y2 = gpu.variable(function (i) {
+var y1 = ctx.variable();
+var y2 = ctx.variable(function (i) {
   return [2 + (Math.random() * 2 - 1) * 0.1, 2 + (Math.random() * 2 - 1) * 0.1, 28 + (Math.random() * 2 - 1) * 0.1, 1.0];
 });
 
-var lorenz = gpu.operation({
+var lorenz = ctx.operation({
   args: ['array', 'scalar'],
   body: '\n    const float s = 10.0;\n    const float b = 8.0 / 3.0;\n    const float r = 28.0;\n\n    vec4 compute (vec4 y, float dt) {\n      // Predict:\n      vec4 ytmp = y + 0.5 * dt * vec4(\n        s * (y.y - y.x),\n        y.x * (r - y.z) - y.y,\n        y.x * y.y - b * y.z,\n        0.0\n      );\n\n      // Correct:\n      return y + dt * vec4(\n        s * (ytmp.y - ytmp.x),\n        ytmp.x * (r - ytmp.z) - ytmp.y,\n        ytmp.x * ytmp.y - b * ytmp.z,\n        0.0\n      );\n    }\n  '
 });
@@ -228,15 +241,23 @@ var camera = require('regl-camera')(regl, {
   damping: 0
 });
 
-var draw = require('./draw-points')(regl, gpu.width, gpu.height);
+var drawPointsFromTexture = require('./draw-points')(regl);
+var samplerCoords = ctx.getSamplerCoords();
 
 regl.frame(function (_ref) {
   var tick = _ref.tick;
 
   iterate();
+
   regl.clear({ color: [0, 0, 0, 1] });
+
   camera(function () {
-    return draw({ points: y1.getTexture() });
+    drawPointsFromTexture({
+      count: n,
+      data: y1.getTexture(),
+      sampleAt: samplerCoords,
+      color: [0.3, 0.7, 1.0, 0.05]
+    });
   });
 });
 
