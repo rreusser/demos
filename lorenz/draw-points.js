@@ -5,7 +5,7 @@ module.exports = function (regl, width, height) {
 
   return regl({
     frag: `void main() {
-      gl_FragColor = vec4(0.8, 0.9, 1.0, 0.2);
+      gl_FragColor = vec4(0.3, 0.7, 1.0, 0.2);
     }`,
     vert: `
       precision mediump float;

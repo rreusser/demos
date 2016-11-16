@@ -39,7 +39,7 @@ module.exports = function (regl, width, height) {
   }));
 
   return regl({
-    frag: 'void main() {\n      gl_FragColor = vec4(0.8, 0.9, 1.0, 0.2);\n    }',
+    frag: 'void main() {\n      gl_FragColor = vec4(0.3, 0.7, 1.0, 0.2);\n    }',
     vert: '\n      precision mediump float;\n      attribute float x, y;\n      uniform sampler2D points;\n      uniform mat4 projection, view;\n      void main() {\n        vec4 pt = texture2D(points, vec2(x, y)).xzyw;\n        gl_Position = projection * view * pt;\n        gl_PointSize = 2.0;\n      }\n    ',
     attributes: { x: x, y: y },
     blend: {
