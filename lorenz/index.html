@@ -39,8 +39,8 @@ module.exports = function (regl, width, height) {
   }));
 
   return regl({
-    frag: 'void main() {\n      gl_FragColor = vec4(0.3, 0.7, 1.0, 0.2);\n    }',
-    vert: '\n      precision mediump float;\n      attribute float x, y;\n      uniform sampler2D points;\n      uniform mat4 projection, view;\n      void main() {\n        vec4 pt = texture2D(points, vec2(x, y)).xzyw;\n        gl_Position = projection * view * pt;\n        gl_PointSize = 2.0;\n      }\n    ',
+    frag: 'void main() {\n      gl_FragColor = vec4(0.3, 0.7, 1.0, 0.05);\n    }',
+    vert: '\n      precision mediump float;\n      attribute float x, y;\n      uniform sampler2D points;\n      uniform mat4 projection, view;\n      void main() {\n        vec4 pt = texture2D(points, vec2(x, y)).xzyw;\n        gl_Position = projection * view * pt;\n        gl_PointSize = 1.0;\n      }\n    ',
     attributes: { x: x, y: y },
     blend: {
       enable: true,
@@ -197,15 +197,16 @@ module.exports = function (regl, baseSize) {
 };
 },{"./parse":26,"is-typedarray":18}],3:[function(require,module,exports){
 var regl = require('regl')({
-  extensions: ['OES_texture_float']
+  extensions: ['OES_texture_float'],
+  pixelRatio: 1
 });
 
-var n = 100000;
+var n = 500000;
 var gpu = require('./gpuwise')(regl, n);
 
 var y1 = gpu.variable();
 var y2 = gpu.variable(function (i) {
-  return [2 + (Math.random() * 2 - 1) * 0.01, 2 + (Math.random() * 2 - 1) * 0.01, 28 + (Math.random() * 2 - 1) * 0.01, 1.0];
+  return [2 + (Math.random() * 2 - 1) * 0.1, 2 + (Math.random() * 2 - 1) * 0.1, 28 + (Math.random() * 2 - 1) * 0.1, 1.0];
 });
 
 var lorenz = gpu.operation({
@@ -213,14 +214,12 @@ var lorenz = gpu.operation({
   body: '\n    const float s = 10.0;\n    const float b = 8.0 / 3.0;\n    const float r = 28.0;\n\n    vec4 compute (vec4 y, float dt) {\n      // Predict:\n      vec4 ytmp = y + 0.5 * dt * vec4(\n        s * (y.y - y.x),\n        y.x * (r - y.z) - y.y,\n        y.x * y.y - b * y.z,\n        0.0\n      );\n\n      // Correct:\n      return y + dt * vec4(\n        s * (ytmp.y - ytmp.x),\n        ytmp.x * (r - ytmp.z) - ytmp.y,\n        ytmp.x * ytmp.y - b * ytmp.z,\n        0.0\n      );\n    }\n  '
 });
 
-function iterate(n) {
-  for (var i = 0; i < n; i++) {
-    // Update the attractor
-    lorenz(y1, y2, 0.005);
+function iterate() {
+  // Update the attractor
+  lorenz(y1, y2, 0.01);
 
-    // Swap buffers:
-    tmp = y1;y1 = y2;y2 = tmp;
-  }
+  // Swap buffers:
+  tmp = y1;y1 = y2;y2 = tmp;
 }
 
 var camera = require('regl-camera')(regl, {
@@ -233,7 +232,7 @@ var draw = require('./draw-points')(regl, gpu.width, gpu.height);
 regl.frame(function (_ref) {
   var tick = _ref.tick;
 
-  iterate(2);
+  iterate();
   regl.clear({ color: [0, 0, 0, 1] });
   camera(function () {
     return draw({ points: y1.getTexture() });

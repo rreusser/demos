@@ -1,15 +1,16 @@
 const regl = require('regl')({
-  extensions: ['OES_texture_float']
+  extensions: ['OES_texture_float'],
+  pixelRatio: 1
 });
 
-const n = 100000;
+const n = 500000;
 const gpu = require('./gpuwise')(regl, n);
 
 var y1 = gpu.variable();
 var y2 = gpu.variable(i => [
-  2 + (Math.random() * 2 - 1) * 0.01,
-  2 + (Math.random() * 2 - 1) * 0.01,
-  28 + (Math.random() * 2 - 1) * 0.01,
+  2 + (Math.random() * 2 - 1) * 0.1,
+  2 + (Math.random() * 2 - 1) * 0.1,
+  28 + (Math.random() * 2 - 1) * 0.1,
   1.0
 ]);
 
@@ -40,14 +41,12 @@ var lorenz = gpu.operation({
   `,
 });
 
-function iterate (n) {
-  for (let i = 0; i < n; i++) {
-    // Update the attractor
-    lorenz(y1, y2, 0.005);
+function iterate () {
+  // Update the attractor
+  lorenz(y1, y2, 0.01);
 
-    // Swap buffers:
-    tmp = y1; y1 = y2; y2 = tmp;
-  }
+  // Swap buffers:
+  tmp = y1; y1 = y2; y2 = tmp;
 }
 
 const camera = require('regl-camera')(regl, {
@@ -58,7 +57,7 @@ const camera = require('regl-camera')(regl, {
 const draw = require('./draw-points')(regl, gpu.width, gpu.height);
 
 regl.frame(({tick}) => {
-  iterate(2);
+  iterate();
   regl.clear({color: [0, 0, 0, 1]});
   camera(() => draw({points: y1.getTexture()}));
 });
