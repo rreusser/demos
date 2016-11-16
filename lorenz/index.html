@@ -224,7 +224,8 @@ function iterate() {
 
 var camera = require('regl-camera')(regl, {
   center: [0, 28, 0],
-  distance: 100
+  distance: 100,
+  damping: 0
 });
 
 var draw = require('./draw-points')(regl, gpu.width, gpu.height);
@@ -2941,6 +2942,8 @@ function createCamera (regl, props_) {
     dphi: 0
   }
 
+  var damping = typeof props.damping !== 'undefined' ? props.damping : 0.9
+
   var right = new Float32Array([1, 0, 0])
   var front = new Float32Array([0, 0, 1])
 
@@ -2971,7 +2974,7 @@ function createCamera (regl, props_) {
   }
 
   function damp (x) {
-    var xd = x * 0.9
+    var xd = x * damping
     if (Math.abs(xd) < 0.1) {
       return 0
     }
@@ -3024,10 +3027,10 @@ function createCamera (regl, props_) {
 
   var injectContext = regl({
     context: Object.assign({}, cameraState, {
-      projection: function ({viewportWidth, viewportHeight}) {
+      projection: function (context) {
         perspective(cameraState.projection,
           cameraState.fovy,
-          viewportWidth / viewportHeight,
+          context.viewportWidth / context.viewportHeight,
           cameraState.near,
           cameraState.far)
         if (cameraState.flipY) { cameraState.projection[5] *= -1 }

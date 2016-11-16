@@ -52,6 +52,7 @@ function iterate () {
 const camera = require('regl-camera')(regl, {
   center: [0, 28, 0],
   distance: 100,
+  damping: 0
 });
 
 const draw = require('./draw-points')(regl, gpu.width, gpu.height);
