@@ -1,7 +1,7 @@
 {
-  "name": "lorenz",
+  "name": "waves",
   "version": "1.0.0",
-  "description": "Computing the lorenz attractor on the GPU",
+  "description": "Waves on the GPU",
   "main": "index.js",
   "scripts": {
     "build": "browserify index.js -t es2040 | indexhtmlify | metadataify | github-cornerify > index.html",
@@ -40,10 +40,10 @@
     "web-audio-player": "^1.2.1"
   },
   "metadataify": {
-    "image": "https://cdn.rawgit.com/rreusser/demos/master/lorenz/screenshot.png"
+    "image": "https://cdn.rawgit.com/rreusser/demos/master/waves/screenshot.png"
   },
   "github-corner": {
-    "url": "https://github.com/rreusser/demos/blob/master/lorenz/index.js",
+    "url": "https://github.com/rreusser/demos/blob/master/waves/index.js",
     "fg": "#333",
     "bg": "#fff"
   }
