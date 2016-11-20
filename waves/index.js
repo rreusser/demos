@@ -173,8 +173,7 @@ function doBump(amount, x, y) {
 }
 
 window.addEventListener('keypress', function (e) {
-  if (e.keyCode === 32) {
-
+  if (e.charCode === 32) {
     if (instructions) {
       document.body.removeChild(instructions);
       instructions = null;
@@ -182,6 +181,6 @@ window.addEventListener('keypress', function (e) {
 
     doBump((Math.random() * 2 - 1) * 4, Math.random() * 2 - 1, Math.random() * 2 - 1);
   }
-});
+}, false);
 
 document.querySelector('canvas').addEventListener('wheel', function (e) {e.preventDefault();});
