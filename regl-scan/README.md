@@ -1,4 +1,4 @@
-# regl-scan
+# [WIP] regl-scan
 
 > GPU Scan (generalized prefix-sum) via regl
 
