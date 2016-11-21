@@ -16,9 +16,7 @@ c1.style.width = screenSize.width + 'px';
 c1.style.height = screenSize.height + 'px';
 document.body.appendChild(c1);
 
-const regl = require('regl')({
-  pixelRatio: 1
-});
+const regl = require('regl')({});
 
 const prefixSum = require('./')(regl, {
   reduce: `vec4 reduce(vec4 prefix, vec4 sum) {
