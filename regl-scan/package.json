@@ -1,0 +1,43 @@
+{
+  "name": "regl-scan",
+  "version": "1.0.0",
+  "description": "GPU Scan (generalized prefix-sum) via regl",
+  "main": "index.js",
+  "scripts": {
+    "test": "karma start test/karma.conf.js",
+    "build": "browserify demo.js -t es2040 | indexhtmlify | metadataify | github-cornerify > index.html"
+  },
+  "author": "Ricky Reusser",
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^13.1.1",
+    "es2040": "^1.2.4",
+    "glsl-numerify": "^1.0.0",
+    "glsl-quad": "^1.0.0",
+    "glslify": "^6.0.1",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.3.0",
+    "karma-browserify": "^5.1.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-jasmine": "^1.0.2",
+    "karma-mocha": "^1.3.0",
+    "mersenne-twister": "^1.1.0",
+    "ndarray": "^1.0.18",
+    "ndarray-fill": "^1.0.1",
+    "ndarray-ops": "^1.2.2",
+    "ndarray-prefix-sum": "^1.0.0",
+    "ndarray-scratch": "^1.2.0",
+    "ndarray-show": "^2.0.0",
+    "ndarray-tests": "^1.3.0",
+    "regl": "^1.3.0",
+    "resl": "^1.0.3",
+    "watchify": "^3.7.0",
+    "util-extend": "^1.0.3"
+  },
+  "github-corner": {
+    "url": "https://github.com/rreusser/demos/tree/master/regl-scan"
+  },
+  "metadataify": {
+    "image": "https://cdn.rawgit.com/rreusser/demos/master/regl-scan/screenshot.png"
+  }
+}
