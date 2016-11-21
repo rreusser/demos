@@ -15,7 +15,7 @@ module.exports = function (regl, samplerCoords) {
       void main() {
         vec4 pt = texture2D(points, xy).xzyw;
         gl_Position = projection * view * pt;
-        gl_PointSize = 4.0;
+        gl_PointSize = 1.0;
       }
     `,
     attributes: {xy: regl.prop('sampleAt')},

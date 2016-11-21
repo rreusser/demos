@@ -32,7 +32,7 @@
 module.exports = function (regl, samplerCoords) {
   return regl({
     frag: '\n      precision mediump float;\n      uniform vec4 color;\n      void main() {\n        gl_FragColor = color;\n      }\n    ',
-    vert: '\n      precision mediump float;\n      attribute vec2 xy;\n      uniform sampler2D points;\n      uniform mat4 projection, view;\n      void main() {\n        vec4 pt = texture2D(points, xy).xzyw;\n        gl_Position = projection * view * pt;\n        gl_PointSize = 4.0;\n      }\n    ',
+    vert: '\n      precision mediump float;\n      attribute vec2 xy;\n      uniform sampler2D points;\n      uniform mat4 projection, view;\n      void main() {\n        vec4 pt = texture2D(points, xy).xzyw;\n        gl_Position = projection * view * pt;\n        gl_PointSize = 1.0;\n      }\n    ',
     attributes: { xy: regl.prop('sampleAt') },
     blend: {
       enable: true,
@@ -214,12 +214,12 @@ var regl = require('regl')({
   pixelRatio: 1.0
 });
 
-var n = 500;
+var n = 500000;
 var ctx = require('./gpuwise')(regl, { n: n });
 
 var y1 = ctx.variable();
 var y2 = ctx.variable(function (i) {
-  return [2 + (Math.random() * 2 - 1) * 10.1, 2 + (Math.random() * 2 - 1) * 10.1, 28 + (Math.random() * 2 - 1) * 10.1, 1.0];
+  return [2 + (Math.random() * 2 - 1) * 0.1, 2 + (Math.random() * 2 - 1) * 0.1, 28 + (Math.random() * 2 - 1) * 0.1, 1.0];
 });
 
 var lorenz = ctx.operation({
@@ -247,7 +247,7 @@ var samplerCoords = ctx.getSamplerCoords();
 regl.frame(function (_ref) {
   var tick = _ref.tick;
 
-  if (tick % 10 !== 0) return;
+  //if (tick % 10 !== 0) return;
 
   iterate();
 
@@ -258,7 +258,7 @@ regl.frame(function (_ref) {
       count: n,
       data: y1.getTexture(),
       sampleAt: samplerCoords,
-      color: [0.3, 0.7, 1, 1]
+      color: [0.3, 0.7, 1, 0.1]
     });
   });
 });
