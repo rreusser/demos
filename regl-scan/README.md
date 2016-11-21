@@ -8,7 +8,9 @@ Applies a [scan (prefix-sum)](https://en.wikipedia.org/wiki/Prefix_sum) operatio
 
 ## Example
 
-See [live demo](rickyreusser.com/demos/regl-scan/)
+<a href="http://rickyreusser.com/demos/regl-scan/"><img src="./screenshot.png"></a>
+
+See: [live demo](http://rickyreusser.com/demos/regl-scan/)
 
 To compute a [summed area table](https://en.wikipedia.org/wiki/Summed_area_table) for each component independently:
 
