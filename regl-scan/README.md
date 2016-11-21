@@ -4,7 +4,7 @@
 
 ## Introduction
 
-The [scan (prefix-sum)](https://en.wikipedia.org/wiki/Prefix_sum) is an operation very similar to map-reduce except each output component contains a partial result. This repo implements the basic algorithm in GLSL, subject to the limitation that it only deals in 2D four-component textures of type `uint8` or `float32`.
+Applies a [scan (prefix-sum)](https://en.wikipedia.org/wiki/Prefix_sum) operation to a [regl](https://github.com/regl-project/regl) framebuffer. It's very similar to map-reduce except each output component contains a partial result. This repo implements the basic algorithm in GLSL, subject to the limitation that it only deals in 2D four-component textures of type `uint8` or `float32`.
 
 ## Example
 
