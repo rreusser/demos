@@ -19,7 +19,7 @@ const prefixSum = require('./)(regl, {
   }`
 });
 
-var result = prefixSum({src: srcFbo, dest: destFbo});
+var result = prefixSum({src: srcFbo, dest: destFbo, axis: 0});
 ```
 
 where `srcFbo` and `destFbo` are [regl framebuffers](https://github.com/regl-project/regl).
@@ -40,7 +40,7 @@ const prefixSum = require('./)(regl, {
   }`
 });
 
-var result = prefixSum({src: srcFbo, dest: destFbo});
+var result = prefixSum({src: srcFbo, dest: destFbo, axis: 0});
 ```
 
 ## License
