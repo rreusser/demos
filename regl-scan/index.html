@@ -34,11 +34,11 @@ var quad = require('glsl-quad');
 var ext = require('util-extend');
 
 var zoom = 2;
-var scale = 16;
-var size = { width: 16, height: 16 };
+var numSize = 16;
 var wid = 2.1;
-var matSize = { width: (scale * size.width + 1) * zoom, height: (scale * size.height + 1) * zoom };
-var screenSize = { width: (scale * size.width * wid + 1) * zoom, height: (scale * size.height + 1) * zoom };
+var size = { width: 16, height: 16 };
+var matSize = { width: (numSize * size.width + 1) * zoom, height: (numSize * size.height + 1) * zoom };
+var screenSize = { width: (numSize * size.width * wid + 1) * zoom, height: (numSize * size.height + 1) * zoom };
 
 var c1 = document.createElement('canvas');
 c1.width = screenSize.width;
@@ -56,7 +56,7 @@ var prefixSum = require('./')(regl, {
 var input = new Uint8Array(size.width * size.height * 4);
 for (var j = 0; j < size.height; j++) {
   for (var i = 0; i < size.width; i++) {
-    input[(i + j * size.width) * 4] = Math.floor(Math.random() * 2);
+    input[(i + j * size.width) * 4] = Math.floor(Math.random() * 2.5);
   }
 }
 
@@ -87,8 +87,8 @@ var drawNumbers = regl({
   frag: numerify.makeFrag({
     multiplier: 255,
     sourceSize: 'vec2(' + size.width + ', ' + size.height + ')',
-    destinationSize: 'vec2(' + (size.width * scale + 1) + ', ' + (size.height * scale + 1) + ')',
-    destinationCellSize: 'vec2(' + scale + ', ' + scale + ')'
+    destinationSize: 'vec2(' + (size.width * numSize + 1) + ', ' + (size.height * numSize + 1) + ')',
+    destinationCellSize: 'vec2(' + numSize + ', ' + numSize + ')'
   }),
   vert: numerify.makeVert(),
   attributes: { a_position: quad.verts, a_uv: quad.uvs },
