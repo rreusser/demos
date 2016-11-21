@@ -121,7 +121,7 @@ require('resl')({
       var tick = _ref2.tick;
 
       // Redraw every now and then just in case
-      if (tick % 100 !== 1) return;
+      if (tick % 30 !== 1) return;
       ext(fbos, prefixSum.compute({ src: fbos.src, dest: fbos.dest, axis: 0 }));
       ext(fbos, prefixSum.compute({ src: fbos.dest, dest: fbos.src, axis: 1 }));
 
