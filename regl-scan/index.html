@@ -47,7 +47,9 @@ c1.style.width = screenSize.width + 'px';
 c1.style.height = screenSize.height + 'px';
 document.body.appendChild(c1);
 
-var regl = require('regl')({ canvas: c1 });
+var regl = require('regl')({
+  pixelRatio: 1
+});
 
 var prefixSum = require('./')(regl, {
   reduce: 'vec4 reduce(vec4 prefix, vec4 sum) {\n    return prefix + sum;\n  }'
@@ -69,7 +71,7 @@ var fbos = {
 };
 
 var drawToScreen = regl({
-  vert: '\n    precision mediump float;\n    attribute vec2 xy;\n    attribute vec2 uvs;\n    varying vec2 uv;\n    uniform vec2 scale, shift;\n    void main () {\n      uv = uvs;\n      gl_Position = vec4(xy * scale + shift, 0, 1);\n    }\n  ',
+  vert: '\n    precision mediump float;\n    attribute vec2 xy;\n    attribute vec2 uvs;\n    varying vec2 uv;\n    uniform vec2 scale, shift, ar;\n    void main () {\n      uv = uvs;\n      gl_Position = vec4(xy * scale / ar + shift, 0, 1);\n    }\n  ',
   frag: '\n    precision mediump float;\n    uniform sampler2D src;\n    varying vec2 uv;\n    void main () {\n      gl_FragColor = texture2D(src, uv);\n    }\n  ',
   attributes: {
     xy: quad.verts,
@@ -78,7 +80,10 @@ var drawToScreen = regl({
   uniforms: {
     src: regl.prop('src'),
     scale: regl.prop('scale'),
-    shift: regl.prop('shift')
+    shift: regl.prop('shift'),
+    ar: function (context) {
+      return [1, context.viewportHeight / context.viewportWidth * wid];
+    }
   },
   count: 6
 });
@@ -114,14 +119,20 @@ require('resl')({
   onDone: function (_ref) {
     var digits = _ref.digits;
 
-    ext(fbos, prefixSum.compute({ src: fbos.src, dest: fbos.dest, axis: 0 }));
-    ext(fbos, prefixSum.compute({ src: fbos.dest, dest: fbos.src, axis: 1 }));
+    regl.frame(function (_ref2) {
+      var tick = _ref2.tick;
 
-    drawNumbers({ src: fbos.orig, dest: fbos.num1, digits: digits });
-    drawNumbers({ src: fbos.dest, dest: fbos.num2, digits: digits });
+      // Redraw every now and then just in case
+      if (tick % 100 !== 1) return;
+      ext(fbos, prefixSum.compute({ src: fbos.src, dest: fbos.dest, axis: 0 }));
+      ext(fbos, prefixSum.compute({ src: fbos.dest, dest: fbos.src, axis: 1 }));
 
-    drawToScreen({ src: fbos.num1, scale: [1 / wid, 1], shift: [-1 + 1 / wid, 0] });
-    drawToScreen({ src: fbos.num2, scale: [1 / wid, 1], shift: [1 - 1 / wid, 0] });
+      drawNumbers({ src: fbos.orig, dest: fbos.num1, digits: digits });
+      drawNumbers({ src: fbos.dest, dest: fbos.num2, digits: digits });
+
+      drawToScreen({ src: fbos.num1, scale: [1 / wid, 1], shift: [-1 + 1 / wid, 0] });
+      drawToScreen({ src: fbos.num2, scale: [1 / wid, 1], shift: [1 - 1 / wid, 0] });
+    });
   }
 });
 },{"./":2,"glsl-numerify":4,"glsl-quad":5,"regl":10,"resl":11,"util-extend":13}],2:[function(require,module,exports){

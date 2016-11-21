@@ -16,7 +16,9 @@ c1.style.width = screenSize.width + 'px';
 c1.style.height = screenSize.height + 'px';
 document.body.appendChild(c1);
 
-const regl = require('regl')({canvas: c1});
+const regl = require('regl')({
+  pixelRatio: 1
+});
 
 const prefixSum = require('./')(regl, {
   reduce: `vec4 reduce(vec4 prefix, vec4 sum) {
@@ -45,10 +47,10 @@ const drawToScreen = regl({
     attribute vec2 xy;
     attribute vec2 uvs;
     varying vec2 uv;
-    uniform vec2 scale, shift;
+    uniform vec2 scale, shift, ar;
     void main () {
       uv = uvs;
-      gl_Position = vec4(xy * scale + shift, 0, 1);
+      gl_Position = vec4(xy * scale / ar + shift, 0, 1);
     }
   `,
   frag: `
@@ -66,7 +68,8 @@ const drawToScreen = regl({
   uniforms: {
     src: regl.prop('src'),
     scale: regl.prop('scale'),
-    shift: regl.prop('shift')
+    shift: regl.prop('shift'),
+    ar: (context) => [1, context.viewportHeight / context.viewportWidth * wid]
   },
   count: 6
 });
@@ -98,13 +101,17 @@ require('resl')({
     }
   },
   onDone: ({digits}) => {
-    ext(fbos, prefixSum.compute({src: fbos.src, dest: fbos.dest, axis: 0}));
-    ext(fbos, prefixSum.compute({src: fbos.dest, dest: fbos.src, axis: 1}));
+    regl.frame(({tick}) => {
+      // Redraw every now and then just in case
+      if (tick % 100 !== 1) return;
+      ext(fbos, prefixSum.compute({src: fbos.src, dest: fbos.dest, axis: 0}));
+      ext(fbos, prefixSum.compute({src: fbos.dest, dest: fbos.src, axis: 1}));
 
-    drawNumbers({src: fbos.orig, dest: fbos.num1, digits});
-    drawNumbers({src: fbos.dest, dest: fbos.num2, digits});
+      drawNumbers({src: fbos.orig, dest: fbos.num1, digits});
+      drawNumbers({src: fbos.dest, dest: fbos.num2, digits});
 
-    drawToScreen({src: fbos.num1, scale: [1 / wid, 1], shift: [-1 + 1 / wid, 0]});
-    drawToScreen({src: fbos.num2, scale: [1 / wid, 1], shift: [1 - 1 / wid, 0]});
+      drawToScreen({src: fbos.num1, scale: [1 / wid, 1], shift: [-1 + 1 / wid, 0]});
+      drawToScreen({src: fbos.num2, scale: [1 / wid, 1], shift: [1 - 1 / wid, 0]});
+    });
   }
 });
