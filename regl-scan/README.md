@@ -26,7 +26,7 @@ result = prefixSum({src: result.dest, dest: result.src, axis: 1});
 // => answer in result.dest
 ```
 
-where `srcFbo` and `destFbo` are [regl framebuffers](https://github.com/regl-project/regl).
+where `srcFbo` and `destFbo` are [regl framebuffers](https://github.com/regl-project/regl). You can never write to the same framebuffer, so the algorithm ping-pongs between two framebuffers. As a result, it's not certain which framebuffer will contain the result at the end. To save an unnecessary copy operation, the result contains the framebuffer receiving the final output in `result.dest` and the scratch buffer in `result.src`.
 
 Or to compute a summed area table for a input vector containing adjacent `xyzw` vectors:
 
