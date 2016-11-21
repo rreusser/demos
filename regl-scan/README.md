@@ -43,6 +43,10 @@ const prefixSum = require('./)(regl, {
 var result = prefixSum({src: srcFbo, dest: destFbo, axis: 0});
 ```
 
+## See also
+
+- [ndarray-prefix-sum](https://github.com/scijs/ndarray-prefix-sum)
+
 ## License
 
 &copy; Ricky Reusser 2016. MIT License.
