@@ -108,7 +108,7 @@ const camera = require('./camera-2d')(regl, {
 
 regl.frame(({tick}) => {
   camera(({dirty}) => {
-    if (!dirty) return;
+    if (!dirty && tick % 30 !== 1) return;
     drawCurves(curves);
   });
 });

@@ -251,7 +251,7 @@ regl.frame(function (_ref) {
   camera(function (_ref2) {
     var dirty = _ref2.dirty;
 
-    if (!dirty) return;
+    if (!dirty && tick % 30 !== 1) return;
     drawCurves(curves);
   });
 });
