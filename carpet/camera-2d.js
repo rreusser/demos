@@ -15,7 +15,7 @@ function createCamera2d (regl, props) {
     eye: new Float32Array(props.eye || [0, 0, 5]),
     up: new Float32Array(props.up || [0, 1, 0]),
     center: new Float32Array(props.center ? [props.center[0], props.center[1], 0] : [0, 0, 0]),
-    aspectRatio: props.aspectRatio || 11,
+    aspectRatio: props.aspectRatio || 1,
     zoom: props.zoom || 1
   }
 

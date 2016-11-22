@@ -2,46 +2,59 @@ const regl = require('regl')();
 const vecFill = require('ndarray-vector-fill');
 const linspace = require('ndarray-linspace');
 const pool = require('ndarray-scratch');
+const show = require('ndarray-show');
 const fill = require('ndarray-fill');
 const gridConnectivity = require('ndarray-grid-connectivity');
 const cellsFromGrid = require('./cells-from-grid');
 const extractContour = require('simplicial-complex-contour');
-const camera = require('./camera-2d')(regl, {center: [8, 7], zoom: 5, aspectRatio: 1/3});
+const ops = require('ndarray-ops');
 
 // The data:
-const xfunc = (a, b) => Math.sqrt(a * b);
-const yfunc = (a, b) => Math.pow(b, 1.5) / a;
-const zfunc = (a, b) => Math.pow(a, 1.2) / b;
+const surfaceArea = (a, b) => 4 * Math.PI * Math.pow((Math.pow(a * b, 1.6) + Math.pow(a, 1.6) + Math.pow(b, 1.6)) / 3, 1 / 1.6);
+const ellipseCircumf = (a, b) => {
+  let h = Math.pow((a - b) / (a + b), 2);
+  return Math.PI * (a + b) * (1 + 3 * h / (10 + Math.sqrt(4 - 3 * h)));
+}
 
 // a/b sampling:
-const abrange = [[4, 8], [10, 15]];
+const abrange = [[1, 5], [1, 5]];
 const abdims = [51, 51];
+const abstride = [5, 5]
 
 // Define the contours:
-const zrange = [0, 1];
+const zrange = [0, 40];
 const zlevels = 21;
 
 // Basis for a and b:
 const a = linspace(abrange[0][0], abrange[0][1], abdims[0], {dtype: 'float32'});
 const b = linspace(abrange[1][0], abrange[1][1], abdims[1], {dtype: 'float32'});
 
-// Evaluate x and y:
-const xy = vecFill(pool.zeros([abdims[0], abdims[1], 2], 'float32'), (i, j) =>
-  [xfunc(a.get(i), b.get(j)), yfunc(a.get(i), b.get(j))]
-);
-
 // Evaluate z:
-const z = fill(pool.zeros([abdims[0], abdims[1]], 'float32'), (i, j) => zfunc(a.get(i), b.get(j)));
+const xy = pool.zeros([abdims[0], abdims[1], 2], 'float32');
+const x = xy.pick(null, null, 0);
+const y = xy.pick(null, null, 1);
+const ab = vecFill(pool.zeros([abdims[0], abdims[1], 2], 'float32'), (i, j) => [a.get(i), b.get(j)]);
+const z = fill(pool.zeros([abdims[0], abdims[1]], 'float32'), (i, j) => surfaceArea(a.get(i), b.get(j)));
+const data = fill(pool.zeros([abdims[0], abdims[1]], 'float32'), (i, j) => {
+  return ellipseCircumf(a.get(i), b.get(j));
+});
+
+ops.assign(y, z);
+fill(x, (i, j) => i - j);
+
+const bounds = [[ops.inf(x), ops.sup(x)], [ops.inf(y), ops.sup(y)]];
+const viewportRange = [0.5 * (bounds[0][1] - bounds[0][0]), 0.5 * (bounds[1][1] - bounds[1][0])];
+const viewportCenter = [0.5 * (bounds[0][1] + bounds[0][0]), 0.5 * (bounds[1][1] + bounds[1][0])];
 
 const curves = [{
   vertices: xy.data,
   vertexStride: 4,
-  elements: gridConnectivity(xy.pick(null, null, 0), {stride: [5, 5]}),
-  color: [0, 0, 0, 1]
+  elements: gridConnectivity(x, {stride: abstride}),
+  color: [0, 0, 0, 0.4]
 }];
 
 linspace(zrange[0], zrange[1], zlevels).data.map((level) => {
-  let curve = extractContour(cellsFromGrid(abdims), z.data, level);
+  let curve = extractContour(cellsFromGrid(abdims), data.data, level);
   if (!curve.cells.length) return;
   curves.push({
     vertices: regl.buffer(curve.vertexWeights.map((w, i) => {
@@ -87,6 +100,12 @@ const drawCurves = regl({
   primitive: 'lines',
   elements: regl.prop('elements'),
   depth: {enable: false}
+});
+
+const camera = require('./camera-2d')(regl, {
+  center: viewportCenter,
+  zoom: viewportRange[0] * 1.2,
+  aspectRatio: viewportRange[0] / viewportRange[1] * window.innerHeight / window.innerWidth
 });
 
 regl.frame(({tick}) => {
