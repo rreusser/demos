@@ -19,7 +19,7 @@ const ellipseCircumf = (a, b) => {
 const wavyFunc = (a, b) => Math.cos(a) * Math.sin(b);
 
 // a/b sampling:
-const abrange = [[1, 7], [1, 5]];
+const abrange = [[0.01, 7], [0.01, 5]];
 const abdims = [71, 51];
 const abstride = [5, 5]
 
