@@ -1,0 +1,47 @@
+{
+  "name": "carpet",
+  "version": "1.0.0",
+  "description": "Quick carpet plot experiments",
+  "main": "index.js",
+  "scripts": {
+    "build": "browserify index.js -t es2040 | indexhtmlify | metadataify | github-cornerify > index.html",
+    "start": "budo --open --live --host localhost index.js -- -t es2040"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rreusser/demos.git"
+  },
+  "keywords": [],
+  "author": "Ricky Reusser",
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^13.1.1",
+    "budo": "^9.2.1",
+    "es2040": "^1.2.4",
+    "gl-mat4": "^1.1.4",
+    "indexhtmlify": "^1.3.1",
+    "metadataify": "^1.0.1",
+    "mouse-change": "^1.3.0",
+    "mouse-wheel": "^1.2.0",
+    "uglify-js": "^2.7.3"
+  },
+  "metadataify": {
+    "image": "https://cdn.rawgit.com/rreusser/demos/master/carpet/screenshot.png"
+  },
+  "github-corner": {
+    "url": "https://github.com/rreusser/demos/blob/master/carpet/index.js"
+  },
+  "dependencies": {
+    "mathjs": "^3.8.0",
+    "ndarray": "^1.0.18",
+    "ndarray-fill": "^1.0.1",
+    "ndarray-function-basis": "^1.0.1",
+    "ndarray-linspace": "^1.0.4",
+    "ndarray-ops": "^1.2.2",
+    "ndarray-scratch": "^1.2.0",
+    "ndarray-show": "^2.0.0",
+    "ndarray-vector-fill": "^1.0.0",
+    "ndarray-grid-connectivity": "https://github.com/scijs/ndarray-grid-connectivity",
+    "regl": "^1.3.0"
+  }
+}
