@@ -102,7 +102,6 @@ const drawCurves = regl({
   uniforms: {
     color: regl.prop('color')
   },
-  lineWidth: 2,
   primitive: 'lines',
   elements: regl.prop('elements'),
   depth: {enable: false}
