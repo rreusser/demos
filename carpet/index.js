@@ -102,10 +102,13 @@ const drawCurves = regl({
   uniforms: {
     color: regl.prop('color')
   },
+  lineWidth: Math.min(Math.max(regl.limits.lineWidthDims[0], 2), regl.limits.lineWidthDims[1]),
   primitive: 'lines',
   elements: regl.prop('elements'),
   depth: {enable: false}
 });
+
+window.regl = regl;
 
 const camera = require('./camera-2d')(regl, {
   center: viewportCenter,
