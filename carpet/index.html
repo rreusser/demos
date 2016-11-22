@@ -155,7 +155,7 @@ var extractContour = require('simplicial-complex-contour');
 var ops = require('ndarray-ops');
 
 // The data:
-var surfaceArea = function (a, b) {
+var ellipsoidSA = function (a, b) {
   return 4 * Math.PI * Math.pow((Math.pow(a * b, 1.6) + Math.pow(a, 1.6) + Math.pow(b, 1.6)) / 3, 1 / 1.6);
 };
 var ellipseCircumf = function (a, b) {
@@ -163,19 +163,19 @@ var ellipseCircumf = function (a, b) {
   return Math.PI * (a + b) * (1 + 3 * h / (10 + Math.sqrt(4 - 3 * h)));
 };
 
-var secondFunc = function (a, b) {
+var wavyFunc = function (a, b) {
   return Math.cos(a) * Math.sin(b);
 };
 
 // a/b sampling:
 var abrange = [[1, 7], [1, 5]];
 var abdims = [71, 51];
-var abstride = [10, 10];
+var abstride = [5, 5];
 
 // Define the contours:
 var zrange = [[0, 40], [-1, 1]];
-var zcolors = [[1, 0, 0, 1], [0, 1, 0, 1]];
-var zlevels = [21, 7];
+var zcolors = [[0.8, 0.2, 0.1, 1], [0.2, 0.8, 0.1, 1]];
+var zlevels = [5, 6];
 
 // Basis for a and b:
 var a = linspace(abrange[0][0], abrange[0][1], abdims[0], { dtype: 'float32' });
@@ -189,12 +189,12 @@ var ab = vecFill(pool.zeros([abdims[0], abdims[1], 2], 'float32'), function (i, 
   return [a.get(i), b.get(j)];
 });
 var z = fill(pool.zeros([abdims[0], abdims[1]], 'float32'), function (i, j) {
-  return surfaceArea(a.get(i), b.get(j));
+  return ellipsoidSA(a.get(i), b.get(j));
 });
-var data = [fill(pool.zeros([abdims[0], abdims[1]], 'float32'), function (i, j) {
+var data = [fill(pool.zeros(abdims, 'float32'), function (i, j) {
   return ellipseCircumf(a.get(i), b.get(j));
-}), fill(pool.zeros([abdims[0], abdims[1]], 'float32'), function (i, j) {
-  return secondFunc(a.get(i), b.get(j));
+}), fill(pool.zeros(abdims, 'float32'), function (i, j) {
+  return wavyFunc(a.get(i), b.get(j));
 })];
 
 ops.assign(y, z);
@@ -210,7 +210,7 @@ var curves = [{
   vertices: xy.data,
   vertexStride: 4,
   elements: gridConnectivity(x, { stride: abstride }),
-  color: [0, 0, 0, 0.3]
+  color: [0, 0, 0, 0.15]
 }];
 
 data.map(function (datum, i) {
