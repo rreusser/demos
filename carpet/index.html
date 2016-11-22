@@ -154,9 +154,9 @@ var cellsFromGrid = require('./cells-from-grid');
 var extractContour = require('simplicial-complex-contour');
 var ops = require('ndarray-ops');
 
-// The data:
+// (Extra square root for dramatic visual effect:)
 var ellipsoidSA = function (a, b) {
-  return 4 * Math.PI * Math.pow((Math.pow(a * b, 1.6) + Math.pow(a, 1.6) + Math.pow(b, 1.6)) / 3, 1 / 1.6);
+  return Math.sqrt(4 * Math.PI * Math.pow((Math.pow(a * b, 1.6) + Math.pow(a, 1.6) + Math.pow(b, 1.6)) / 3, 1 / 1.6));
 };
 var ellipseCircumf = function (a, b) {
   var h = Math.pow((a - b) / (a + b), 2);

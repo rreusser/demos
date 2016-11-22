@@ -9,8 +9,8 @@ const cellsFromGrid = require('./cells-from-grid');
 const extractContour = require('simplicial-complex-contour');
 const ops = require('ndarray-ops');
 
-// The data:
-const ellipsoidSA = (a, b) => 4 * Math.PI * Math.pow((Math.pow(a * b, 1.6) + Math.pow(a, 1.6) + Math.pow(b, 1.6)) / 3, 1 / 1.6);
+// (Extra square root for dramatic visual effect:)
+const ellipsoidSA = (a, b) => Math.sqrt(4 * Math.PI * Math.pow((Math.pow(a * b, 1.6) + Math.pow(a, 1.6) + Math.pow(b, 1.6)) / 3, 1 / 1.6));
 const ellipseCircumf = (a, b) => {
   let h = Math.pow((a - b) / (a + b), 2);
   return Math.PI * (a + b) * (1 + 3 * h / (10 + Math.sqrt(4 - 3 * h)));
