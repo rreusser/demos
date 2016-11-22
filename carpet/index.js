@@ -17,8 +17,8 @@ const ellipseCircumf = (a, b) => {
 }
 
 // a/b sampling:
-const abrange = [[1, 5], [1, 5]];
-const abdims = [51, 51];
+const abrange = [[1, 7], [1, 5]];
+const abdims = [71, 51];
 const abstride = [5, 5]
 
 // Define the contours:
@@ -35,9 +35,7 @@ const x = xy.pick(null, null, 0);
 const y = xy.pick(null, null, 1);
 const ab = vecFill(pool.zeros([abdims[0], abdims[1], 2], 'float32'), (i, j) => [a.get(i), b.get(j)]);
 const z = fill(pool.zeros([abdims[0], abdims[1]], 'float32'), (i, j) => surfaceArea(a.get(i), b.get(j)));
-const data = fill(pool.zeros([abdims[0], abdims[1]], 'float32'), (i, j) => {
-  return ellipseCircumf(a.get(i), b.get(j));
-});
+const data = fill(pool.zeros([abdims[0], abdims[1]], 'float32'), (i, j) => ellipseCircumf(a.get(i), b.get(j)));
 
 ops.assign(y, z);
 fill(x, (i, j) => i - j);
