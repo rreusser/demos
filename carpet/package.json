@@ -42,6 +42,7 @@
     "ndarray-scratch": "^1.2.0",
     "ndarray-show": "^2.0.0",
     "ndarray-vector-fill": "^1.0.0",
-    "regl": "^1.3.0"
+    "regl": "^1.3.0",
+    "static-kdtree": "^1.0.1"
   }
 }
