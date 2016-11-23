@@ -19,17 +19,17 @@ const ellipseCircumf = (a, b) => {
   return Math.PI * (a + b) * (1 + 3 * h / (10 + Math.sqrt(4 - 3 * h)));
 }
 
-const wavyFunc = (a, b) => Math.pow(Math.sin(Math.cos(a) * Math.sin(b) * 10), 2);
+const wavyFunc = (a, b) => Math.pow(Math.sin(Math.cos(a) * Math.sin(b) * 20), 2);
 
 // a/b sampling:
 const abrange = [[0.5, 7], [0.5, 5.05]];
-const abdims = [5, 4];
+const abdims = [71, 51];
 const abstride = [1, 1]
 
 // Define the contours:
 const zrange = [
   [0.25, 0.5],
-  [0, 40],
+  [20, 40],
 ];
 
 const zcolors = [
@@ -39,7 +39,7 @@ const zcolors = [
 
 const zlevels = [
   1,
-  50
+  1
 ];
 
 // Basis for a and b:
@@ -67,19 +67,19 @@ const viewportCenter = [0.5 * (bounds[0][1] + bounds[0][0]), 0.5 * (bounds[1][1]
 const curves = [{
   vertices: xy.data,
   vertexStride: 4,
+  primitive: 'lines',
   elements: gridConnectivity(x, {stride: abstride}),
   color: [0, 0, 0, 0.15]
 }];
 
 data.map(function (datum, i) {
-  if (i > 0) return;
   linspace(zrange[i][0], zrange[i][1], zlevels[i]).data.map((level, k) => {
     let curve = extractContour(cellsFromGrid(abdims, datum.data, xy.data), datum.data, level);
     if (!curve.cells.length) return;
 
     continuify(curve).forEach(function (splitCurve, i) {
       curves.push({
-        vertices: (splitCurve.vertexWeights.map((w, j) => {
+        vertices: regl.buffer(splitCurve.vertexWeights.map((w, j) => {
           let i1 = splitCurve.vertexIds[j][0] * 2;
           let i2 = splitCurve.vertexIds[j][1] * 2;
           return [
@@ -89,7 +89,8 @@ data.map(function (datum, i) {
         })),
         vertexStride: 8,
         elements: splitCurve.cells,
-        color: hsl2rgb([(90 + i * 180 + k * 20) / 360, 0.8, 0.4]).concat(1),
+        primitive: 'lines',
+        color: hsl2rgb([((90 + k * 180 + i * 5) / 360) % 1, 0.8, 0.4]).concat(1),
       });
     });
   })
@@ -121,7 +122,7 @@ const drawCurves = regl({
     color: regl.prop('color')
   },
   lineWidth: Math.min(Math.max(regl.limits.lineWidthDims[0], 2), regl.limits.lineWidthDims[1]),
-  primitive: 'lines',
+  primitive: regl.prop('primitive'),
   elements: regl.prop('elements'),
   depth: {enable: false}
 });
@@ -134,10 +135,9 @@ const camera = require('./camera-2d')(regl, {
   aspectRatio: viewportRange[0] / viewportRange[1] * window.innerHeight / window.innerWidth
 });
 
-//regl.frame(({tick}) => {
-  let frame = 0;
+regl.frame(({tick}) => {
   camera(({dirty}) => {
     if (!dirty && tick % 30 !== 1) return;
     drawCurves(curves);
   });
-//});
+});

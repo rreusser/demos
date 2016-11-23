@@ -43,15 +43,15 @@ module.exports = function (dims, data, xy) {
       var b = a + 1;
       var c = a + dims[1];
       var d = b + dims[1];
-      cells.push([a, b, c]);
-      cells.push([d, c, b]);
-      //cells.push([a, b, idx]);
-      //cells.push([b, d, idx]);
-      //cells.push([d, c, idx]);
-      //cells.push([c, a, idx]);
-      //data.push(customMean(data[a], data[b], data[c], data[d]));
-      //xy.push(mean(xy[a * 2], xy[b * 2], xy[c * 2], xy[d * 2]));
-      //xy.push(mean(xy[a * 2 + 1], xy[b * 2 + 1], xy[c * 2 + 1], xy[d * 2 + 1]));
+      //cells.push([a, b, c]);
+      //cells.push([d, c, b]);
+      cells.push([a, b, idx]);
+      cells.push([b, d, idx]);
+      cells.push([d, c, idx]);
+      cells.push([c, a, idx]);
+      data.push(customMean(data[a], data[b], data[c], data[d]));
+      xy.push(mean(xy[a * 2], xy[b * 2], xy[c * 2], xy[d * 2]));
+      xy.push(mean(xy[a * 2 + 1], xy[b * 2 + 1], xy[c * 2 + 1], xy[d * 2 + 1]));
       idx++;
     }
   }

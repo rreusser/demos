@@ -1,7 +1,7 @@
 const createKDTree = require('static-kdtree');
 
 module.exports = function continuify (simplex) {
-  console.log('simplex:', simplex);
+  var t1 = performance.now();
   var cid, i, j, k, pair, ids, w;
   var weights = simplex.vertexWeights;
   var cells = simplex.cells;
@@ -72,14 +72,12 @@ module.exports = function continuify (simplex) {
         if (dir === 0) {
           if (polyline[0] !== consumedCellPair) {
             polyline.unshift(consumedCellPair);
-            console.log('consumedCellPair:', consumedCellPair);
             newSimplex.vertexIds.unshift(vertexIds[consumedCellPair].slice(0));
             newSimplex.vertexWeights.unshift(weights[consumedCellPair]);
           }
         } else {
           if (polyline[polyline.length - 1] !== consumedCellPair) {
             polyline.push(consumedCellPair);
-            console.log('consumedCellPair:', consumedCellPair);
             newSimplex.vertexIds.push(vertexIds[consumedCellPair].slice(0));
             newSimplex.vertexWeights.push(weights[consumedCellPair]);
           }
@@ -105,6 +103,8 @@ module.exports = function continuify (simplex) {
       ns.cells.push([j, j + 1]);
     }
   }
+  var t2 = performance.now();
+  console.log('t2 - t1:', t2 - t1);
 
   return newSimplices;
 }
