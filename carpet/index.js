@@ -19,18 +19,18 @@ const ellipseCircumf = (a, b) => {
   return Math.PI * (a + b) * (1 + 3 * h / (10 + Math.sqrt(4 - 3 * h)));
 }
 
-const wavyFunc = (a, b) => Math.pow(Math.sin(Math.cos(a) * Math.sin(b) * 40), 2);
+const wavyFunc = (a, b) => Math.pow(Math.sin(Math.cos(Math.pow(a - 0.5, 0.4) * 10) * Math.sin(Math.pow(b - 0.5, 0.4) * 10) * 20), 2);
 //const wavyFunc1 = (a, b) => Math.sin(14 * (a + b));
 //const wavyFunc2 = (a, b) => Math.sin(14 * (a - b));
 
 // a/b sampling:
-const abrange = [[0.5, 7], [0.5, 5.05]];
-const abdims = [171, 151];
+const abrange = [[0.5, 7], [0.5, 5]];
+const abdims = [251, 151];
 const abstride = [1, 1]
 
 // Define the contours:
 const zrange = [
-  [0.25, 0.2],
+  [0.4, 0.2],
   [0.6, 0.2],
 ];
 
