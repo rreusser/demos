@@ -160,7 +160,7 @@ function contraharmonicMean(a, b, c, d) {
 
 // This just weights the mean toward the arithmetic mean a bit more... totally
 // ad hoc. Didn't have the effect I was looking for but seems fine...
-function customMean(a, b, c, d) {
+function weightedMean(a, b, c, d) {
   var m = mean(a, b, c, d);
   var dx = [a - m, b - m, c - m, d - m];
   var w = dx.map(function (x) {
@@ -169,24 +169,74 @@ function customMean(a, b, c, d) {
   return m + (dx[0] * w[0] + dx[1] * w[1] + dx[2] * w[2] + dx[3] * w[3]) * 0.25 / (w[0] + w[1] + w[2] + w[3]);
 }
 
+function dot(a, b) {
+  return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+}
+
+function length(a) {
+  return Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+}
+
+function angle(a, b) {
+  return Math.acos(dot(a, b) / (length(a) * length(b) + 1e-15));
+}
+
+function cross(a, b) {
+  return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+}
+
+function sub(b, a) {
+  return [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+}
+
 module.exports = function (dims, data, xy) {
   var cells = [];
   var idx = data.length;
+  console.log('data.length:', data.length);
   for (var j = 0; j < dims[0] - 1; j++) {
     for (var i = 0; i < dims[1] - 1; i++) {
       var a = i + j * dims[1];
       var b = a + 1;
       var c = a + dims[1];
       var d = b + dims[1];
-      //cells.push([a, b, c]);
-      //cells.push([d, c, b]);
-      cells.push([a, b, idx]);
-      cells.push([b, d, idx]);
-      cells.push([d, c, idx]);
-      cells.push([c, a, idx]);
-      data.push(customMean(data[a], data[b], data[c], data[d]));
-      xy.push(mean(xy[a * 2], xy[b * 2], xy[c * 2], xy[d * 2]));
-      xy.push(mean(xy[a * 2 + 1], xy[b * 2 + 1], xy[c * 2 + 1], xy[d * 2 + 1]));
+      if (false) {
+        // c d
+        // a b
+
+        var va = [xy[a * 2], xy[a * 2 + 1], data[a]];
+        var vb = [xy[b * 2], xy[b * 2 + 1], data[b]];
+        var vc = [xy[c * 2], xy[c * 2 + 1], data[c]];
+        var vd = [xy[d * 2], xy[d * 2 + 1], data[d]];
+
+        // Get the angle between normals of triangls abc and bdc, i.e. if the quad is
+        // split along the b-c line:
+        var nabc = cross(sub(vb, va), sub(vc, va));
+        var nbdc = cross(sub(vc, vd), sub(vb, vd));
+        var angBC = angle(nabc, nbdc);
+
+        // Get the angle between normals of triangls abd and dca, i.e. if the quad is
+        // split along the a-d line:
+        var nabd = cross(sub(vd, vb), sub(va, vb));
+        var ndca = cross(sub(va, vc), sub(vd, vc));
+        var angAD = angle(nabd, ndca);
+        //console.log('angAD, angBC:', angAD, angBC);
+
+        if (angAD < angBC) {
+          cells.push([a, b, c]);
+          cells.push([d, c, b]);
+        } else {
+          cells.push([a, d, c]);
+          cells.push([a, b, d]);
+        }
+      } else {
+        cells.push([a, b, idx]);
+        cells.push([b, d, idx]);
+        cells.push([d, c, idx]);
+        cells.push([c, a, idx]);
+        data.push(weightedMean(data[a], data[b], data[c], data[d]));
+        xy.push(mean(xy[a * 2], xy[b * 2], xy[c * 2], xy[d * 2]));
+        xy.push(mean(xy[a * 2 + 1], xy[b * 2 + 1], xy[c * 2 + 1], xy[d * 2 + 1]));
+      }
       idx++;
     }
   }
@@ -196,7 +246,7 @@ module.exports = function (dims, data, xy) {
 },{}],3:[function(require,module,exports){
 var createKDTree = require('static-kdtree');
 
-module.exports = function continuify(simplex) {
+module.exports = function continuify(simplex, maxIdx) {
   var t1 = performance.now();
   var cid, i, j, k, pair, ids, w;
   var weights = simplex.vertexWeights;
@@ -265,6 +315,12 @@ module.exports = function continuify(simplex) {
         var consumedCellPair = getCellPairByConsumingCellDir(curCid, dir);
         if (consumedCellPair === null) continue;
 
+        var ids = vertexIds[consumedCellPair];
+        //var completesLoop = polyline[0] === consumedCellPair || polyline[polyline.length - 1] === consumedCellPair;;
+        //var isTmpNode = ids[0] >= maxIdx || ids[1] >= maxIdx;
+        //var isFirstPoint = polyline.length === 0;
+
+        //if (!isTmpNode || isFirstPoint || completesLoop) {
         if (dir === 0) {
           if (polyline[0] !== consumedCellPair) {
             polyline.unshift(consumedCellPair);
@@ -278,6 +334,7 @@ module.exports = function continuify(simplex) {
             newSimplex.vertexWeights.push(weights[consumedCellPair]);
           }
         }
+        //}
 
         // Now jump to the new cell:
         newCidsToIterate = getAdjacentCellIdsByConsumingVertexIds(vertexIds[consumedCellPair], curCid);
@@ -294,18 +351,38 @@ module.exports = function continuify(simplex) {
   for (i = 0; i < polylines.length; i++) {
     var polyline = polylines[i];
     var ns = newSimplices[i];
+    var filteredIds = [];
+    var filteredWeights = [];
 
-    for (j = 0; j < polyline.length - 1; j++) {
-      ns.cells.push([j, j + 1]);
+    var isClosed = polyline[0] === polyline[polyline.length - 1];
+    var needsClose = isClosed && (ns.vertexIds[0][0] >= maxIdx || ns.vertexIds[0][1] >= maxIdx);
+
+    var c = 0;
+    for (j = 0; j < ns.vertexIds.length; j++) {
+      var verts = ns.vertexIds[j];
+      if (verts[0] < maxIdx && verts[1] <= maxIdx) {
+        filteredIds.push(verts);
+        filteredWeights.push(ns.vertexWeights[j]);
+        if (c > 0) ns.cells.push([c - 1, c]);
+        c++;
+      }
     }
+    if (needsClose) {
+      ns.vertexIds.push(ns.vertexIds[0].slice());
+      ns.vertexWeights.push(ns.vertexWeights[0]);
+      ns.cells.push([c - 1, 0]);
+    }
+    ns.vertexIds = filteredIds;
+    ns.vertexWeights = filteredWeights;
   }
+
   var t2 = performance.now();
   console.log('t2 - t1:', t2 - t1);
 
   return newSimplices;
 };
 },{"static-kdtree":61}],4:[function(require,module,exports){
-var regl = require('regl')();
+var regl = require('regl')({ extensions: ['oes_element_index_uint'] });
 var vecFill = require('ndarray-vector-fill');
 var linspace = require('ndarray-linspace');
 var pool = require('ndarray-scratch');
@@ -329,18 +406,20 @@ var ellipseCircumf = function (a, b) {
 };
 
 var wavyFunc = function (a, b) {
-  return Math.pow(Math.sin(Math.cos(a) * Math.sin(b) * 20), 2);
+  return Math.pow(Math.sin(Math.cos(a) * Math.sin(b) * 40), 2);
 };
+//const wavyFunc1 = (a, b) => Math.sin(14 * (a + b));
+//const wavyFunc2 = (a, b) => Math.sin(14 * (a - b));
 
 // a/b sampling:
 var abrange = [[0.5, 7], [0.5, 5.05]];
-var abdims = [71, 51];
+var abdims = [171, 151];
 var abstride = [1, 1];
 
 // Define the contours:
-var zrange = [[0.25, 0.5], [20, 40]];
+var zrange = [[0.25, 0.2], [0.6, 0.2]];
 
-var zcolors = [[0.2, 0.8, 0.1, 1], [0.8, 0.2, 0.1, 1]];
+var zcolors = [[0.15, 0.8, 0.1, 1], [0.8, 0.2, 0.1, 1]];
 
 var zlevels = [1, 1];
 
@@ -360,14 +439,13 @@ var z = fill(ndarray([], [abdims[0], abdims[1]]), function (i, j) {
 });
 var data = [fill(ndarray([], abdims), function (i, j) {
   return wavyFunc(a.get(i), b.get(j));
-}), fill(ndarray([], abdims), function (i, j) {
-  return ellipseCircumf(a.get(i), b.get(j));
 })];
 
 ops.assign(y, z);
 fill(x, function (i, j) {
   return i - j;
 });
+ops.mulseq(x, (ops.sup(y) - ops.inf(y)) / (ops.sup(x) - ops.inf(x)));
 
 var bounds = [[ops.inf(x), ops.sup(x)], [ops.inf(y), ops.sup(y)]];
 var viewportRange = [0.5 * (bounds[0][1] - bounds[0][0]), 0.5 * (bounds[1][1] - bounds[1][0])];
@@ -386,7 +464,7 @@ data.map(function (datum, i) {
     var curve = extractContour(cellsFromGrid(abdims, datum.data, xy.data), datum.data, level);
     if (!curve.cells.length) return;
 
-    continuify(curve).forEach(function (splitCurve, i) {
+    continuify(curve, abdims[0] * abdims[1]).forEach(function (splitCurve, i) {
       curves.push({
         vertices: regl.buffer(splitCurve.vertexWeights.map(function (w, j) {
           var i1 = splitCurve.vertexIds[j][0] * 2;
@@ -396,7 +474,7 @@ data.map(function (datum, i) {
         vertexStride: 8,
         elements: splitCurve.cells,
         primitive: 'lines',
-        color: hsl2rgb([(90 + k * 180 + i * 5) / 360 % 1, 0.8, 0.4]).concat(1)
+        color: hsl2rgb([(90 + k * 180 + i * 20) / 360 % 1, 0.8, 0.4]).concat(1)
       });
     });
   });

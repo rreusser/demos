@@ -1,6 +1,6 @@
 const createKDTree = require('static-kdtree');
 
-module.exports = function continuify (simplex) {
+module.exports = function continuify (simplex, maxIdx) {
   var t1 = performance.now();
   var cid, i, j, k, pair, ids, w;
   var weights = simplex.vertexWeights;
@@ -69,19 +69,26 @@ module.exports = function continuify (simplex) {
         var consumedCellPair = getCellPairByConsumingCellDir(curCid, dir);
         if (consumedCellPair === null) continue;
 
-        if (dir === 0) {
-          if (polyline[0] !== consumedCellPair) {
-            polyline.unshift(consumedCellPair);
-            newSimplex.vertexIds.unshift(vertexIds[consumedCellPair].slice(0));
-            newSimplex.vertexWeights.unshift(weights[consumedCellPair]);
+        var ids = vertexIds[consumedCellPair];
+        //var completesLoop = polyline[0] === consumedCellPair || polyline[polyline.length - 1] === consumedCellPair;;
+        //var isTmpNode = ids[0] >= maxIdx || ids[1] >= maxIdx;
+        //var isFirstPoint = polyline.length === 0;
+
+        //if (!isTmpNode || isFirstPoint || completesLoop) {
+          if (dir === 0) {
+            if (polyline[0] !== consumedCellPair) {
+              polyline.unshift(consumedCellPair);
+              newSimplex.vertexIds.unshift(vertexIds[consumedCellPair].slice(0));
+              newSimplex.vertexWeights.unshift(weights[consumedCellPair]);
+            }
+          } else {
+            if (polyline[polyline.length - 1] !== consumedCellPair) {
+              polyline.push(consumedCellPair);
+              newSimplex.vertexIds.push(vertexIds[consumedCellPair].slice(0));
+              newSimplex.vertexWeights.push(weights[consumedCellPair]);
+            }
           }
-        } else {
-          if (polyline[polyline.length - 1] !== consumedCellPair) {
-            polyline.push(consumedCellPair);
-            newSimplex.vertexIds.push(vertexIds[consumedCellPair].slice(0));
-            newSimplex.vertexWeights.push(weights[consumedCellPair]);
-          }
-        }
+        //}
 
         // Now jump to the new cell:
         newCidsToIterate = getAdjacentCellIdsByConsumingVertexIds(vertexIds[consumedCellPair], curCid);
@@ -98,11 +105,31 @@ module.exports = function continuify (simplex) {
   for (i = 0; i < polylines.length; i++) {
     var polyline = polylines[i];
     var ns = newSimplices[i];
+    var filteredIds = [];
+    var filteredWeights = [];
 
-    for (j = 0; j < polyline.length - 1; j++) {
-      ns.cells.push([j, j + 1]);
+    var isClosed = polyline[0] === polyline[polyline.length - 1];
+    var needsClose = isClosed && (ns.vertexIds[0][0] >= maxIdx || ns.vertexIds[0][1] >= maxIdx);
+
+    var c = 0;
+    for (j = 0; j < ns.vertexIds.length; j++) {
+      var verts = ns.vertexIds[j];
+      if (verts[0] < maxIdx && verts[1] <= maxIdx) {
+        filteredIds.push(verts);
+        filteredWeights.push(ns.vertexWeights[j]);
+        if (c > 0) ns.cells.push([c - 1, c]);
+        c++;
+      }
     }
+    if (needsClose) {
+      ns.vertexIds.push(ns.vertexIds[0].slice());
+      ns.vertexWeights.push(ns.vertexWeights[0]);
+      ns.cells.push([c - 1, 0]);
+    }
+    ns.vertexIds = filteredIds;
+    ns.vertexWeights = filteredWeights;
   }
+
   var t2 = performance.now();
   console.log('t2 - t1:', t2 - t1);
 

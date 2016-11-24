@@ -1,4 +1,4 @@
-const regl = require('regl')();
+const regl = require('regl')({extensions: ['oes_element_index_uint']});
 const vecFill = require('ndarray-vector-fill');
 const linspace = require('ndarray-linspace');
 const pool = require('ndarray-scratch');
@@ -19,21 +19,23 @@ const ellipseCircumf = (a, b) => {
   return Math.PI * (a + b) * (1 + 3 * h / (10 + Math.sqrt(4 - 3 * h)));
 }
 
-const wavyFunc = (a, b) => Math.pow(Math.sin(Math.cos(a) * Math.sin(b) * 20), 2);
+const wavyFunc = (a, b) => Math.pow(Math.sin(Math.cos(a) * Math.sin(b) * 40), 2);
+//const wavyFunc1 = (a, b) => Math.sin(14 * (a + b));
+//const wavyFunc2 = (a, b) => Math.sin(14 * (a - b));
 
 // a/b sampling:
 const abrange = [[0.5, 7], [0.5, 5.05]];
-const abdims = [71, 51];
+const abdims = [171, 151];
 const abstride = [1, 1]
 
 // Define the contours:
 const zrange = [
-  [0.25, 0.5],
-  [20, 40],
+  [0.25, 0.2],
+  [0.6, 0.2],
 ];
 
 const zcolors = [
-  [0.2, 0.8, 0.1, 1],
+  [0.15, 0.8, 0.1, 1],
   [0.8, 0.2, 0.1, 1],
 ];
 
@@ -54,11 +56,13 @@ const ab = vecFill(ndarray([], [abdims[0], abdims[1], 2]), (i, j) => [a.get(i), 
 const z = fill(ndarray([], [abdims[0], abdims[1]]), (i, j) => ellipsoidSA(a.get(i), b.get(j)));
 const data = [
   fill(ndarray([], abdims), (i, j) => wavyFunc(a.get(i), b.get(j))),
-  fill(ndarray([], abdims), (i, j) => ellipseCircumf(a.get(i), b.get(j))),
+  //fill(ndarray([], abdims), (i, j) => wavyFunc2(a.get(i), b.get(j))),
 ];
 
 ops.assign(y, z);
 fill(x, (i, j) => i - j);
+ops.mulseq(x, (ops.sup(y) - ops.inf(y)) / (ops.sup(x) - ops.inf(x)));
+
 
 const bounds = [[ops.inf(x), ops.sup(x)], [ops.inf(y), ops.sup(y)]];
 const viewportRange = [0.5 * (bounds[0][1] - bounds[0][0]), 0.5 * (bounds[1][1] - bounds[1][0])];
@@ -77,7 +81,7 @@ data.map(function (datum, i) {
     let curve = extractContour(cellsFromGrid(abdims, datum.data, xy.data), datum.data, level);
     if (!curve.cells.length) return;
 
-    continuify(curve).forEach(function (splitCurve, i) {
+    continuify(curve, abdims[0] * abdims[1]).forEach(function (splitCurve, i) {
       curves.push({
         vertices: regl.buffer(splitCurve.vertexWeights.map((w, j) => {
           let i1 = splitCurve.vertexIds[j][0] * 2;
@@ -90,7 +94,7 @@ data.map(function (datum, i) {
         vertexStride: 8,
         elements: splitCurve.cells,
         primitive: 'lines',
-        color: hsl2rgb([((90 + k * 180 + i * 5) / 360) % 1, 0.8, 0.4]).concat(1),
+        color: hsl2rgb([((90 + k * 180 + i * 20) / 360) % 1, 0.8, 0.4]).concat(1),
       });
     });
   })
