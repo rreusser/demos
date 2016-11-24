@@ -382,7 +382,9 @@ module.exports = function continuify(simplex, maxIdx) {
   return newSimplices;
 };
 },{"static-kdtree":61}],4:[function(require,module,exports){
-var regl = require('regl')({ extensions: ['oes_element_index_uint'] });
+var regl = require('regl')({
+  //extensions: ['oes_element_index_uint']
+});
 var vecFill = require('ndarray-vector-fill');
 var linspace = require('ndarray-linspace');
 var pool = require('ndarray-scratch');
@@ -406,18 +408,18 @@ var ellipseCircumf = function (a, b) {
 };
 
 var wavyFunc = function (a, b) {
-  return Math.pow(Math.sin(Math.cos(Math.pow(a - 0.5, 0.4) * 10) * Math.sin(Math.pow(b - 0.5, 0.4) * 10) * 20), 2);
+  return Math.pow(Math.sin(Math.cos(Math.pow(a - 0.5, 0.4) * 10) * Math.sin(Math.pow(b - 0.5, 0.4) * 10) * 10), 2);
 };
 //const wavyFunc1 = (a, b) => Math.sin(14 * (a + b));
 //const wavyFunc2 = (a, b) => Math.sin(14 * (a - b));
 
 // a/b sampling:
 var abrange = [[0.5, 7], [0.5, 5]];
-var abdims = [251, 151];
+var abdims = [201, 151];
 var abstride = [1, 1];
 
 // Define the contours:
-var zrange = [[0.4, 0.2], [0.6, 0.2]];
+var zrange = [[0.3, 0.9], [0.6, 0.2]];
 
 var zcolors = [[0.15, 0.8, 0.1, 1], [0.8, 0.2, 0.1, 1]];
 
@@ -474,7 +476,7 @@ data.map(function (datum, i) {
         vertexStride: 8,
         elements: splitCurve.cells,
         primitive: 'lines',
-        color: hsl2rgb([(90 + k * 180 + i * 20) / 360 % 1, 0.8, 0.4]).concat(1)
+        color: hsl2rgb([(90 + k * 180 + i * 2) / 360 % 1, 0.9, 0.4]).concat(1)
       });
     });
   });

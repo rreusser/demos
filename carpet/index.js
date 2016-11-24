@@ -1,4 +1,6 @@
-const regl = require('regl')({extensions: ['oes_element_index_uint']});
+const regl = require('regl')({
+  //extensions: ['oes_element_index_uint']
+});
 const vecFill = require('ndarray-vector-fill');
 const linspace = require('ndarray-linspace');
 const pool = require('ndarray-scratch');
@@ -19,18 +21,18 @@ const ellipseCircumf = (a, b) => {
   return Math.PI * (a + b) * (1 + 3 * h / (10 + Math.sqrt(4 - 3 * h)));
 }
 
-const wavyFunc = (a, b) => Math.pow(Math.sin(Math.cos(Math.pow(a - 0.5, 0.4) * 10) * Math.sin(Math.pow(b - 0.5, 0.4) * 10) * 20), 2);
+const wavyFunc = (a, b) => Math.pow(Math.sin(Math.cos(Math.pow(a - 0.5, 0.4) * 10) * Math.sin(Math.pow(b - 0.5, 0.4) * 10) * 10), 2);
 //const wavyFunc1 = (a, b) => Math.sin(14 * (a + b));
 //const wavyFunc2 = (a, b) => Math.sin(14 * (a - b));
 
 // a/b sampling:
 const abrange = [[0.5, 7], [0.5, 5]];
-const abdims = [251, 151];
+const abdims = [201, 151];
 const abstride = [1, 1]
 
 // Define the contours:
 const zrange = [
-  [0.4, 0.2],
+  [0.3, 0.9],
   [0.6, 0.2],
 ];
 
@@ -94,7 +96,7 @@ data.map(function (datum, i) {
         vertexStride: 8,
         elements: splitCurve.cells,
         primitive: 'lines',
-        color: hsl2rgb([((90 + k * 180 + i * 20) / 360) % 1, 0.8, 0.4]).concat(1),
+        color: hsl2rgb([((90 + k * 180 + i * 2) / 360) % 1, 0.9, 0.4]).concat(1),
       });
     });
   })
