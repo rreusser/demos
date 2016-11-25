@@ -1,0 +1,48 @@
+{
+  "name": "principle-of-least-action",
+  "version": "1.0.0",
+  "description": "Visualizing the Principle of Least Action",
+  "main": "index.js",
+  "scripts": {
+    "build": "browserify index.js -t brfs | indexhtmlify | metadataify | github-cornerify > index.html",
+    "start": "budo --open --live --host localhost index.js -- -t brfs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rreusser/demos.git"
+  },
+  "keywords": [],
+  "author": "Ricky Reusser",
+  "license": "MIT",
+  "devDependencies": {
+    "brfs": "^1.4.3",
+    "browserify": "^13.1.1",
+    "budo": "^9.2.1",
+    "indexhtmlify": "^1.3.1",
+    "metadataify": "^1.0.1",
+    "uglify-js": "^2.7.3"
+  },
+  "dependencies": {
+    "b-spline": "^1.0.7",
+    "binary-search-bounds": "^2.0.3",
+    "bisect": "^1.0.0",
+    "d3": "^3.5.0",
+    "h": "^0.1.0",
+    "insert-css": "^2.0.0",
+    "minimize-golden-section-1d": "^1.0.3",
+    "minimize-powell": "git@github.com:rreusser/minimize-powell.git",
+    "ndarray": "^1.0.18",
+    "ndarray-fill": "^1.0.1",
+    "ndarray-lup-solve": "^1.1.0",
+    "ndarray-scratch": "^1.2.0",
+    "newton-raphson": "0.0.3"
+  },
+  "metadataify": {
+    "image": "https://cdn.rawgit.com/rreusser/demos/master/principle-of-least-action/screenshot.png"
+  },
+  "github-corner": {
+    "url": "https://github.com/rreusser/demos/tree/master/principle-of-least-action",
+    "bg": "#333",
+    "fg": "#fff"
+  }
+}

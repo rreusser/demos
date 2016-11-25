@@ -1,0 +1,145 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#controls {
+  position: absolute;
+  top: 20px;
+  right: 70px;
+  z-index: 100;
+}
+
+.panel {
+  text-align: right;
+  pointer-events: none;
+}
+
+.details-field {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+  pointer-events: none;
+}
+
+.btn-group {
+  margin-bottom: 0.5em;
+  pointer-events: all;
+}
+
+.btn {
+  display: inline-block;
+  background: none;
+  border: 1px solid black;
+  font-family: Times, serif;
+  font-size: 14px;
+  border-radius: 3px;
+  outline: none;
+}
+
+.btn:hover {
+  background-color: #ccc;
+}
+
+.btn:active {
+  background-color: #888;
+  color: white;
+}
+
+.btn-container {
+  text-align: right;
+  margin-top: 20px;
+}
+
+.btn:not(:last-child) {
+  margin-right: 0.5em;
+}
+
+#plot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-height: 600px;
+}
+
+svg {
+  background-color: #FFF;
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.lineplot circle {
+  stroke: #000;
+  fill: #000;
+}
+
+.lineplot path {
+  stroke: #000;
+  fill: none;
+}
+
+.ref-curve {
+  display: none;
+}
+
+.solution-visible .ref-curve {
+  display: block;
+}
+
+.solution-point {
+  display: none;
+}
+
+.solution-visible .solution-point {
+  display: block;
+}
+
+.drag-active .particle-plot,
+.drag-active .particle-dingers {
+  display: none;
+}
+
+.particles-paused .particle-plot,
+.particles-paused .particle-dingers {
+  display: none;
+}
+
+.particle-dingers {
+  pointer-events: none;
+}
+
+.lineplot path.ref-curve {
+  stroke: #000;
+  stroke-dasharray: 5, 5;
+}
+
+.pt .handle {
+  opacity: 0;
+}
+
+.pt.draggable circle {
+  cursor: move;
+}
+
+.pt.draggable-nsew circle {
+  cursor: move;
+}
+
+.pt.draggable.hover .handle,
+.pt.draggable.dragging .handle {
+  opacity: 0.1;
+}
+

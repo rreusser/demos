@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <title>Brachistochrone</title>
+    <link rel="stylesheet" href="styles.css"/>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <div id="plot"></div>
+    <div class="panel" id="controls">
+      <div class="btn-group">
+        <button id="toggle-particles" class="btn">Pause</button>
+        <button id="fit-to-solution" class="btn">Minimize Time</button>
+        <button id="toggle-solution" class="btn">Hide Solution</button>
+      </div>
+      <div id="test-curve-details" class="details-field"></div>
+      <div id="solution-details" class="details-field"></div>
+    </div>
+    <script src="bundle.js"></script>
+  </body>
+</html>
