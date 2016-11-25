@@ -1,5 +1,7 @@
 # first-order-wave-equation
 
+> [Simulating the first order wave equation](https://github.com/rreusser/demos/tree/master/first-order-wave-equation)
+
 Nothing too interesting here. Just wasting time trying to figure out what it means to carry things all the way through and actually use [scijs](http://scijs.net/packages). So this repo implements a simple simulation of the first-order wave equation,
 
 <p align="center"><img alt="&bsol;frac&lcub;&bsol;partial f&rcub;&lcub;&bsol;partial t&rcub; &equals; -c &bsol;&comma; &bsol;frac&lcub;&bsol;partial f&rcub;&lcub;&bsol;partial x&rcub;" valign="middle" src="images/fracpartial-fpartial-t-c-fracpartial-fpartial-44eec16cee.png" width="115" height="47"></p>

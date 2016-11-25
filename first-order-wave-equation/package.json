@@ -1,7 +1,7 @@
 {
   "name": "first-order-wave-equation",
   "version": "1.0.0",
-  "description": "Computing the lorenz attractor on the GPU",
+  "description": "Simulating the first order wave equation",
   "main": "index.js",
   "scripts": {
     "build": "browserify index.js -t es2040 | indexhtmlify | metadataify | github-cornerify > index.html",
