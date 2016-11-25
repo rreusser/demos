@@ -1,0 +1,52 @@
+{
+  "name": "elastodynamics",
+  "version": "1.0.0",
+  "description": "Rayleigh waves on the GPU!",
+  "main": "index.js",
+  "scripts": {
+    "build": "browserify index.js -t brfs | indexhtmlify | metadataify | github-cornerify > index.html",
+    "start": "budo --open --live --host localhost index.js -- -t brfs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rreusser/demos.git"
+  },
+  "keywords": [],
+  "author": "Ricky Reusser",
+  "license": "MIT",
+  "devDependencies": {
+    "brfs": "^1.4.3",
+    "glslify": "^6.0.1"
+  },
+  "metadataify": {
+    "image": "https://cdn.rawgit.com/rreusser/demos/master/elastodynamics/screenshot.png"
+  },
+  "github-corner": {
+    "url": "https://github.com/rreusser/demos/blob/master/elastodynamics/index.js",
+    "fg": "#333",
+    "bg": "#fff"
+  },
+  "dependencies": {
+    "complex.js": "^2.0.1",
+    "control-panel": "git@github.com:rreusser/control-panel.git#input-events",
+    "cwise": "^1.0.9",
+    "durand-kerner": "^1.0.0",
+    "event-emitter": "^0.3.4",
+    "flatten": "^1.0.2",
+    "gl-mat4": "^1.1.4",
+    "insert-css": "^2.0.0",
+    "isndarray": "^1.0.0",
+    "mouse-change": "^1.3.0",
+    "mouse-wheel": "^1.2.0",
+    "ndarray-grid-connectivity": "https://github.com/scijs/ndarray-grid-connectivity",
+    "ndarray-ops": "^1.2.2",
+    "ndarray-scratch": "^1.2.0",
+    "ndarray-show": "^2.0.0",
+    "ndarray-transfinite-interpolation": "https://github.com/rreusser/ndarray-transfinite-interpolation",
+    "ndarray-vector-fill": "^1.0.0",
+    "node-pid-controller": "^1.0.0",
+    "query-string": "^4.2.3",
+    "regl": "^1.3.0",
+    "util-extend": "^1.0.3"
+  }
+}
