@@ -34,7 +34,7 @@ document.body.appendChild(
 );
 
 document.body.appendChild(
-  h('a.gh-corner', {href: "https://github.com/rreusser/demos/schrodinger-1d", target: "_blank"}, [
+  h('a.gh-corner', {href: "https://github.com/rreusser/demos/tree/master/schrodinger-1d", target: "_blank"}, [
     h('img', {src: "https://cdn.rawgit.com/rreusser/schrodinger-equation-1d-demo/master/www/src/images/gh-corner.svg"})
   ])
 );

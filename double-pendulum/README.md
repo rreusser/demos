@@ -1,6 +1,6 @@
 # double-pendulum
 
-> Just a double pendulum
+> [Just a double pendulum](http://rickyreusser.com/demos/double-pendulum/)
 
 [![experimental][stability-experimental]][stability-url]
 <!--[![Build Status][travis-image]][travis-url]-->

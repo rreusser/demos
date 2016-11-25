@@ -21,7 +21,7 @@
     "image": "https://cdn.rawgit.com/rreusser/demos/master/double-pendulum/screenshot.png"
   },
   "github-corner": {
-    "url": "https://github.com/rreusser/demos/blob/master/double-pendulum/index.js",
+    "url": "https://github.com/rreusser/demos/blob/master/double-pendulum",
     "fg": "#333",
     "bg": "#fff"
   },

@@ -13,7 +13,7 @@
   },
   "keywords": [],
   "author": "Ricky Reusser",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "browserify": "^13.1.1",
     "budo": "^9.2.1",
@@ -41,7 +41,7 @@
     "image": "https://cdn.rawgit.com/rreusser/demos/master/lorenz/screenshot.png"
   },
   "github-corner": {
-    "url": "https://github.com/rreusser/demos/blob/master/lorenz/index.js",
+    "url": "https://github.com/rreusser/demos/tree/master/lorenz",
     "fg": "#333",
     "bg": "#fff"
   }

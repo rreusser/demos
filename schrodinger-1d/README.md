@@ -1,4 +1,4 @@
-# demos/schrodinger-1d
+# schrodinger-1d
 
 > [The Schrödinger Equation with a potential barrier in 1D](http://rickyreusser.com/demos/schrodinger-1d/)
 

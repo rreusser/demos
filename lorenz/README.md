@@ -1,7 +1,11 @@
 # lorenz
 
+> [A 500000 particle Lorenz Attractor, computed and displayed in WebGL](http://rickyreusser.com/demos/lorenz/)
+
 This demo computes the lorenz attractor on the GPU using a [cwise](https://github.com/scijs/cwise)-inspired library for GPU computation. The syntax is very similar to cwise, except there always must be exactly one output. For example, a simple Euler step of the attractor would look like:
 
+
+***Update***: In hindsight, regl already handles most of the work and boilerplate quite nicely so that I'm starting to think that this might not be so useful. :)
 
 ```javascript
 // Initialize a context for 1000 points:

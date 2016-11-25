@@ -13,7 +13,7 @@
   },
   "keywords": [],
   "author": "Ricky Reusser",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "browserify": "^13.1.1",
     "budo": "^9.2.1",
