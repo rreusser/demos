@@ -1,4 +1,4 @@
-# carpaet
+# carpet
 
 > Experimenting with carpet plots
 
