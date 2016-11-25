@@ -32,7 +32,7 @@
   },
   "github-corner": {
     "url": "https://github.com/rreusser/demos/tree/master/traveling-waves",
-    "fg": "#333",
-    "bg": "#fff"
+    "bg": "#333",
+    "fg": "#fff"
   }
 }

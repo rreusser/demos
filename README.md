@@ -5,6 +5,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 ## [plotly.js](https://github.com/plotly/plotly.js)
 
 - [schrodinger-1d](http://rickyreusser.com/demos/schrodinger-1d/) The Schrödinger Equation with a potential barrier in 1D
+- [traveling waves](http://rickyreusser.com/demos/traveling-waves/) (broken at the moment) Visualizing the wavenumber representation of travling waves
 
 ## [regl](https://github.com/regl-project/regl)
 
