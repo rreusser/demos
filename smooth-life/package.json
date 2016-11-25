@@ -1,0 +1,41 @@
+{
+  "name": "smooth-life",
+  "version": "1.0.0",
+  "description": "SmoothLife on the GPU, via regl",
+  "main": "index.js",
+  "scripts": {
+    "build": "browserify index.js -t es2040 -t brfs | indexhtmlify | metadataify | github-cornerify > index.html",
+    "start": "budo --open --live --host localhost index.js -- -t es2040 -t brfs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rreusser/demos.git"
+  },
+  "keywords": [],
+  "author": "Ricky Reusser",
+  "license": "MIT",
+  "devDependencies": {
+    "brfs": "^1.4.3",
+    "browserify": "^13.1.1",
+    "budo": "^9.2.1",
+    "es2040": "^1.2.4",
+    "indexhtmlify": "^1.3.1",
+    "metadataify": "^1.0.1",
+    "uglify-js": "^2.7.3"
+  },
+  "dependencies": {
+    "control-panel": "^1.2.0",
+    "insert-css": "^2.0.0",
+    "query-string": "^4.2.3",
+    "regl": "^1.3.0",
+    "util-extend": "^1.0.3"
+  },
+  "metadataify": {
+    "image": "https://cdn.rawgit.com/rreusser/demos/master/smooth-life/screenshot.png"
+  },
+  "github-corner": {
+    "url": "https://github.com/rreusser/demos/tree/master/smooth-life",
+    "fg": "#333",
+    "bg": "#fff"
+  }
+}
