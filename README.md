@@ -12,7 +12,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 
 ## [regl](https://github.com/regl-project/regl)
 
-- [⭐️⭐️ schrodinger](http://rickyreusser.com/demos/schrodinger/): A response to [this tweet](https://mobile.twitter.com/mathteacher1729/status/789489981966409728)
+- [⭐️⭐️⭐️ schrodinger](http://rickyreusser.com/demos/schrodinger/): A response to [this tweet](https://mobile.twitter.com/mathteacher1729/status/789489981966409728)
 - [⭐️⭐️⭐️⭐️⭐️ lorenz](http://rickyreusser.com/demos/lorenz/): A 500000 particle Lorenz Attractor, computed and displayed in WebGL
 - [⭐️⭐️⭐️⭐️ waves](http://rickyreusser.com/demos/waves/): A 2D wave equation on the GPU
 - [⭐️⭐️⭐️ regl-scan](http://rickyreusser.com/demos/regl-scan/): The [scan (prefix-sum)](https://en.wikipedia.org/wiki/Prefix_sum) operation on the GPU
