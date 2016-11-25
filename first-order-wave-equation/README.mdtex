@@ -39,12 +39,12 @@ This repo implements solutions using the following methods in time:
 
 and in space:
 
-- Explicit [first order upwind](./src/upwind.js) finite difference
-- Explicit [first order downwind](./src/downwind.js) finite difference (always unstable)
-- Explicit [central second order](./src/central.js) finite difference
-- Implicit [sixth order compact](./src/compact-sixth-order.js) scheme [[1]](#1)
-- Implicit [eighth order compact](./src/compact-eighth-order.js) scheme [[1]](#1)
-- [Spectral](./src/spectral.js) (= [FFT](http://scijs.net/packages/#scijs/ndarray-fft)), resolves wavenumber exactly)
+- Explicit [first order upwind](./demos/first-order-wave-equation/upwind.js) finite difference
+- Explicit [first order downwind](./demos/first-order-wave-equation/downwind.js) finite difference (always unstable)
+- Explicit [central second order](./demos/first-order-wave-equation/central.js) finite difference
+- Implicit [sixth order compact](./demos/first-order-wave-equation/compact-sixth-order.js) scheme [[1]](#1)
+- Implicit [eighth order compact](./demos/first-order-wave-equation/compact-eighth-order.js) scheme [[1]](#1)
+- [Spectral](./demos/first-order-wave-equation/spectral.js) (= [FFT](http://scijs.net/packages/#scijs/ndarray-fft)), resolves wavenumber exactly)
 
 As a brief aside, compact schemes are similar to more common explicit finite differences, except they achieve a higher order of accuracy for a smaller stencil by solving for all derivatives simultaneously. The general form is [[1]](#1)
 
