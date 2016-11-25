@@ -1,6 +1,6 @@
-# principle-of-least-action
+# brachistochrone
 
-> [Visualizing the Principle of Least Action for a ball thrown in the air. Drag the points to minimize the action!](http://rickyreusser.com/demos/principle-of-least-action/)
+> [Visualizing the Brachistochrone (fasted time) problem](http://rickyreusser.com/demos/brachistochrone/)
 
 # License
 
