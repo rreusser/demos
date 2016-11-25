@@ -19,7 +19,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 
 ## [three.js](https://threejs.org/)
 
-- [grid-generation-experiments](http://rickyreusser.com/grid-generation-experiments/) Hyperbolic grid generation around a NACA airfoil
+- [grid-generation-experiments](http://rickyreusser.com/2016/02/07/hyperbolic-grid-generation/) An exploration of hyperbolic grid generation
 
 ## canvas
 
