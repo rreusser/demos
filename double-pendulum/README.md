@@ -8,7 +8,7 @@
 <!--[![Dependency Status][david-dm-image]][david-dm-url]-->
 <!--[![Semistandard Style][semistandard-image]][semistandard-url]-->
 
-[View it!](rickyreusser.com/demos/double-pendulum)
+[View it!](http://rickyreusser.com/demos/double-pendulum)
 
 ## License
 
