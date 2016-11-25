@@ -64,7 +64,7 @@ html, body {
   max-height: 600px;
 }
 
-svg {
+#plot svg {
   background-color: #FFF;
   cursor: default;
   -webkit-user-select: none;
