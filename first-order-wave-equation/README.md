@@ -1,6 +1,6 @@
 # first-order-wave-equation
 
-> [Simulating the first order wave equation](https://github.com/rreusser/demos/tree/master/first-order-wave-equation)
+> [Simulating the first order wave equation](http://rickyreusser.com/demos/first-order-wave-equation/)
 
 Nothing too interesting here. Just wasting time trying to figure out what it means to carry things all the way through and actually use [scijs](http://scijs.net/packages). So this repo implements a simple simulation of the first-order wave equation,
 

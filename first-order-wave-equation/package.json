@@ -36,7 +36,7 @@
   },
   "github-corner": {
     "url": "https://github.com/rreusser/demos/tree/master/first-order-wave-equation",
-    "fg": "#333",
-    "bg": "#fff"
+    "bg": "#333",
+    "fg": "#fff"
   }
 }
