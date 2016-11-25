@@ -11,7 +11,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 - [carpet](http://rickyreusser.com/demos/carpet/): Carpet plots with regl
 - [elastodynamics](http://rickyreusser.com/demos/elastodynamics/) Rayleigh waves on the GPU!
 - [smooth-life](http://rickyreusser.com/demos/smooth-life/) SmoothLife on the GPU 
-- [domain coloring](http://rickyreusser.com/glsl-domain-coloring/eqn.html) Domain coloring for complex analytic functions
+- [domain coloring](http://rickyreusser.com/glsl-domain-coloring/eqn.html) Domain coloring for complex analytic functions (see: [repo](https://github.com/rreusser/glsl-domain-coloring))
 
 ## [plotly.js](https://github.com/plotly/plotly.js)
 
