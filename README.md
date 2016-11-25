@@ -23,6 +23,11 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 
 - [grid-generation-experiments](http://rickyreusser.com/2016/02/07/hyperbolic-grid-generation/) An exploration of hyperbolic grid generation
 
+## [d3.js](https://d3js.org/)
+
+- [fresnel](http://rickyreusser.com/demos/fresnel) Visualizing the boundary conditions that define Fresnel reflection and refraction
+- [jukowski](https://t.d3fc.io/status/742340688562552833) A Jukowski Airfoil in 106 characters
+
 ## canvas
 
 - [double-pendulum](http://rickyreusser.com/demos/double-pendulum/) Patterns (or chaos) made by plotting the endpoint of a double pendulum.
