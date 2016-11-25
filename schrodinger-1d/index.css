@@ -1,0 +1,62 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: rgb(227,227,227);
+}
+
+#graph {
+  position: absolute;
+  left: 300px;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+#control-panels-container {
+  padding-top: 60px;
+  width: 300px;
+  position: absolute;
+  top: 0;
+  width: 300px;
+  left: 0;
+  bottom: 0;
+  overflow-y: auto;
+}
+
+.control-panel > div:first-child {
+  text-align: left !important;
+  font-weight: 900 !important;
+  text-decoration: underline;
+}
+
+.codepenButton {
+  background: #333;
+  border: none;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 0 10px;
+  outline: none;
+  cursor: pointer;
+}
+
+.codepenButton:hover {
+  background-color: #444;
+}
+
+.codepenButton img {
+  vertical-align: middle;
+  margin-right: 0.5em;
+}
+
+.codepenButton span {
+  color: white;
+  line-height: 40px;
+}
+
+.gh-corner {
+  z-index: 1000;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
