@@ -7,5 +7,6 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 - [waves](http://rickyreusser.com/demos/waves/): A 2D wave equation on the GPU
 - [regl-scan](http://rickyreusser.com/demos/regl-scan/): The [scan (prefix-sum)](https://en.wikipedia.org/wiki/Prefix_sum) operation on the GPU
 - [carpet](http://rickyreusser.com/demos/carpet/): Carpet plots with regl
+- [double-pendulum](http://rickyreusser.com/demos/double-pendulum/) Patterns (or chaos) made by plotting the endpoint of a double pendulum.
 
 &copy; 2016 Ricky Reusser
