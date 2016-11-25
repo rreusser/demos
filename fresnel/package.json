@@ -47,7 +47,7 @@
   },
   "github-corner": {
     "url": "https://github.com/rreusser/demos/tree/master/fresnel",
-    "fg": "#333",
-    "bg": "#fff"
+    "fg": "#fff",
+    "bg": "#333"
   }
 }
