@@ -1,0 +1,7 @@
+# principle-of-least-action
+
+> [Visualizing the Principle of Least Action for a ball thrown in the air](http://rickyreusser.com/demos/principle-of-least-action/)
+
+# License
+
+&copy; 2016 Ricky Reusser. MIT License.

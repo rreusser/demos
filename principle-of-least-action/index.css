@@ -1,0 +1,128 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#table-container {
+  position: absolute;
+  top: 100px;
+  right: 20px;
+  width: 300px;
+  bottom: 0;
+}
+
+#table-container th {
+  font-weight: 400;
+  font-style: italic;
+}
+
+#table-container .action-label {
+  text-align: right;
+}
+
+#action {
+  width: 100%;
+  font-family: Times, serif;
+}
+
+#action td {
+  text-align: right;
+}
+
+.s-label {
+  font-style: italic;
+}
+
+.btn {
+  display: inline-block;
+  background: none;
+  border: 1px solid black;
+  font-family: Times, serif;
+  font-size: 14px;
+  border-radius: 3px;
+}
+
+.btn:hover {
+  background-color: #ccc;
+}
+
+.btn:active {
+  background-color: #888;
+  color: white;
+}
+
+.btn-container {
+  text-align: right;
+  margin-top: 20px;
+}
+
+.btn:not(:last-child) {
+  margin-right: 0.5em;
+}
+
+#plot {
+  position: absolute;
+  top: 0;
+  right: 300px;
+  bottom: 0;
+  left: 0;
+}
+
+svg {
+  background-color: #FFF;
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.lineplot circle {
+  stroke: #000;
+  fill: #000;
+}
+
+.lineplot path {
+  stroke: #000;
+  fill: none;
+}
+
+.ref-trajectory {
+  display: none;
+}
+
+.ref-visible .ref-trajectory {
+  display: block;
+}
+
+.lineplot path.ref-trajectory {
+  stroke: #000;
+  stroke-dasharray: 5, 5;
+}
+
+.pt .handle {
+  opacity: 0;
+}
+
+.pt.draggable circle {
+  cursor: ns-resize;
+}
+
+.pt.draggable-nsew circle {
+  cursor: move;
+}
+
+.pt.draggable.hover .handle,
+.pt.draggable.dragging .handle {
+  opacity: 0.1;
+}
+
