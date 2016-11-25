@@ -6,6 +6,9 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 
 - [schrodinger-1d](http://rickyreusser.com/demos/schrodinger-1d/) The Schrödinger Equation with a potential barrier in 1D
 - [traveling waves](http://rickyreusser.com/demos/traveling-waves/) (broken at the moment) Visualizing the wavenumber representation of travling waves
+- [sierpinski-shapes](http://codepen.io/rsreusser/pen/GjZwYb) Testing GPU limits using plotly.js point clouds
+- [gaussian-mixture-em](http://rickyreusser.com/gaussian-mixture-estimator/) Fitting n-dimensional Gaussian mixture models to scatter data
+- [k-means++](http://rickyreusser.com/kmpp/) K-means clustering based on the [kmpp module](https://github.com/cmtt/kmpp) of [cmtt](https://github.com/cmtt)
 
 ## [regl](https://github.com/regl-project/regl)
 
@@ -19,6 +22,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 - [domain coloring](http://rickyreusser.com/glsl-domain-coloring/eqn.html) Domain coloring for complex analytic functions (see: [repo](https://github.com/rreusser/glsl-domain-coloring))
 - [complex-zeros-delves-lyness](http://rickyreusser.com/complex-zeros-delves-lyness/zeros.html) Each time you move the viewport, it will try to find *all* the zeros of a complex analytic function within the current view.
 - [lamb-wave-dispersion](http://rickyreusser.com/complex-zeros-delves-lyness/lamb.html) Plottling the dispersion equation for [Lamb waves](https://en.wikipedia.org/wiki/Lamb_waves) in the complex domain. (Root-finding didn't work so well, but at least it was real trippy.)
+- [ndarray-transfinite-interpolation](http://demos.rickyreusser.com/ndarray-transfinite-interpolation/volume.html) A module for transfinite interpolation. [See repo here](https://github.com/rreusser/ndarray-transfinite-interpolation)
 
 ## [three.js](https://threejs.org/)
 
