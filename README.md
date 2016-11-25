@@ -2,6 +2,10 @@
 
 This is hopefully one repo to manage all the demos I've been accumulating or at least a place to dump the new ones.
 
+## [plotly.js](https://github.com/plotly/plotly.js)
+
+- [schrodinger-1d](http://rickyreusser.com/demos/schrodinger-1d/) The Schrödinger Equation with a potential barrier in 1D
+
 ## [regl](https://github.com/regl-project/regl)
 
 - [schrodinger](http://rickyreusser.com/demos/schrodinger/): A response to [this tweet](https://mobile.twitter.com/mathteacher1729/status/789489981966409728)
@@ -13,9 +17,9 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 - [smooth-life](http://rickyreusser.com/demos/smooth-life/) SmoothLife on the GPU 
 - [domain coloring](http://rickyreusser.com/glsl-domain-coloring/eqn.html) Domain coloring for complex analytic functions (see: [repo](https://github.com/rreusser/glsl-domain-coloring))
 
-## [plotly.js](https://github.com/plotly/plotly.js)
+## [three.js](https://threejs.org/)
 
-- [schrodinger-1d](http://rickyreusser.com/demos/schrodinger-1d/) The Schrödinger Equation with a potential barrier in 1D
+- [grid-generation-experiments](http://rickyreusser.com/grid-generation-experiments/) Hyperbolic grid generation around a NACA airfoil
 
 ## canvas
 
