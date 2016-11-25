@@ -19,5 +19,6 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 ## canvas
 
 - [double-pendulum](http://rickyreusser.com/demos/double-pendulum/) Patterns (or chaos) made by plotting the endpoint of a double pendulum.
+- [first-order-wave-equation](http://rickyreusser.com/demos/first-order-wave-equation/) Simulating the first order wave equation
 
 &copy; 2016 Ricky Reusser
