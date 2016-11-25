@@ -23,8 +23,8 @@
   },
   "github-corner": {
     "url": "https://github.com/rreusser/demos/blob/master/elastodynamics/index.js",
-    "fg": "#333",
-    "bg": "#fff"
+    "fg": "#fff",
+    "bg": "#333"
   },
   "dependencies": {
     "complex.js": "^2.0.1",
