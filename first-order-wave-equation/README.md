@@ -54,3 +54,7 @@ This is a tridiagonal system that can be [solved periodically](http://scijs.net/
 
 ## References
 Lele, S. K. (1992). [Compact Finite Difference Schemes with Spectral-like Resolution](http://www.math.colostate.edu/~yzhou/course/math750_fall2009/Lele_1992JCP.pdf). Journal of Computational Physics, 103, 16-42.
+
+# License
+
+&copy; 2016 Ricky Reusser. MIT License.
