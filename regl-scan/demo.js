@@ -9,13 +9,6 @@ const size = {width: 16, height: 16};
 const matSize = {width: (numSize * size.width + 1) * zoom, height: (numSize * size.height + 1) * zoom};
 const screenSize = {width: (numSize * size.width * wid + 1) * zoom, height: (numSize * size.height + 1) * zoom};
 
-const c1 = document.createElement('canvas');
-c1.width = screenSize.width;
-c1.height = screenSize.height;
-c1.style.width = screenSize.width + 'px';
-c1.style.height = screenSize.height + 'px';
-document.body.appendChild(c1);
-
 const regl = require('regl')({});
 
 const prefixSum = require('./')(regl, {
@@ -93,7 +86,6 @@ const drawNumbers = regl({
 const digitImg = new Image();
 
 digitImg.addEventListener('load', function () {
-  console.log('digitImg.width, digitImg.height:', digitImg.width, digitImg.height);
   const digits = regl.texture({data: digitImg, flipY: true});
 
   window.digitImg = digitImg;
