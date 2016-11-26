@@ -105,23 +105,30 @@ var drawNumbers = regl({
 });
 
 var digitImg = new Image();
-digitImg.src = numerify.digits.uri;
-var digits = regl.texture({ data: digitImg, flipY: true });
 
-regl.frame(function (_ref) {
-  var tick = _ref.tick;
+digitImg.addEventListener('load', function () {
+  console.log('digitImg.width, digitImg.height:', digitImg.width, digitImg.height);
+  var digits = regl.texture({ data: digitImg, flipY: true });
 
-  // Redraw every now and then just in case
-  if (tick % 30 !== 1) return;
-  ext(fbos, prefixSum.compute({ src: fbos.src, dest: fbos.dest, axis: 0 }));
-  ext(fbos, prefixSum.compute({ src: fbos.dest, dest: fbos.src, axis: 1 }));
+  window.digitImg = digitImg;
 
-  drawNumbers({ src: fbos.orig, dest: fbos.num1, digits: digits });
-  drawNumbers({ src: fbos.dest, dest: fbos.num2, digits: digits });
+  regl.frame(function (_ref) {
+    var tick = _ref.tick;
 
-  drawToScreen({ src: fbos.num1, scale: [1 / wid, 1], shift: [-1 + 1 / wid, 0] });
-  drawToScreen({ src: fbos.num2, scale: [1 / wid, 1], shift: [1 - 1 / wid, 0] });
+    // Redraw every now and then just in case
+    if (tick % 30 !== 1) return;
+    ext(fbos, prefixSum.compute({ src: fbos.src, dest: fbos.dest, axis: 0 }));
+    ext(fbos, prefixSum.compute({ src: fbos.dest, dest: fbos.src, axis: 1 }));
+
+    drawNumbers({ src: fbos.orig, dest: fbos.num1, digits: digits });
+    drawNumbers({ src: fbos.dest, dest: fbos.num2, digits: digits });
+
+    drawToScreen({ src: fbos.num1, scale: [1 / wid, 1], shift: [-1 + 1 / wid, 0] });
+    drawToScreen({ src: fbos.num2, scale: [1 / wid, 1], shift: [1 - 1 / wid, 0] });
+  });
 });
+
+digitImg.src = numerify.digits.uri;
 },{"./":2,"glsl-numerify":4,"glsl-quad":5,"regl":10,"util-extend":12}],2:[function(require,module,exports){
 'use strict';
 
