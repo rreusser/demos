@@ -1,15 +1,60 @@
 const numerify = require('glsl-numerify');
 const quad = require('glsl-quad');
 const ext = require('util-extend');
+const h = require('h');
+const css = require('insert-css');
 
 const zoom = 2;
 const numSize = 16;
-const wid = 2.1;
+const hei = 2.1;
 const size = {width: 16, height: 16};
 const matSize = {width: (numSize * size.width + 1) * zoom, height: (numSize * size.height + 1) * zoom};
-const screenSize = {width: (numSize * size.width * wid + 1) * zoom, height: (numSize * size.height + 1) * zoom};
+const screenSize = {width: (numSize * size.width + 1) * zoom, height: (numSize * size.height * hei + 1) * zoom};
 
-const regl = require('regl')({});
+css(`
+  body, html {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    font-family: 'Helvetica' ,'Arial', sans-serif;
+    color: #444;
+  }
+  canvas {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  h1 {
+    margin-top: 2em;
+  }
+  p {
+    text-align: left;
+    padding: 0 10px 40px;
+    line-height: 1.4;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+`);
+
+const ww = Math.min(500, window.innerWidth);
+const wh = ww * 2.1;
+const canvas = h('canvas', {style: {width: ww + 'px', height: wh + 'px', 'margin-left': 'auto', 'margin-right': 'auto'}});
+canvas.width = ww * 2;
+canvas.height = wh * 2;
+
+document.body.appendChild(h('div', [
+  h('h1', 'regl-scan'),
+  h('p', `
+    The demo below computes the scan operation from left to right an then from
+    bottom to top. The first matrix contains the input. Each cell in the lower matrix
+    contains the sum of all of the numbers in the rectangle from it to the cell
+    in the lower-left corner.
+  `)
+]));
+
+document.body.appendChild(canvas);
+
+const regl = require('regl')({canvas: canvas});
 
 const prefixSum = require('./')(regl, {
   reduce: `vec4 reduce(vec4 prefix, vec4 sum) {
@@ -60,7 +105,7 @@ const drawToScreen = regl({
     src: regl.prop('src'),
     scale: regl.prop('scale'),
     shift: regl.prop('shift'),
-    ar: (context) => [1, context.viewportHeight / context.viewportWidth * wid]
+    ar: (context) => [context.viewportWidth / context.viewportHeight * hei, 1]
   },
   count: 6
 });
@@ -88,8 +133,6 @@ const digitImg = new Image();
 digitImg.addEventListener('load', function () {
   const digits = regl.texture({data: digitImg, flipY: true});
 
-  window.digitImg = digitImg;
-
   regl.frame(({tick}) => {
     // Redraw every now and then just in case
     if (tick % 30 !== 1) return;
@@ -99,8 +142,8 @@ digitImg.addEventListener('load', function () {
     drawNumbers({src: fbos.orig, dest: fbos.num1, digits});
     drawNumbers({src: fbos.dest, dest: fbos.num2, digits});
 
-    drawToScreen({src: fbos.num1, scale: [1 / wid, 1], shift: [-1 + 1 / wid, 0]});
-    drawToScreen({src: fbos.num2, scale: [1 / wid, 1], shift: [1 - 1 / wid, 0]});
+    drawToScreen({src: fbos.num1, scale: [1, 1 / hei], shift: [0, 1 - 1 / hei]});
+    drawToScreen({src: fbos.num2, scale: [1, 1 / hei], shift: [0, -1 + 1 / hei]});
   });
 })
 

@@ -13,6 +13,7 @@
   "license": "MIT",
   "devDependencies": {
     "browserify": "^13.1.1",
+    "budo": "^9.2.2",
     "es2040": "^1.2.4",
     "glsl-numerify": "^1.0.0",
     "glsl-quad": "^1.0.0",
@@ -33,13 +34,17 @@
     "ndarray-tests": "^1.3.0",
     "regl": "^1.3.0",
     "resl": "^1.0.3",
-    "watchify": "^3.7.0",
-    "util-extend": "^1.0.3"
+    "util-extend": "^1.0.3",
+    "watchify": "^3.7.0"
   },
   "github-corner": {
     "url": "https://github.com/rreusser/demos/tree/master/regl-scan"
   },
   "metadataify": {
     "image": "https://cdn.rawgit.com/rreusser/demos/master/regl-scan/screenshot.png"
+  },
+  "dependencies": {
+    "h": "^0.1.0",
+    "insert-css": "^2.0.0"
   }
 }
