@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "karma start test/karma.conf.js",
-    "start": "budo demo.js --live --open -- -t es2040",
-    "starttd": "budo tridiagonal.js --live --open -- -t es2040",
-    "build": "browserify demo.js -t es2040 | indexhtmlify | metadataify | github-cornerify > index.html"
+    "start": "budo demo.js --live --open -- -g es2040",
+    "starttd": "budo tridiagonal.js --live --open -- -g es2040",
+    "build": "browserify demo.js -g es2040 | indexhtmlify | metadataify | github-cornerify > index.html"
   },
   "author": "Ricky Reusser",
   "license": "MIT",
