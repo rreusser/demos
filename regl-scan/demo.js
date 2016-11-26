@@ -32,7 +32,7 @@ for (let j = 0; j < size.height; j++) {
 }
 
 var fbos = {
-  orig: regl.framebuffer({color: regl.texture(ext({data: input.slice(0)}, size))}),
+  orig: regl.framebuffer({color: regl.texture(ext({data: input}, size))}),
   src: regl.framebuffer({color: regl.texture(ext({data: input}, size))}),
   dest: regl.framebuffer({color: regl.texture(ext({data: input}, size))}),
   num1: regl.framebuffer({color: regl.texture(matSize)}),
