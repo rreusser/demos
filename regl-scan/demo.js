@@ -90,26 +90,19 @@ const drawNumbers = regl({
   }
 });
 
-require('resl')({
-  manifest: {
-    digits: {
-      type: 'image',
-      src: numerify.digits.uri,
-      parser: (data) => regl.texture({data, flipY: true})
-    }
-  },
-  onDone: ({digits}) => {
-    regl.frame(({tick}) => {
-      // Redraw every now and then just in case
-      if (tick % 30 !== 1) return;
-      ext(fbos, prefixSum.compute({src: fbos.src, dest: fbos.dest, axis: 0}));
-      ext(fbos, prefixSum.compute({src: fbos.dest, dest: fbos.src, axis: 1}));
+const digitImg = new Image();
+digitImg.src = numerify.digits.uri;
+const digits = regl.texture({data: digitImg, flipY: true});
 
-      drawNumbers({src: fbos.orig, dest: fbos.num1, digits});
-      drawNumbers({src: fbos.dest, dest: fbos.num2, digits});
+regl.frame(({tick}) => {
+  // Redraw every now and then just in case
+  if (tick % 30 !== 1) return;
+  ext(fbos, prefixSum.compute({src: fbos.src, dest: fbos.dest, axis: 0}));
+  ext(fbos, prefixSum.compute({src: fbos.dest, dest: fbos.src, axis: 1}));
 
-      drawToScreen({src: fbos.num1, scale: [1 / wid, 1], shift: [-1 + 1 / wid, 0]});
-      drawToScreen({src: fbos.num2, scale: [1 / wid, 1], shift: [1 - 1 / wid, 0]});
-    });
-  }
+  drawNumbers({src: fbos.orig, dest: fbos.num1, digits});
+  drawNumbers({src: fbos.dest, dest: fbos.num2, digits});
+
+  drawToScreen({src: fbos.num1, scale: [1 / wid, 1], shift: [-1 + 1 / wid, 0]});
+  drawToScreen({src: fbos.num2, scale: [1 / wid, 1], shift: [1 - 1 / wid, 0]});
 });
