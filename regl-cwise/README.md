@@ -28,6 +28,8 @@ where `z` is a regl [framebuffer object](https://github.com/regl-project/regl/bl
 
 ### Convolution
 
+[See demo](http://rickyreusser.com/demos/regl-cwise/)
+
 The convolution borrows from cwise syntax:
 
 ```javascript
