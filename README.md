@@ -16,6 +16,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 - [⭐️⭐️⭐️⭐️⭐️ lorenz](http://rickyreusser.com/demos/lorenz/): A 500000 particle Lorenz Attractor, computed and displayed in WebGL
 - [⭐️⭐️⭐️⭐️ waves](http://rickyreusser.com/demos/waves/): A 2D wave equation on the GPU
 - [⭐️⭐️⭐️ regl-scan](http://rickyreusser.com/demos/regl-scan/): The [scan (prefix-sum)](https://en.wikipedia.org/wiki/Prefix_sum) operation on the GPU
+- [⭐️⭐️⭐️ regl-cwise](http://rickyreusser.com/demos/regl-cwise/): A subset of [cwise](https://github.com/scijs/cwise) on the GPU
 - [⭐️⭐️⭐️ carpet](http://rickyreusser.com/demos/carpet/): Carpet plots with regl
 - [⭐️⭐️⭐️⭐️ elastodynamics](http://rickyreusser.com/demos/elastodynamics/) Rayleigh waves on the GPU!
 - [⭐️⭐️⭐️ smooth-life](http://rickyreusser.com/demos/smooth-life/) SmoothLife on the GPU 
