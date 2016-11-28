@@ -1,4 +1,4 @@
-# regl-cwise
+# [WIP] regl-cwise
 
 > A subset of [cwise](https://github.com/scijs/cwise) on the GPU
 
