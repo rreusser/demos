@@ -21,7 +21,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 - [⭐️⭐️⭐️⭐️ elastodynamics](http://rickyreusser.com/demos/elastodynamics/) Rayleigh waves on the GPU!
 - [⭐️⭐️⭐️ smooth-life](http://rickyreusser.com/demos/smooth-life/) SmoothLife on the GPU 
 - [⭐️⭐️⭐️ domain coloring](http://rickyreusser.com/glsl-domain-coloring/eqn.html) Domain coloring for complex analytic functions (see: [repo](https://github.com/rreusser/glsl-domain-coloring))
-- [⭐️⭐️ complex-zeros-delves-lyness](http://rickyreusser.com/complex-zeros-delves-lyness/zeros.html) Each time you move the viewport, it will try to find *all* the zeros of a complex analytic function within the current view.
+- [⭐️⭐️ complex-zeros-delves-lyness](http://rickyreusser.com/complex-zeros-delves-lyness/zeros.html) Uses contour integrals to try to find all the zeros of a complex analytic function within the current view.
 - [⭐️⭐️⭐️⭐️ lamb-wave-dispersion](http://rickyreusser.com/complex-zeros-delves-lyness/lamb.html) Plotting the dispersion equation for [Lamb waves](https://en.wikipedia.org/wiki/Lamb_waves) in the complex domain. (Root-finding didn't work so well, but at least it was real trippy.)
 - [⭐️⭐️ ndarray-transfinite-interpolation](http://demos.rickyreusser.com/ndarray-transfinite-interpolation/volume.html) A module for transfinite interpolation. [See repo here](https://github.com/rreusser/ndarray-transfinite-interpolation#ndarray-transfinite-interpolation)
 
