@@ -166,8 +166,8 @@ regl.frame(({tick}) => {
 
       var eye = context.eye;
       var phi = Math.atan2(eye[1], Math.sqrt(eye[0] * eye[0] + eye[2] * eye[2]))
-      var diag = Math.sqrt(context.viewportWidth * context.viewportWidth + context.viewportHeight * context.viewportHeight) / 500;
-      var opac = Math.min(1, Math.max(0.05, 20 * Math.atan(1 / length(context.eye)) * diag * Math.sin(phi * 2)));
+      var screenSizeFactor = context.viewportHeight / 100;
+      var opac = Math.min(1, Math.max(0.05, 20 * Math.atan(1 / length(context.eye)) * screenSizeFactor * (0.5 - 0.45 * Math.cos(phi * 2))));
       draw({points: y1, opacity: opac})
     });
   });
