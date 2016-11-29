@@ -1,16 +1,5 @@
-var instructions = document.createElement('span');
-instructions.textContent = 'Spacebar to nudge';
-instructions.style.fontStyle = 'italic';
-instructions.style.zIndex = 100000;
-instructions.style.position = 'absolute';
-instructions.style.color = 'white';
-document.body.appendChild(instructions);
-
-const regl = require('regl')({
-  extensions: ['OES_texture_float'],
-  pixelRatio: 1
-});
-
+const regl = require('regl')({extensions: ['OES_texture_float'], pixelRatio: 1});
+const intersect = require('ray-plane-intersection');
 const gpu = require('./utils')(regl);
 const shape = [150, 150];
 const size = [40, 40];
@@ -34,9 +23,10 @@ const integrate = gpu.op({
     uniform sampler2D y;
     varying vec2 uv;
     void main () {
-      float c = 0.1;
-      float b = 0.02;
-      float dt = 0.05;
+      float c = 0.1;   // Wave speed
+      float b = 0.02;  // Damping constant
+      float dt = 0.05; // time step
+      float k = 0.01;  // spring constant (pulls things back to zero)
       vec4 f = texture2D(y, uv);
       vec2 e = texture2D(y, uv + du).zw;
       vec2 w = texture2D(y, uv - du).zw;
@@ -51,7 +41,7 @@ const integrate = gpu.op({
         0.5 * (e.x + w.x + n.x + s.x) +
         0.25 * (ne.x + nw.x + se.x + sw.x);
 
-      vec2 df = vec2(f.w - f.z * b, c * laplacian);
+      vec2 df = vec2(f.w - f.z * b, c * laplacian - k * f.z);
 
       gl_FragColor = vec4(f.xy, f.zw + dt * df);
     }
@@ -136,8 +126,6 @@ const draw = regl({
 function iterate (n) {
   for (let i = 0; i < n; i++) {
     integrate({input: y1, output: y2f});
-
-
     let tmp = y1; y1 = y2; y2 = tmp;
     tmp = y1f; y1f = y2f; y2f = tmp;
   }
@@ -151,36 +139,28 @@ const camera = require('regl-camera')(regl, {
   center: [0.5, 0.5, 0.5],
 });
 
+var raycastMouse = require('./raycast-mouse')(regl);
+
 regl.frame(({tick}) => {
-  if (tick === 1) {
-    doBump(-4, 0, 0);
-  }
-
-  iterate(20);
-
   regl.clear({color: [0, 0, 0, 1]});
-  camera(() => draw({points: y1}));
+
+  camera(context => {
+    raycastMouse(context, ({rayOrigin, rayDirection, rayChanged}) => {
+      if (rayChanged) {
+        var hit = intersect([], rayOrigin, rayDirection, [0, 1, 0], 0);
+        doBump(0.3, hit[0], hit[2]);
+      }
+
+      iterate(20);
+
+      draw({points: y1})
+    });
+  });
 });
 
 function doBump(amount, x, y) {
-  nudgePoint([x, y]);
-  bump({
-    input: y2,
-    output: y1f,
-    amount: amount,
-    radius: 20
-  });
+  nudgePoint([x / size[0] * 2, y / size[1] * 2]);
+  bump({input: y2, output: y1f, amount: amount, radius: 10});
 }
-
-window.addEventListener('keypress', function (e) {
-  if ((e.keyCode ? e.keyCode : e.charCode) === 32) {
-    if (instructions) {
-      document.body.removeChild(instructions);
-      instructions = null;
-    }
-
-    doBump((Math.random() * 2 - 1) * 4, Math.random() * 2 - 1, Math.random() * 2 - 1);
-  }
-}, false);
 
 document.querySelector('canvas').addEventListener('wheel', function (e) {e.preventDefault();});

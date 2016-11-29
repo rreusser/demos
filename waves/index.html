@@ -29,19 +29,8 @@
 </a></body>
 <script>
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var instructions = document.createElement('span');
-instructions.textContent = 'Spacebar to nudge';
-instructions.style.fontStyle = 'italic';
-instructions.style.zIndex = 100000;
-instructions.style.position = 'absolute';
-instructions.style.color = 'white';
-document.body.appendChild(instructions);
-
-var regl = require('regl')({
-  extensions: ['OES_texture_float'],
-  pixelRatio: 1
-});
-
+var regl = require('regl')({ extensions: ['OES_texture_float'], pixelRatio: 1 });
+var intersect = require('ray-plane-intersection');
 var gpu = require('./utils')(regl);
 var shape = [150, 150];
 var size = [40, 40];
@@ -61,7 +50,7 @@ var y1f = gpu.fbo(y1);
 var y2f = gpu.fbo(y2);
 
 var integrate = gpu.op({
-  frag: '\n    precision mediump float;\n    uniform vec2 du, dv;\n    uniform sampler2D y;\n    varying vec2 uv;\n    void main () {\n      float c = 0.1;\n      float b = 0.02;\n      float dt = 0.05;\n      vec4 f = texture2D(y, uv);\n      vec2 e = texture2D(y, uv + du).zw;\n      vec2 w = texture2D(y, uv - du).zw;\n      vec2 n = texture2D(y, uv + dv).zw;\n      vec2 s = texture2D(y, uv - dv).zw;\n      vec2 ne = texture2D(y, uv + du + dv).zw;\n      vec2 se = texture2D(y, uv + du - dv).zw;\n      vec2 nw = texture2D(y, uv - du + dv).zw;\n      vec2 sw = texture2D(y, uv - du - dv).zw;\n\n      float laplacian = -3.0 * f.z +\n        0.5 * (e.x + w.x + n.x + s.x) +\n        0.25 * (ne.x + nw.x + se.x + sw.x);\n\n      vec2 df = vec2(f.w - f.z * b, c * laplacian);\n\n      gl_FragColor = vec4(f.xy, f.zw + dt * df);\n    }\n  ',
+  frag: '\n    precision mediump float;\n    uniform vec2 du, dv;\n    uniform sampler2D y;\n    varying vec2 uv;\n    void main () {\n      float c = 0.1;   // Wave speed\n      float b = 0.02;  // Damping constant\n      float dt = 0.05; // time step\n      float k = 0.01;  // spring constant (pulls things back to zero)\n      vec4 f = texture2D(y, uv);\n      vec2 e = texture2D(y, uv + du).zw;\n      vec2 w = texture2D(y, uv - du).zw;\n      vec2 n = texture2D(y, uv + dv).zw;\n      vec2 s = texture2D(y, uv - dv).zw;\n      vec2 ne = texture2D(y, uv + du + dv).zw;\n      vec2 se = texture2D(y, uv + du - dv).zw;\n      vec2 nw = texture2D(y, uv - du + dv).zw;\n      vec2 sw = texture2D(y, uv - du - dv).zw;\n\n      float laplacian = -3.0 * f.z +\n        0.5 * (e.x + w.x + n.x + s.x) +\n        0.25 * (ne.x + nw.x + se.x + sw.x);\n\n      vec2 df = vec2(f.w - f.z * b, c * laplacian - k * f.z);\n\n      gl_FragColor = vec4(f.xy, f.zw + dt * df);\n    }\n  ',
   uniforms: { y: regl.prop('input') }
 });
 
@@ -103,7 +92,6 @@ var draw = regl({
 function iterate(n) {
   for (var i = 0; i < n; i++) {
     integrate({ input: y1, output: y2f });
-
     var tmp = y1;y1 = y2;y2 = tmp;
     tmp = y1f;y1f = y2f;y2f = tmp;
   }
@@ -117,46 +105,40 @@ var camera = require('regl-camera')(regl, {
   center: [0.5, 0.5, 0.5]
 });
 
+var raycastMouse = require('./raycast-mouse')(regl);
+
 regl.frame(function (_ref) {
   var tick = _ref.tick;
 
-  if (tick === 1) {
-    doBump(-4, 0, 0);
-  }
-
-  iterate(20);
-
   regl.clear({ color: [0, 0, 0, 1] });
-  camera(function () {
-    return draw({ points: y1 });
+
+  camera(function (context) {
+    raycastMouse(context, function (_ref2) {
+      var rayOrigin = _ref2.rayOrigin,
+          rayDirection = _ref2.rayDirection,
+          rayChanged = _ref2.rayChanged;
+
+      if (rayChanged) {
+        var hit = intersect([], rayOrigin, rayDirection, [0, 1, 0], 0);
+        doBump(0.3, hit[0], hit[2]);
+      }
+
+      iterate(20);
+
+      draw({ points: y1 });
+    });
   });
 });
 
 function doBump(amount, x, y) {
-  nudgePoint([x, y]);
-  bump({
-    input: y2,
-    output: y1f,
-    amount: amount,
-    radius: 20
-  });
+  nudgePoint([x / size[0] * 2, y / size[1] * 2]);
+  bump({ input: y2, output: y1f, amount: amount, radius: 10 });
 }
-
-window.addEventListener('keypress', function (e) {
-  if ((e.keyCode ? e.keyCode : e.charCode) === 32) {
-    if (instructions) {
-      document.body.removeChild(instructions);
-      instructions = null;
-    }
-
-    doBump((Math.random() * 2 - 1) * 4, Math.random() * 2 - 1, Math.random() * 2 - 1);
-  }
-}, false);
 
 document.querySelector('canvas').addEventListener('wheel', function (e) {
   e.preventDefault();
 });
-},{"./utils":13,"regl":11,"regl-camera":10}],2:[function(require,module,exports){
+},{"./raycast-mouse":21,"./utils":22,"ray-plane-intersection":17,"regl":19,"regl-camera":18}],2:[function(require,module,exports){
 module.exports = identity;
 
 /**
@@ -185,6 +167,62 @@ function identity(out) {
     return out;
 };
 },{}],3:[function(require,module,exports){
+module.exports = invert;
+
+/**
+ * Inverts a mat4
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the source matrix
+ * @returns {mat4} out
+ */
+function invert(out, a) {
+    var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3],
+        a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7],
+        a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11],
+        a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15],
+
+        b00 = a00 * a11 - a01 * a10,
+        b01 = a00 * a12 - a02 * a10,
+        b02 = a00 * a13 - a03 * a10,
+        b03 = a01 * a12 - a02 * a11,
+        b04 = a01 * a13 - a03 * a11,
+        b05 = a02 * a13 - a03 * a12,
+        b06 = a20 * a31 - a21 * a30,
+        b07 = a20 * a32 - a22 * a30,
+        b08 = a20 * a33 - a23 * a30,
+        b09 = a21 * a32 - a22 * a31,
+        b10 = a21 * a33 - a23 * a31,
+        b11 = a22 * a33 - a23 * a32,
+
+        // Calculate the determinant
+        det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+
+    if (!det) { 
+        return null; 
+    }
+    det = 1.0 / det;
+
+    out[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det;
+    out[1] = (a02 * b10 - a01 * b11 - a03 * b09) * det;
+    out[2] = (a31 * b05 - a32 * b04 + a33 * b03) * det;
+    out[3] = (a22 * b04 - a21 * b05 - a23 * b03) * det;
+    out[4] = (a12 * b08 - a10 * b11 - a13 * b07) * det;
+    out[5] = (a00 * b11 - a02 * b08 + a03 * b07) * det;
+    out[6] = (a32 * b02 - a30 * b05 - a33 * b01) * det;
+    out[7] = (a20 * b05 - a22 * b02 + a23 * b01) * det;
+    out[8] = (a10 * b10 - a11 * b08 + a13 * b06) * det;
+    out[9] = (a01 * b08 - a00 * b10 - a03 * b06) * det;
+    out[10] = (a30 * b04 - a31 * b02 + a33 * b00) * det;
+    out[11] = (a21 * b02 - a20 * b04 - a23 * b00) * det;
+    out[12] = (a11 * b07 - a10 * b09 - a12 * b06) * det;
+    out[13] = (a00 * b09 - a01 * b07 + a02 * b06) * det;
+    out[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
+    out[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
+
+    return out;
+};
+},{}],4:[function(require,module,exports){
 var identity = require('./identity');
 
 module.exports = lookAt;
@@ -275,7 +313,7 @@ function lookAt(out, eye, center, up) {
 
     return out;
 };
-},{"./identity":2}],4:[function(require,module,exports){
+},{"./identity":2}],5:[function(require,module,exports){
 module.exports = perspective;
 
 /**
@@ -309,7 +347,114 @@ function perspective(out, fovy, aspect, near, far) {
     out[15] = 0;
     return out;
 };
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
+module.exports = add;
+
+/**
+ * Adds two vec3's
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @returns {vec3} out
+ */
+function add(out, a, b) {
+    out[0] = a[0] + b[0]
+    out[1] = a[1] + b[1]
+    out[2] = a[2] + b[2]
+    return out
+}
+},{}],7:[function(require,module,exports){
+module.exports = copy;
+
+/**
+ * Copy the values from one vec3 to another
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the source vector
+ * @returns {vec3} out
+ */
+function copy(out, a) {
+    out[0] = a[0]
+    out[1] = a[1]
+    out[2] = a[2]
+    return out
+}
+},{}],8:[function(require,module,exports){
+module.exports = dot;
+
+/**
+ * Calculates the dot product of two vec3's
+ *
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @returns {Number} dot product of a and b
+ */
+function dot(a, b) {
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+}
+},{}],9:[function(require,module,exports){
+module.exports = normalize;
+
+/**
+ * Normalize a vec3
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a vector to normalize
+ * @returns {vec3} out
+ */
+function normalize(out, a) {
+    var x = a[0],
+        y = a[1],
+        z = a[2]
+    var len = x*x + y*y + z*z
+    if (len > 0) {
+        //TODO: evaluate use of glm_invsqrt here?
+        len = 1 / Math.sqrt(len)
+        out[0] = a[0] * len
+        out[1] = a[1] * len
+        out[2] = a[2] * len
+    }
+    return out
+}
+},{}],10:[function(require,module,exports){
+module.exports = scale;
+
+/**
+ * Scales a vec3 by a scalar number
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the vector to scale
+ * @param {Number} b amount to scale the vector by
+ * @returns {vec3} out
+ */
+function scale(out, a, b) {
+    out[0] = a[0] * b
+    out[1] = a[1] * b
+    out[2] = a[2] * b
+    return out
+}
+},{}],11:[function(require,module,exports){
+module.exports = transformMat4
+
+/**
+ * Transforms the vec4 with a mat4.
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a the vector to transform
+ * @param {mat4} m matrix to transform with
+ * @returns {vec4} out
+ */
+function transformMat4 (out, a, m) {
+  var x = a[0], y = a[1], z = a[2], w = a[3]
+  out[0] = m[0] * x + m[4] * y + m[8] * z + m[12] * w
+  out[1] = m[1] * x + m[5] * y + m[9] * z + m[13] * w
+  out[2] = m[2] * x + m[6] * y + m[10] * z + m[14] * w
+  out[3] = m[3] * x + m[7] * y + m[11] * z + m[15] * w
+  return out
+}
+
+},{}],12:[function(require,module,exports){
 module.exports = function(arr) {
   if (!arr) return false
   if (!arr.dtype) return false
@@ -317,15 +462,15 @@ module.exports = function(arr) {
   return re.test(String(arr.constructor))
 }
 
-},{}],6:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
 
 var mouse = require('mouse-event')
 
-function mouseListen(element, callback) {
-  if(!callback) {
+function mouseListen (element, callback) {
+  if (!callback) {
     callback = element
     element = window
   }
@@ -334,64 +479,63 @@ function mouseListen(element, callback) {
   var x = 0
   var y = 0
   var mods = {
-    shift:   false,
-    alt:     false,
+    shift: false,
+    alt: false,
     control: false,
-    meta:    false
+    meta: false
   }
   var attached = false
 
-  function updateMods(ev) {
+  function updateMods (ev) {
     var changed = false
-    if('altKey' in ev) {
+    if ('altKey' in ev) {
       changed = changed || ev.altKey !== mods.alt
       mods.alt = !!ev.altKey
     }
-    if('shiftKey' in ev) {
+    if ('shiftKey' in ev) {
       changed = changed || ev.shiftKey !== mods.shift
       mods.shift = !!ev.shiftKey
     }
-    if('ctrlKey' in ev) {
+    if ('ctrlKey' in ev) {
       changed = changed || ev.ctrlKey !== mods.control
       mods.control = !!ev.ctrlKey
     }
-    if('metaKey' in ev) {
+    if ('metaKey' in ev) {
       changed = changed || ev.metaKey !== mods.meta
       mods.meta = !!ev.metaKey
     }
     return changed
   }
 
-  function handleEvent(nextButtons, ev) {
+  function handleEvent (nextButtons, ev) {
     var nextX = mouse.x(ev)
     var nextY = mouse.y(ev)
-    if('buttons' in ev) {
-      nextButtons = ev.buttons|0
+    if ('buttons' in ev) {
+      nextButtons = ev.buttons | 0
     }
-    if(nextButtons !== buttonState ||
-       nextX !== x ||
-       nextY !== y ||
-       updateMods(ev)) {
-      buttonState = nextButtons|0
-      x = nextX||0
-      y = nextY||0
+    if (nextButtons !== buttonState ||
+      nextX !== x ||
+      nextY !== y ||
+      updateMods(ev)) {
+      buttonState = nextButtons | 0
+      x = nextX || 0
+      y = nextY || 0
       callback && callback(buttonState, x, y, mods)
     }
   }
 
-  function clearState(ev) {
+  function clearState (ev) {
     handleEvent(0, ev)
   }
 
-  function handleBlur() {
-    if(buttonState ||
+  function handleBlur () {
+    if (buttonState ||
       x ||
       y ||
       mods.shift ||
       mods.alt ||
       mods.meta ||
       mods.control) {
-
       x = y = 0
       buttonState = 0
       mods.shift = mods.alt = mods.control = mods.meta = false
@@ -399,30 +543,30 @@ function mouseListen(element, callback) {
     }
   }
 
-  function handleMods(ev) {
-    if(updateMods(ev)) {
+  function handleMods (ev) {
+    if (updateMods(ev)) {
       callback && callback(buttonState, x, y, mods)
     }
   }
 
-  function handleMouseMove(ev) {
-    if(mouse.buttons(ev) === 0) {
+  function handleMouseMove (ev) {
+    if (mouse.buttons(ev) === 0) {
       handleEvent(0, ev)
     } else {
       handleEvent(buttonState, ev)
     }
   }
 
-  function handleMouseDown(ev) {
+  function handleMouseDown (ev) {
     handleEvent(buttonState | mouse.buttons(ev), ev)
   }
 
-  function handleMouseUp(ev) {
+  function handleMouseUp (ev) {
     handleEvent(buttonState & ~mouse.buttons(ev), ev)
   }
 
-  function attachListeners() {
-    if(attached) {
+  function attachListeners () {
+    if (attached) {
       return
     }
     attached = true
@@ -444,7 +588,7 @@ function mouseListen(element, callback) {
     element.addEventListener('keydown', handleMods)
     element.addEventListener('keypress', handleMods)
 
-    if(element !== window) {
+    if (element !== window) {
       window.addEventListener('blur', handleBlur)
 
       window.addEventListener('keyup', handleMods)
@@ -453,8 +597,8 @@ function mouseListen(element, callback) {
     }
   }
 
-  function detachListeners() {
-    if(!attached) {
+  function detachListeners () {
+    if (!attached) {
       return
     }
     attached = false
@@ -476,7 +620,7 @@ function mouseListen(element, callback) {
     element.removeEventListener('keydown', handleMods)
     element.removeEventListener('keypress', handleMods)
 
-    if(element !== window) {
+    if (element !== window) {
       window.removeEventListener('blur', handleBlur)
 
       window.removeEventListener('keyup', handleMods)
@@ -485,7 +629,7 @@ function mouseListen(element, callback) {
     }
   }
 
-  //Attach listeners
+  // Attach listeners
   attachListeners()
 
   var result = {
@@ -494,30 +638,30 @@ function mouseListen(element, callback) {
 
   Object.defineProperties(result, {
     enabled: {
-      get: function() { return attached },
-      set: function(f) {
-        if(f) {
+      get: function () { return attached },
+      set: function (f) {
+        if (f) {
           attachListeners()
         } else {
-          detachListeners
+          detachListeners()
         }
       },
       enumerable: true
     },
     buttons: {
-      get: function() { return buttonState },
+      get: function () { return buttonState },
       enumerable: true
     },
     x: {
-      get: function() { return x },
+      get: function () { return x },
       enumerable: true
     },
     y: {
-      get: function() { return y },
+      get: function () { return y },
       enumerable: true
     },
     mods: {
-      get: function() { return mods },
+      get: function () { return mods },
       enumerable: true
     }
   })
@@ -525,7 +669,7 @@ function mouseListen(element, callback) {
   return result
 }
 
-},{"mouse-event":7}],7:[function(require,module,exports){
+},{"mouse-event":14}],14:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -587,7 +731,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],8:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict'
 
 var toPX = require('to-px')
@@ -629,7 +773,7 @@ function mouseWheelListen(element, callback, noScroll) {
   return listener
 }
 
-},{"to-px":12}],9:[function(require,module,exports){
+},{"to-px":20}],16:[function(require,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -640,7 +784,33 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],10:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
+var dot = require('gl-vec3/dot')
+var add = require('gl-vec3/add')
+var scale = require('gl-vec3/scale')
+var copy = require('gl-vec3/copy')
+
+module.exports = intersectRayPlane
+
+var v0 = [0, 0, 0]
+
+function intersectRayPlane(out, origin, direction, normal, dist) {
+  var denom = dot(direction, normal)
+  if (denom !== 0) {
+    var t = -(dot(origin, normal) + dist) / denom
+    if (t < 0) {
+      return null
+    }
+    scale(v0, direction, t)
+    return add(out, origin, v0)
+  } else if (dot(normal, origin) + dist === 0) {
+    return copy(out, origin)
+  } else {
+    return null
+  }
+}
+
+},{"gl-vec3/add":6,"gl-vec3/copy":7,"gl-vec3/dot":8,"gl-vec3/scale":10}],18:[function(require,module,exports){
 var mouseChange = require('mouse-change')
 var mouseWheel = require('mouse-wheel')
 var identity = require('gl-mat4/identity')
@@ -787,7 +957,7 @@ function createCamera (regl, props_) {
   return setupCamera
 }
 
-},{"gl-mat4/identity":2,"gl-mat4/lookAt":3,"gl-mat4/perspective":4,"mouse-change":6,"mouse-wheel":8}],11:[function(require,module,exports){
+},{"gl-mat4/identity":2,"gl-mat4/lookAt":4,"gl-mat4/perspective":5,"mouse-change":13,"mouse-wheel":15}],19:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
@@ -10292,7 +10462,7 @@ return wrapREGL;
 })));
 
 
-},{}],12:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict'
 
 var parseUnit = require('parse-unit')
@@ -10353,7 +10523,82 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":9}],13:[function(require,module,exports){
+},{"parse-unit":16}],21:[function(require,module,exports){
+'use strict';
+
+var normalize = require('gl-vec3/normalize');
+var transformMat4 = require('gl-vec4/transformMat4');
+var invert = require('gl-mat4/invert');
+var mouse = require('mouse-change');
+
+module.exports = raycast;
+
+function raycast(regl, options) {
+  options = options || {};
+  var normalized = options.normalized === undefined ? true : !!options.normalized;
+
+  var mouseX = 0;
+  var mouseY = 0;
+  var mouseBtns;
+  var dirty = true;
+
+  mouse(function (bb, xx, yy) {
+    dirty = true;
+    mouseBtns = bb;
+    mouseX = xx;
+    mouseY = yy;
+  });
+
+  var injectContext = regl({
+    context: {
+      rayOrigin: function (context) {
+        return context.eye;
+      },
+      rayDirection: function () {
+        return ray;
+      },
+      rayChanged: function () {
+        var _dirty = dirty;
+        dirty = false;
+        return _dirty;
+      }
+    }
+  });
+
+  var view = [];
+  var proj = [];
+  var ray = [];
+
+  return function (context, cb) {
+    if (dirty) {
+      invert(view, context.view);
+      invert(proj, context.projection);
+
+      // Pick ray in homogeneous clip coordinates:
+      ray[0] = 2 * mouseX / context.viewportWidth * context.pixelRatio - 1;
+      ray[1] = 1 - 2 * mouseY / context.viewportHeight * context.pixelRatio;
+      ray[2] = -1;
+      ray[3] = 1;
+
+      // Transform into eye coords:
+      transformMat4(ray, ray, proj);
+
+      // Set z, w to mean forwards and not a point:
+      ray[2] = -1;
+      ray[3] = 0;
+
+      // Into world coordinates:
+      transformMat4(ray, ray, view);
+
+      if (normalized) {
+        normalize(ray, ray);
+      }
+    }
+
+    injectContext(cb);
+  };
+}
+},{"gl-mat4/invert":3,"gl-vec3/normalize":9,"gl-vec4/transformMat4":11,"mouse-change":13}],22:[function(require,module,exports){
 var isndarray = require('isndarray');
 
 module.exports = function (regl) {
@@ -10450,6 +10695,6 @@ module.exports = function (regl) {
     fbo: gpuFbo
   };
 };
-},{"isndarray":5}]},{},[1]);
+},{"isndarray":12}]},{},[1]);
 </script>
 </html>
