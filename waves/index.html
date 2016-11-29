@@ -31,6 +31,8 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var regl = require('regl')({ extensions: ['OES_texture_float'], pixelRatio: 1 });
 var intersect = require('ray-plane-intersection');
+var length = require('gl-vec3/length');
+var subtract = require('gl-vec3/subtract');
 var gpu = require('./utils')(regl);
 var shape = [150, 150];
 var size = [40, 40];
@@ -50,7 +52,7 @@ var y1f = gpu.fbo(y1);
 var y2f = gpu.fbo(y2);
 
 var integrate = gpu.op({
-  frag: '\n    precision mediump float;\n    uniform vec2 du, dv;\n    uniform sampler2D y;\n    varying vec2 uv;\n    void main () {\n      float c = 0.1;   // Wave speed\n      float b = 0.02;  // Damping constant\n      float dt = 0.05; // time step\n      float k = 0.01;  // spring constant (pulls things back to zero)\n      vec4 f = texture2D(y, uv);\n      vec2 e = texture2D(y, uv + du).zw;\n      vec2 w = texture2D(y, uv - du).zw;\n      vec2 n = texture2D(y, uv + dv).zw;\n      vec2 s = texture2D(y, uv - dv).zw;\n      vec2 ne = texture2D(y, uv + du + dv).zw;\n      vec2 se = texture2D(y, uv + du - dv).zw;\n      vec2 nw = texture2D(y, uv - du + dv).zw;\n      vec2 sw = texture2D(y, uv - du - dv).zw;\n\n      float laplacian = -3.0 * f.z +\n        0.5 * (e.x + w.x + n.x + s.x) +\n        0.25 * (ne.x + nw.x + se.x + sw.x);\n\n      vec2 df = vec2(f.w - f.z * b, c * laplacian - k * f.z);\n\n      gl_FragColor = vec4(f.xy, f.zw + dt * df);\n    }\n  ',
+  frag: '\n    precision mediump float;\n    uniform vec2 du, dv;\n    uniform sampler2D y;\n    varying vec2 uv;\n    void main () {\n      float c = 0.5;   // Wave speed\n      float b = 0.1;  // Damping constant\n      float dt = 0.05; // time step\n      float k = 0.001;  // spring constant (pulls things back to zero)\n      vec4 f = texture2D(y, uv);\n      vec2 e = texture2D(y, uv + du).zw;\n      vec2 w = texture2D(y, uv - du).zw;\n      vec2 n = texture2D(y, uv + dv).zw;\n      vec2 s = texture2D(y, uv - dv).zw;\n      vec2 ne = texture2D(y, uv + du + dv).zw;\n      vec2 se = texture2D(y, uv + du - dv).zw;\n      vec2 nw = texture2D(y, uv - du + dv).zw;\n      vec2 sw = texture2D(y, uv - du - dv).zw;\n\n      float laplacian = -3.0 * f.z +\n        0.5 * (e.x + w.x + n.x + s.x) +\n        0.25 * (ne.x + nw.x + se.x + sw.x);\n\n      vec2 df = vec2(f.w - f.z * b, c * laplacian - k * f.z);\n\n      gl_FragColor = vec4(f.xy, f.zw + dt * df);\n    }\n  ',
   uniforms: { y: regl.prop('input') }
 });
 
@@ -75,7 +77,7 @@ var bump = gpu.op({
 });
 
 var draw = regl({
-  frag: '\n    precision mediump float;\n    uniform vec4 color;\n    void main() {\n      gl_FragColor = vec4(0.3, 0.5, 1.0, 0.5);\n    }\n  ',
+  frag: '\n    precision mediump float;\n    uniform vec4 color;\n    uniform float opacity;\n    void main() {\n      gl_FragColor = vec4(0.3, 0.5, 1.0, opacity);\n    }\n  ',
   vert: '\n    precision mediump float;\n    attribute vec2 uv;\n    uniform sampler2D points;\n    uniform mat4 projection, view;\n    void main() {\n      vec4 pt = texture2D(points, uv).xyzw;\n      gl_Position = projection * view * vec4(pt.xzy, 1.0);\n      gl_PointSize = 3.0;\n    }\n  ',
   attributes: { uv: gpu.arrayLookup(shape) },
   blend: {
@@ -83,7 +85,10 @@ var draw = regl({
     func: { srcRGB: 'src alpha', srcAlpha: 1, dstRGB: 1, dstAlpha: 1 },
     equation: { rgb: 'add', alpha: 'add' }
   },
-  uniforms: { points: regl.prop('points') },
+  uniforms: {
+    points: regl.prop('points'),
+    opacity: regl.prop('opacity')
+  },
   depth: { enable: false },
   primitive: 'points',
   count: shape[0] * shape[1]
@@ -107,6 +112,7 @@ var camera = require('regl-camera')(regl, {
 
 var raycastMouse = require('./raycast-mouse')(regl);
 
+var phit;
 regl.frame(function (_ref) {
   var tick = _ref.tick;
 
@@ -120,12 +126,20 @@ regl.frame(function (_ref) {
 
       if (rayChanged) {
         var hit = intersect([], rayOrigin, rayDirection, [0, 1, 0], 0);
-        doBump(0.3, hit[0], hit[2]);
+        if (hit && hit.length && phit && phit.length) {
+          var diff = subtract([], hit, phit);
+          doBump(Math.min(4, length(diff)), hit[0], hit[2]);
+        }
+        phit = hit;
       }
 
       iterate(20);
 
-      draw({ points: y1 });
+      var eye = context.eye;
+      var phi = Math.atan2(eye[1], Math.sqrt(eye[0] * eye[0] + eye[2] * eye[2]));
+      var diag = Math.sqrt(context.viewportWidth * context.viewportWidth + context.viewportHeight * context.viewportHeight) / 500;
+      var opac = Math.min(1, Math.max(0.05, 20 * Math.atan(1 / length(context.eye)) * diag * Math.sin(phi * 2)));
+      draw({ points: y1, opacity: opac });
     });
   });
 });
@@ -138,7 +152,7 @@ function doBump(amount, x, y) {
 document.querySelector('canvas').addEventListener('wheel', function (e) {
   e.preventDefault();
 });
-},{"./raycast-mouse":21,"./utils":22,"ray-plane-intersection":17,"regl":19,"regl-camera":18}],2:[function(require,module,exports){
+},{"./raycast-mouse":23,"./utils":24,"gl-vec3/length":9,"gl-vec3/subtract":12,"ray-plane-intersection":19,"regl":21,"regl-camera":20}],2:[function(require,module,exports){
 module.exports = identity;
 
 /**
@@ -394,6 +408,21 @@ function dot(a, b) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 }
 },{}],9:[function(require,module,exports){
+module.exports = length;
+
+/**
+ * Calculates the length of a vec3
+ *
+ * @param {vec3} a vector to calculate length of
+ * @returns {Number} length of a
+ */
+function length(a) {
+    var x = a[0],
+        y = a[1],
+        z = a[2]
+    return Math.sqrt(x*x + y*y + z*z)
+}
+},{}],10:[function(require,module,exports){
 module.exports = normalize;
 
 /**
@@ -417,7 +446,7 @@ function normalize(out, a) {
     }
     return out
 }
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports = scale;
 
 /**
@@ -434,7 +463,24 @@ function scale(out, a, b) {
     out[2] = a[2] * b
     return out
 }
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
+module.exports = subtract;
+
+/**
+ * Subtracts vector b from vector a
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @returns {vec3} out
+ */
+function subtract(out, a, b) {
+    out[0] = a[0] - b[0]
+    out[1] = a[1] - b[1]
+    out[2] = a[2] - b[2]
+    return out
+}
+},{}],13:[function(require,module,exports){
 module.exports = transformMat4
 
 /**
@@ -454,7 +500,7 @@ function transformMat4 (out, a, m) {
   return out
 }
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = function(arr) {
   if (!arr) return false
   if (!arr.dtype) return false
@@ -462,7 +508,7 @@ module.exports = function(arr) {
   return re.test(String(arr.constructor))
 }
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -669,7 +715,7 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":14}],14:[function(require,module,exports){
+},{"mouse-event":16}],16:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -731,7 +777,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict'
 
 var toPX = require('to-px')
@@ -773,7 +819,7 @@ function mouseWheelListen(element, callback, noScroll) {
   return listener
 }
 
-},{"to-px":20}],16:[function(require,module,exports){
+},{"to-px":22}],18:[function(require,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -784,7 +830,7 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var dot = require('gl-vec3/dot')
 var add = require('gl-vec3/add')
 var scale = require('gl-vec3/scale')
@@ -810,7 +856,7 @@ function intersectRayPlane(out, origin, direction, normal, dist) {
   }
 }
 
-},{"gl-vec3/add":6,"gl-vec3/copy":7,"gl-vec3/dot":8,"gl-vec3/scale":10}],18:[function(require,module,exports){
+},{"gl-vec3/add":6,"gl-vec3/copy":7,"gl-vec3/dot":8,"gl-vec3/scale":11}],20:[function(require,module,exports){
 var mouseChange = require('mouse-change')
 var mouseWheel = require('mouse-wheel')
 var identity = require('gl-mat4/identity')
@@ -957,7 +1003,7 @@ function createCamera (regl, props_) {
   return setupCamera
 }
 
-},{"gl-mat4/identity":2,"gl-mat4/lookAt":4,"gl-mat4/perspective":5,"mouse-change":13,"mouse-wheel":15}],19:[function(require,module,exports){
+},{"gl-mat4/identity":2,"gl-mat4/lookAt":4,"gl-mat4/perspective":5,"mouse-change":15,"mouse-wheel":17}],21:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
@@ -10462,7 +10508,7 @@ return wrapREGL;
 })));
 
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict'
 
 var parseUnit = require('parse-unit')
@@ -10523,7 +10569,7 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":16}],21:[function(require,module,exports){
+},{"parse-unit":18}],23:[function(require,module,exports){
 'use strict';
 
 var normalize = require('gl-vec3/normalize');
@@ -10598,7 +10644,7 @@ function raycast(regl, options) {
     injectContext(cb);
   };
 }
-},{"gl-mat4/invert":3,"gl-vec3/normalize":9,"gl-vec4/transformMat4":11,"mouse-change":13}],22:[function(require,module,exports){
+},{"gl-mat4/invert":3,"gl-vec3/normalize":10,"gl-vec4/transformMat4":13,"mouse-change":15}],24:[function(require,module,exports){
 var isndarray = require('isndarray');
 
 module.exports = function (regl) {
@@ -10695,6 +10741,6 @@ module.exports = function (regl) {
     fbo: gpuFbo
   };
 };
-},{"isndarray":12}]},{},[1]);
+},{"isndarray":14}]},{},[1]);
 </script>
 </html>
