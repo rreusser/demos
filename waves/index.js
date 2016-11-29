@@ -157,7 +157,7 @@ regl.frame(({tick}) => {
         var hit = intersect([], rayOrigin, rayDirection, [0, 1, 0], 0);
         if (hit && hit.length && phit && phit.length) {
           var diff = subtract([], hit, phit);
-          doBump(Math.min(4, length(diff)), hit[0], hit[2]);
+          doBump(Math.min(8, 2 * length(diff)), hit[0], hit[2]);
         }
         phit = hit;
       }
