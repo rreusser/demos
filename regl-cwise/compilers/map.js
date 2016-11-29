@@ -34,23 +34,37 @@ module.exports = function (regl, parsedMap) {
     count: 3
   });
 
-  function compute () {
-    if (arguments.length - 1 !== invokeArgs.length) {
-      fail('Number of arguments provided (' + arguments.length + ') does not equal number of arguments expected (' + (invokeArgs.length + 1) + ').');
+  function compute (args, reps) {
+    if (args.length - 1 !== invokeArgs.length) {
+      fail('Number of args provided (' + args.length + ') does not equal number of args expected (' + (invokeArgs.length + 1) + ').');
     }
 
     var i;
     var props = {};
+    reps = reps || 1;
 
-    // Set the destination fbo:
-    props[parsedMap.destProp] = arguments[0];
+    for (var rep = 0; rep < reps; rep++) {
+      // Set the destination fbo:
+      props[parsedMap.destProp] = args[0];
 
-    // Set the props:
-    for (var i = 1; i < arguments.length; i++) {
-      props[invokeArgs[i - 1]] = arguments[i];
+      // Set the props:
+      for (var i = 1; i < args.length; i++) {
+        props[invokeArgs[i - 1]] = args[i];
+      }
+
+      op(props);
+
+      if (parsedMap.permute) {
+        var p = parsedMap.permute;
+        var tmp = [];
+        for (i = 0; i < p.length; i++) {
+          tmp[i] = args[p[i]];
+        }
+        for (i = 0; i < p.length; i++) {
+          args[i] = tmp[i];
+        }
+      }
     }
-
-    op(props);
   }
 
   compute.destroy = function () {

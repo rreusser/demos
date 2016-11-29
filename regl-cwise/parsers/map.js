@@ -40,7 +40,8 @@ function parseGpgpuMap (opts) {
     destProp: defs.vars.dest,
     invokeArgs: defs.invokeArgs,
     duProp: defs.vars.du,
-    dvProp: defs.vars.dv
+    dvProp: defs.vars.dv,
+    permute: opts.permute
   };
 }
 

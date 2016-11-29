@@ -1,5 +1,23 @@
 html, body {
-  background-color: white;
+  background-color: black;
   margin: 0;
   padding: 0;
+}
+.selector {
+  z-index: 1000;
+  position: absolute;
+  padding: 10px;
+}
+.selector button {
+  font-size: 1.4em;
+  font-family: 'Arial', sans-serif;
+  font-style: italic;
+  cursor: pointer;
+  outline: none;
+  background: none;
+  border: none;
+  color: #48a;
+}
+.selector button.selected {
+  color: #8df;
 }

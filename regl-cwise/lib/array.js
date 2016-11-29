@@ -35,8 +35,24 @@ function gpuArray (regl, data, shape) {
 
   var n = shape.slice(0, 2).reduce((a, b) => a * b, 1);
 
-  if (!data) {
+  if (!data || typeof data === 'function') {
+    var fn = data;
     data = new Float32Array(n * 4);
+  }
+
+  if (typeof fn === 'function') {
+    var ni = shape[0];
+    var nj = shape[1];
+    for (var j = 0; j < nj; j++) {
+      for (var i = 0; i < ni; i++) {
+        var value = fn(i, j);
+        var idx = 4 * (i + ni * j);
+        data[idx] = value[0];
+        data[idx + 1] = value[1];
+        data[idx + 2] = value[2];
+        data[idx + 3] = value[3];
+      }
+    }
   }
 
   var fullShape = shape.slice(0, 2).concat([4]);
@@ -66,6 +82,17 @@ function gpuArray (regl, data, shape) {
   fbo.destroy = function () {
     origDestroy();
     tex.destroy();
+  };
+
+  fbo.samplerCoords = function () {
+    var xy = [];
+    for (var i = 0; i < n; i++) {
+      xy.push([
+        (i % shape[0]) / Math.max(1, shape[0] - 1),
+        Math.floor(i / shape[0]) / Math.max(1, shape[1] - 1)
+      ]);
+    }
+    return regl.buffer(xy);
   };
 
   return fbo;
