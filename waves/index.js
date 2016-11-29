@@ -28,7 +28,7 @@ const integrate = gpu.op({
       float c = 0.5;   // Wave speed
       float b = 0.1;  // Damping constant
       float dt = 0.05; // time step
-      float k = 0.001;  // spring constant (pulls things back to zero)
+      float k = 0.010;  // spring constant (pulls things back to zero)
       vec4 f = texture2D(y, uv);
       vec2 e = texture2D(y, uv + du).zw;
       vec2 w = texture2D(y, uv - du).zw;
@@ -64,7 +64,7 @@ const bump = gpu.op({
       vec4 f = texture2D(y, uv);
       vec2 x = gl_PointCoord - 0.5;
       float r2 = dot(x, x);
-      float mag = exp(-r2 / (0.2 * 0.2)) * dot(x, direction);
+      float mag = exp(-r2 / (0.2 * 0.2)) * dot(x - direction * 0.01, direction);
       gl_FragColor = vec4(0, 0, 0, -mag * amount);
     }
   `,
@@ -147,7 +147,8 @@ const camera = require('regl-camera')(regl, {
   damping: 0,
   theta: 0.2,
   phi: 0.35,
-  distance: 40,
+  fovy: Math.PI / 5.0,
+  distance: 60,
   center: [0.5, 0.5, 0.5],
 });
 
@@ -158,17 +159,21 @@ regl.frame(({tick}) => {
   regl.clear({color: [0, 0, 0, 1]});
 
   camera(context => {
-    raycastMouse(context, ({rayOrigin, rayDirection, rayChanged}) => {
+    raycastMouse(context, ({rayOrigin, rayDirection, rayChanged, mouseButtons}) => {
       if (rayChanged) {
         var hit = intersect([], rayOrigin, rayDirection, [0, 1, 0], 0);
         if (hit && hit.length && phit && phit.length) {
           var diff = subtract([], hit, phit);
-          doBump(1, hit[0], hit[2], phit[0], phit[2], diff[0], diff[2]);
+          doBump(10, hit[0], hit[2], phit[0], phit[2], diff[0], diff[2]);
         }
-        phit = hit;
+        if (hit && hit.length && hit[0] > -size[0] * 0.5 && hit[0] < size[0] * 0.5 && hit[2] > -size[0] * 0.5 && hit[2] < size[0] * 0.5) {
+          phit = hit;
+        } else {
+          phit = null;
+        }
       }
 
-      iterate(30);
+      iterate(40);
 
       var eye = context.eye;
       var phi = Math.atan2(eye[1], Math.sqrt(eye[0] * eye[0] + eye[2] * eye[2]))
@@ -182,21 +187,26 @@ regl.frame(({tick}) => {
 function doBump(amount, x, y, px, py, dx, dy) {
   var pts = [];
   var l = Math.sqrt((x - px) * (x - px) + (y - py) * (y - py));
-  var dl = 0.1;
+  var dl = 0.05;
   var n = Math.max(1, Math.floor(l / dl));
+  var dl = l / n;
+  var vx = x - px;
+  var vy = y - py;
+  var lv = Math.sqrt(vx * vx + vy * vy);
+  vx *= dl / lv;
+  vy *= dl / lv;
   for (i = 0; i < n; i++) {
-    var interp = i / n;
-    pts.push((x * (1 - interp) + px * interp) / size[0] * 2);
-    pts.push((y * (1 - interp) + py * interp) / size[1] * 2);
+    pts.push((x - i * vx) / size[0] * 2);
+    pts.push((y - i * vy) / size[1] * 2);
   }
   nudgePoint(pts);
   bump({
     count: n,
     input: y2,
     output: y1f,
-    amount: amount,
+    amount: amount * dl / Math.sqrt(l),
     radius: 20,
-    direction: [dx, dy]
+    direction: [-dx, dy]
   });
 }
 

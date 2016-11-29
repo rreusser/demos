@@ -35,7 +35,10 @@ function raycast (regl, options) {
         var _dirty = dirty;
         dirty = false;
         return _dirty;
-      }
+      },
+      mouseButton: function () {
+        return mouseBtns;
+      },
     }
   });
 

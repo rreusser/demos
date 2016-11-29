@@ -29,6 +29,7 @@
     "fourier-transform": "^1.0.2",
     "github-cornerify": "^1.0.6",
     "gl-mat4": "^1.1.4",
+    "gl-vec2": "^1.0.0",
     "gl-vec3": "^1.0.3",
     "glsl-parser": "^2.0.0",
     "glsl-tokenizer": "^2.1.2",
