@@ -56,19 +56,23 @@ var integrate = gpu.op({
   uniforms: { y: regl.prop('input') }
 });
 
-var nudgePoint = regl.buffer([0, 0]);
+var nudgePoint = regl.buffer({ data: new Float32Array([0, 0]), type: 'float', usage: 'dynamic' });
+var nudgeVel = regl.buffer([1, 0]);
 var bump = gpu.op({
-  frag: '\n    precision mediump float;\n    uniform sampler2D y;\n    uniform float amount;\n    varying vec2 uv;\n    void main () {\n      vec4 f = texture2D(y, uv);\n      vec2 x = gl_PointCoord - 0.5;\n      float r2 = dot(x, x);\n      float mag = exp(-r2 / (0.2 * 0.2));\n      gl_FragColor = vec4(0, 0, 0, mag * amount);\n    }\n  ',
-  vert: '\n    precision mediump float;\n    uniform float radius;\n    attribute vec2 points;\n    varying vec2 uv;\n    void main () {\n      uv = 0.5 * (points + 1.0);\n      gl_Position = vec4(points, 0, 1);\n      gl_PointSize = radius;\n    }\n  ',
+  frag: '\n    precision mediump float;\n    uniform sampler2D y;\n    uniform float amount;\n    varying vec2 uv;\n    uniform vec2 direction;\n    void main () {\n      vec4 f = texture2D(y, uv);\n      vec2 x = gl_PointCoord - 0.5;\n      float r2 = dot(x, x);\n      float mag = exp(-r2 / (0.2 * 0.2)) * dot(x, direction);\n      gl_FragColor = vec4(0, 0, 0, -mag * amount);\n    }\n  ',
+  vert: '\n    precision mediump float;\n    uniform float radius;\n    attribute vec2 points;\n    varying vec2 dir;\n    varying vec2 uv;\n    void main () {\n      uv = 0.5 * (points + 1.0);\n      gl_Position = vec4(points, 0, 1);\n      gl_PointSize = radius;\n    }\n  ',
   uniforms: {
     y: regl.prop('input'),
     amount: regl.prop('amount'),
-    radius: regl.prop('radius')
+    radius: regl.prop('radius'),
+    direction: regl.prop('direction')
   },
   framebuffer: regl.prop('output'),
   primitive: 'points',
-  count: 1,
-  attributes: { points: nudgePoint },
+  count: regl.prop('count'),
+  attributes: {
+    points: nudgePoint
+  },
   blend: {
     enable: true,
     func: { srcRGB: 'src alpha', srcAlpha: 1, dstRGB: 1, dstAlpha: 1 },
@@ -95,7 +99,7 @@ var draw = regl({
 });
 
 function iterate(n) {
-  for (var i = 0; i < n; i++) {
+  for (var _i = 0; _i < n; _i++) {
     integrate({ input: y1, output: y2f });
     var tmp = y1;y1 = y2;y2 = tmp;
     tmp = y1f;y1f = y2f;y2f = tmp;
@@ -128,12 +132,12 @@ regl.frame(function (_ref) {
         var hit = intersect([], rayOrigin, rayDirection, [0, 1, 0], 0);
         if (hit && hit.length && phit && phit.length) {
           var diff = subtract([], hit, phit);
-          doBump(Math.min(8, 2 * length(diff)), hit[0], hit[2]);
+          doBump(1, hit[0], hit[2], phit[0], phit[2], diff[0], diff[2]);
         }
         phit = hit;
       }
 
-      iterate(20);
+      iterate(30);
 
       var eye = context.eye;
       var phi = Math.atan2(eye[1], Math.sqrt(eye[0] * eye[0] + eye[2] * eye[2]));
@@ -144,9 +148,25 @@ regl.frame(function (_ref) {
   });
 });
 
-function doBump(amount, x, y) {
-  nudgePoint([x / size[0] * 2, y / size[1] * 2]);
-  bump({ input: y2, output: y1f, amount: amount, radius: 10 });
+function doBump(amount, x, y, px, py, dx, dy) {
+  var pts = [];
+  var l = Math.sqrt((x - px) * (x - px) + (y - py) * (y - py));
+  var dl = 0.1;
+  var n = Math.max(1, Math.floor(l / dl));
+  for (i = 0; i < n; i++) {
+    var interp = i / n;
+    pts.push((x * (1 - interp) + px * interp) / size[0] * 2);
+    pts.push((y * (1 - interp) + py * interp) / size[1] * 2);
+  }
+  nudgePoint(pts);
+  bump({
+    count: n,
+    input: y2,
+    output: y1f,
+    amount: amount,
+    radius: 20,
+    direction: [dx, dy]
+  });
 }
 
 document.querySelector('canvas').addEventListener('wheel', function (e) {

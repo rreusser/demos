@@ -51,25 +51,28 @@ const integrate = gpu.op({
   uniforms: {y: regl.prop('input')}
 });
 
-const nudgePoint = regl.buffer([0, 0]);
+const nudgePoint = regl.buffer({data: new Float32Array([0, 0]), type: 'float', usage: 'dynamic'});
+const nudgeVel = regl.buffer([1, 0]);
 const bump = gpu.op({
   frag: `
     precision mediump float;
     uniform sampler2D y;
     uniform float amount;
     varying vec2 uv;
+    uniform vec2 direction;
     void main () {
       vec4 f = texture2D(y, uv);
       vec2 x = gl_PointCoord - 0.5;
       float r2 = dot(x, x);
-      float mag = exp(-r2 / (0.2 * 0.2));
-      gl_FragColor = vec4(0, 0, 0, mag * amount);
+      float mag = exp(-r2 / (0.2 * 0.2)) * dot(x, direction);
+      gl_FragColor = vec4(0, 0, 0, -mag * amount);
     }
   `,
   vert: `
     precision mediump float;
     uniform float radius;
     attribute vec2 points;
+    varying vec2 dir;
     varying vec2 uv;
     void main () {
       uv = 0.5 * (points + 1.0);
@@ -80,12 +83,15 @@ const bump = gpu.op({
   uniforms: {
     y: regl.prop('input'),
     amount: regl.prop('amount'),
-    radius: regl.prop('radius')
+    radius: regl.prop('radius'),
+    direction: regl.prop('direction')
   },
   framebuffer: regl.prop('output'),
   primitive: 'points',
-  count: 1,
-  attributes: {points: nudgePoint},
+  count: regl.prop('count'),
+  attributes: {
+    points: nudgePoint,
+  },
   blend: {
     enable: true,
     func: {srcRGB: 'src alpha', srcAlpha: 1, dstRGB: 1, dstAlpha: 1},
@@ -157,12 +163,12 @@ regl.frame(({tick}) => {
         var hit = intersect([], rayOrigin, rayDirection, [0, 1, 0], 0);
         if (hit && hit.length && phit && phit.length) {
           var diff = subtract([], hit, phit);
-          doBump(Math.min(8, 2 * length(diff)), hit[0], hit[2]);
+          doBump(1, hit[0], hit[2], phit[0], phit[2], diff[0], diff[2]);
         }
         phit = hit;
       }
 
-      iterate(20);
+      iterate(30);
 
       var eye = context.eye;
       var phi = Math.atan2(eye[1], Math.sqrt(eye[0] * eye[0] + eye[2] * eye[2]))
@@ -173,9 +179,25 @@ regl.frame(({tick}) => {
   });
 });
 
-function doBump(amount, x, y) {
-  nudgePoint([x / size[0] * 2, y / size[1] * 2]);
-  bump({input: y2, output: y1f, amount: amount, radius: 10});
+function doBump(amount, x, y, px, py, dx, dy) {
+  var pts = [];
+  var l = Math.sqrt((x - px) * (x - px) + (y - py) * (y - py));
+  var dl = 0.1;
+  var n = Math.max(1, Math.floor(l / dl));
+  for (i = 0; i < n; i++) {
+    var interp = i / n;
+    pts.push((x * (1 - interp) + px * interp) / size[0] * 2);
+    pts.push((y * (1 - interp) + py * interp) / size[1] * 2);
+  }
+  nudgePoint(pts);
+  bump({
+    count: n,
+    input: y2,
+    output: y1f,
+    amount: amount,
+    radius: 20,
+    direction: [dx, dy]
+  });
 }
 
 document.querySelector('canvas').addEventListener('wheel', function (e) {e.preventDefault();});
