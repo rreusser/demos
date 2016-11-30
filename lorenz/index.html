@@ -111,7 +111,7 @@ var attractors = {
   aizawa: gpgpu.map({
     args: ['array', 'scalar'],
     permute: [1, 0, 2],
-    body: '\n      vec3 deriv (float x, float y, float z) {\n        return vec3(\n          (z - 0.7) * x - 3.5 * y,\n          3.5 * x + (z - 0.7) * y,\n          0.6 + 0.95 * z - (z * z * z / 3.0) - (x * x + y * y) * (1.0 + 0.25 * z) + 0.1 * z * (x * x * x)\n        );\n      }\n      vec4 compute (vec4 y, float dt) {\n        dt *= 2.0;\n        y.z -= 18.0;\n        y.xyz *= 0.1;\n        vec3 ytmp = y.xyz + 0.5 * dt * deriv(y.x, y.y, y.z);\n        y.xyz = y.xyz + dt * deriv(ytmp.x, ytmp.y, ytmp.z);\n        float r = length(y.xyz);\n        if (r > 2.0) {\n          y.xyz /= r;\n        }\n        y.xyz /= 0.1;\n        y.z += 18.0;\n        return y;\n      }\n    '
+    body: '\n      vec3 deriv (float x, float y, float z) {\n        return vec3(\n          (z - 0.7) * x - 3.5 * y,\n          3.5 * x + (z - 0.7) * y,\n          0.6 + 0.95 * z - (z * z * z / 3.0) - (x * x + y * y) * (1.0 + 0.25 * z) + 0.1 * z * (x * x * x)\n        );\n      }\n      vec4 compute (vec4 y, float dt) {\n        dt *= 1.0;\n        y.z -= 18.0;\n        y.xyz *= 0.1;\n        vec3 ytmp = y.xyz + 0.5 * dt * deriv(y.x, y.y, y.z);\n        y.xyz = y.xyz + dt * deriv(ytmp.x, ytmp.y, ytmp.z);\n        float r = length(y.xyz);\n        if (r > 2.0) {\n          y.xyz /= r;\n        }\n        y.xyz /= 0.1;\n        y.z += 18.0;\n        return y;\n      }\n    '
   })
 };
 

@@ -282,7 +282,7 @@ const attractors = {
         );
       }
       vec4 compute (vec4 y, float dt) {
-        dt *= 2.0;
+        dt *= 1.0;
         y.z -= 18.0;
         y.xyz *= 0.1;
         vec3 ytmp = y.xyz + 0.5 * dt * deriv(y.x, y.y, y.z);
