@@ -7,9 +7,10 @@ html, body {
   z-index: 1000;
   position: absolute;
   padding: 10px;
+  padding-right: 50px;
 }
 .selector button {
-  font-size: 1.4em;
+  font-size: 1.2em;
   font-family: 'Arial', sans-serif;
   font-style: italic;
   cursor: pointer;

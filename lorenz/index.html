@@ -34,11 +34,11 @@ var gpgpu = require('../regl-cwise')(regl);
 var length = require('gl-vec3/length');
 var h = require('h');
 
-require('insert-css')("html, body {\n  background-color: black;\n  margin: 0;\n  padding: 0;\n}\n.selector {\n  z-index: 1000;\n  position: absolute;\n  padding: 10px;\n}\n.selector button {\n  font-size: 1.4em;\n  font-family: 'Arial', sans-serif;\n  font-style: italic;\n  cursor: pointer;\n  outline: none;\n  background: none;\n  border: none;\n  color: #48a;\n}\n.selector button.selected {\n  color: #8df;\n}\n");
+require('insert-css')("html, body {\n  background-color: black;\n  margin: 0;\n  padding: 0;\n}\n.selector {\n  z-index: 1000;\n  position: absolute;\n  padding: 10px;\n  padding-right: 50px;\n}\n.selector button {\n  font-size: 1.2em;\n  font-family: 'Arial', sans-serif;\n  font-style: italic;\n  cursor: pointer;\n  outline: none;\n  background: none;\n  border: none;\n  color: #48a;\n}\n.selector button.selected {\n  color: #8df;\n}\n");
 
 var attractor = 'lorenz';
 
-var btns = [h('button.selected', { 'data-attractor': 'lorenz' }, 'Lorenz'), h('button', { 'data-attractor': 'rossler' }, 'Rössler'), h('button', { 'data-attractor': 'chua' }, 'Chua'), h('button', { 'data-attractor': 'ikeda' }, 'Ikeda'), h('button', { 'data-attractor': 'pickover' }, 'Pickover')];
+var btns = [h('button.selected', { 'data-attractor': 'lorenz' }, 'Lorenz'), h('button', { 'data-attractor': 'rossler' }, 'Rössler'), h('button', { 'data-attractor': 'chua' }, 'Chua'), h('button', { 'data-attractor': 'arneodo' }, 'Arneodo'), h('button', { 'data-attractor': 'chenlee' }, 'Chen-Lee'), h('button', { 'data-attractor': 'coullet' }, 'Coullet'), h('button', { 'data-attractor': 'dadras' }, 'Dadras'), h('button', { 'data-attractor': 'aizawa' }, 'Aizawa'), h('button', { 'data-attractor': 'thomas' }, 'Thomas'), h('button', { 'data-attractor': 'tsucs2' }, 'TSUCS2'), h('button', { 'data-attractor': 'rayleighbenard' }, 'Rayleigh-Benard')];
 document.body.appendChild(h('div.selector', btns));
 
 btns.forEach(function (btn) {
@@ -54,7 +54,7 @@ var shape = [600, 600, 4];
 var n = shape[0] * shape[1];
 var y1 = gpgpu.array(null, shape);
 var y2 = gpgpu.array(function (i, j) {
-  return [2 + (Math.random() * 2 - 1) * 10.1, 2 + (Math.random() * 2 - 1) * 10.1, 28 + (Math.random() * 2 - 1) * 10.1, 1.0];
+  return [0 + (Math.random() * 2 - 1) * 0.5, 0 + (Math.random() * 2 - 1) * 0.5, 28 + (Math.random() * 2 - 1) * 0.5, 1.0];
 }, shape);
 
 var attractors = {
@@ -73,21 +73,52 @@ var attractors = {
     permute: [1, 0, 2],
     body: '\n      vec4 deriv (vec4 p) {\n        return vec4(\n          40.0 * (p.y - p.x),\n          -12.0 * p.x - p.x * p.z + 28.0 * p.y,\n          p.x * p.y - 3.0 * p.z,\n          0.0\n        );\n      }\n      vec4 compute (vec4 y, float dt) {\n        y.z -= 10.0;\n        y = y + dt * 0.5 * deriv(y + 0.25 * dt * deriv(y));\n        y.z += 10.0;\n        return y;\n      }\n    '
   }),
-  ikeda: gpgpu.map({
+  arneodo: gpgpu.map({
     args: ['array', 'scalar'],
     permute: [1, 0, 2],
-    body: '\n      const float a = 1.0;\n      const float b = 0.9;\n      const float c = 0.4;\n      const float d = 6.0;\n      vec4 deriv (vec4 p) {\n        return vec4(\n          a + b * (p.x * cos(p.z) - p.y * sin(p.z)),\n          b * (p.x * sin(p.z) + p.y * cos(p.z)),\n          c - d / (1.0 + p.x * p.x + p.y * p.y),\n          0.0\n        );\n      }\n      vec4 compute (vec4 y, float dt) {\n        y.z -= 10.0;\n        y = y + dt * 2.0 * deriv(y + dt * deriv(y));\n        y.z += 10.0;\n        return y;\n      }\n    '
+    body: '\n      const float mu = 1.2;\n      const float nu = 0.5;\n      vec4 deriv (vec4 p) {\n        return vec4(\n          p.y,\n          p.z,\n          5.5 * p.x - 3.5 * p.y - p.z - p.x * p.x * p.x,\n          0.0\n        );\n      }\n      vec4 compute (vec4 y, float dt) {\n        y.z -= 28.0;\n        y = y + dt * 1.0 * deriv(y + 0.5 * dt * deriv(y));\n        float r = length(y.xyz);\n        if (r > 1000.0) {\n          y.xyz /= r;\n        }\n        y.z += 28.0;\n        return y;\n      }\n    '
   }),
-  pickover: gpgpu.map({
+  chenlee: gpgpu.map({
     args: ['array', 'scalar'],
     permute: [1, 0, 2],
-    body: '\n      const float a = 2.24;\n      const float b = 0.43;\n      const float c = -0.65;\n      const float d = -2.43;\n      vec4 deriv (vec4 p) {\n        return vec4(\n          sin(a * p.x) - p.z * cos(b * p.y),\n          p.z * sin(c * p.x) - cos(d * p.y),\n          1.0 / sin(p.x),\n          0.0\n        );\n      }\n      vec4 compute (vec4 y, float dt) {\n        y.z -= 28.0;\n        y = y + dt * deriv(y + 0.5 * dt * deriv(y));\n        y.z += 28.0;\n        return y;\n      }\n    '
+    body: '\n      const float mu = 1.2;\n      const float nu = 0.5;\n      vec4 deriv (vec4 p) {\n        return vec4(\n          5.0 * p.x - p.y * p.z,\n          -10.0 * p.y + p.x * p.z,\n          -0.38 * p.z + p.x * p.y / 3.0,\n          0.0\n        );\n      }\n      vec4 compute (vec4 y, float dt) {\n        y.z -= 28.0;\n        y = y + dt * 1.0 * deriv(y + 0.5 * dt * deriv(y));\n        float r = length(y.xyz);\n        if (r > 1000.0) {\n          y.xyz /= r;\n        }\n        y.z += 28.0;\n        return y;\n      }\n    '
+  }),
+  coullet: gpgpu.map({
+    args: ['array', 'scalar'],
+    permute: [1, 0, 2],
+    body: '\n      vec4 deriv (vec4 p) {\n        return vec4(\n          p.y,\n          p.z,\n          0.8 * p.x - 1.1 * p.y - 0.45 * p.z - p.x * p.x * p.x,\n          0.0\n        );\n      }\n      vec4 compute (vec4 y, float dt) {\n        y.z -= 28.0;\n        y *= 0.1;\n        y = y + dt * 4.0 * deriv(y + 2.0 * dt * deriv(y));\n        float r = length(y.xyz);\n        if (r > 1000.0) {\n          y.xyz /= r;\n        }\n        y /= 0.1;\n        y.z += 28.0;\n        return y;\n      }\n    '
+  }),
+  dadras: gpgpu.map({
+    args: ['array', 'scalar'],
+    permute: [1, 0, 2],
+    body: '\n      vec4 deriv (vec4 p) {\n        return vec4(\n          p.y - 3.0 * p.x + 2.7 * p.y * p.z,\n          1.7 * p.y - p.x * p.z + p.z,\n          2.0 * p.x * p.y - 9.0 * p.z,\n          0.0\n        );\n      }\n      vec4 compute (vec4 y, float dt) {\n        y.z -= 28.0;\n        y *= 0.4;\n        y = y + dt * 2.0 * deriv(y + dt * deriv(y));\n        float r = length(y.xyz);\n        if (r > 1000.0) {\n          y.xyz /= r;\n        }\n        y /= 0.4;\n        y.z += 28.0;\n        return y;\n      }\n    '
+  }),
+  thomas: gpgpu.map({
+    args: ['array', 'scalar'],
+    permute: [1, 0, 2],
+    body: '\n      vec3 deriv (float x, float y, float z) {\n        return vec3(\n          -0.19 * x + sin(y),\n          -0.19 * y + sin(z),\n          -0.19 * z + sin(x)\n        );\n      }\n      vec4 compute (vec4 y, float dt) {\n        dt *= 8.0;\n        y.z -= 28.0;\n        y.xyz *= 0.2;\n        vec3 ytmp = y.xyz + 0.5 * dt * deriv(y.x, y.y, y.z);\n        y.xyz = y.xyz + dt * deriv(ytmp.x, ytmp.y, ytmp.z);\n        float r = length(y.xyz);\n        y.xyz /= 0.2;\n        y.z += 28.0;\n        return y;\n      }\n    '
+  }),
+  tsucs2: gpgpu.map({
+    args: ['array', 'scalar'],
+    permute: [1, 0, 2],
+    body: '\n      vec3 deriv (float x, float y, float z) {\n        return vec3(\n          40.0 * (y - x) + 0.16 * x * z,\n          55.0 * x - x * z + 20.0 * y,\n          1.833 * z + x * y - 0.65 * x * x\n        );\n      }\n      vec4 compute (vec4 y, float dt) {\n        dt *= 0.1;\n        y.z -= 8.0;\n        y.xyz /= 0.15;\n        vec3 ytmp = y.xyz + 0.5 * dt * deriv(y.x, y.y, y.z);\n        y.xyz = y.xyz + dt * deriv(ytmp.x, ytmp.y, ytmp.z);\n        //float r = length(y.xyz);\n        y.xyz *= 0.15;\n        y.z += 8.0;\n        return y;\n      }\n    '
+  }),
+  rayleighbenard: gpgpu.map({
+    args: ['array', 'scalar'],
+    permute: [1, 0, 2],
+    body: '\n      vec3 deriv (float x, float y, float z) {\n        return vec3(\n          9.0 * (y - x),\n          12.0 * x - y - x * z,\n          x * y - 0.5 * z\n        );\n      }\n      vec4 compute (vec4 y, float dt) {\n        dt *= 2.0;\n        //y.z -= 18.0;\n        y.xyz /= 2.5;\n        vec3 ytmp = y.xyz + 0.5 * dt * deriv(y.x, y.y, y.z);\n        y.xyz = y.xyz + dt * deriv(ytmp.x, ytmp.y, ytmp.z);\n        //float r = length(y.xyz);\n        y.xyz *= 2.5;\n        //y.z += 18.0;\n        return y;\n      }\n    '
+  }),
+  aizawa: gpgpu.map({
+    args: ['array', 'scalar'],
+    permute: [1, 0, 2],
+    body: '\n      vec3 deriv (float x, float y, float z) {\n        return vec3(\n          (z - 0.7) * x - 3.5 * y,\n          3.5 * x + (z - 0.7) * y,\n          0.6 + 0.95 * z - (z * z * z / 3.0) - (x * x + y * y) * (1.0 + 0.25 * z) + 0.1 * z * (x * x * x)\n        );\n      }\n      vec4 compute (vec4 y, float dt) {\n        dt *= 2.0;\n        y.z -= 18.0;\n        y.xyz *= 0.1;\n        vec3 ytmp = y.xyz + 0.5 * dt * deriv(y.x, y.y, y.z);\n        y.xyz = y.xyz + dt * deriv(ytmp.x, ytmp.y, ytmp.z);\n        float r = length(y.xyz);\n        if (r > 2.0) {\n          y.xyz /= r;\n        }\n        y.xyz /= 0.1;\n        y.z += 18.0;\n        return y;\n      }\n    '
   })
 };
 
 var camera = require('regl-camera')(regl, {
   center: [0, 28, 0],
   distance: 100,
+  far: 10000,
   damping: 0
 });
 
