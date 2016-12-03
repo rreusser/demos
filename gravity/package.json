@@ -1,11 +1,11 @@
 {
-  "name": "lorenz",
+  "name": "gravity",
   "version": "1.0.0",
-  "description": "Computing the lorenz attractor on the GPU",
+  "description": "Gravity as a continuum",
   "main": "index.js",
   "scripts": {
     "build": "browserify index.js -t es2040 -t brfs -t glslify | indexhtmlify | metadataify | github-cornerify > index.html",
-    "start": "budo --open --live --css index.css --host localhost index.js -- -t es2040 -t brfs -t glslify"
+    "start": "budo --open --live --host localhost index.js -- -t es2040 -t brfs -t glslify"
   },
   "repository": {
     "type": "git",
@@ -42,18 +42,16 @@
     "ndarray": "^1.0.18",
     "ndarray-fft": "^1.0.3",
     "newton-raphson-method": "^1.0.0",
+    "random-normal": "^1.0.0",
     "regl": "^1.3.0",
-    "regl-camera": "https://github.com/regl-project/regl-camera.git#master",
-    "resl": "^1.0.3",
-    "scijs-window-functions": "^2.0.2",
-    "web-audio-player": "^1.2.1"
+    "regl-camera": "https://github.com/regl-project/regl-camera.git#master"
   },
   "metadataify": {
-    "image": "https://cdn.rawgit.com/rreusser/demos/master/lorenz/screenshot.png"
+    "image": "https://cdn.rawgit.com/rreusser/demos/master/gravity/screenshot.png"
   },
   "github-corner": {
-    "url": "https://github.com/rreusser/demos/tree/master/lorenz",
-    "fg": "#f8f0e8",
-    "bg": "#444"
+    "url": "https://github.com/rreusser/demos/tree/master/gravity",
+    "bg": "#fff",
+    "fg": "#333"
   }
 }

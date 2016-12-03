@@ -1,24 +1,79 @@
 html, body {
-  background-color: black;
+  background-color: white;
   margin: 0;
   padding: 0;
+  font-family: 'Arial', sans-serif;
 }
 .selector {
-  z-index: 1000;
+  z-index: 10;
   position: absolute;
-  padding: 10px;
-  padding-right: 50px;
+  bottom: 0;
+  padding: 8px;
 }
 .selector button {
-  font-size: 1.2em;
-  font-family: 'Arial', sans-serif;
+  font-size: 0.9em;
   font-style: italic;
   cursor: pointer;
   outline: none;
   background: none;
   border: none;
-  color: #48a;
+  opacity: 0.5;
 }
 .selector button.selected {
-  color: #8df;
+  opacity: 1.0;
+}
+#number-control {
+  font-size: 0.9em;
+  font-style: italic;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  padding: 10px;
+}
+
+#number-control input[type=range] {
+  -webkit-appearance: none;
+  width: 200px;
+  background: rgba(0, 0, 0, 0.1);
+  height: 20px;
+  border: none;
+  vertical-align: middle;
+  cursor: ew-resize;
+}
+
+#number-control span {
+  vertical-align: middle;
+  margin-left: 10px;
+}
+
+#number-control input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background-color: rgba(0, 0, 0, 0.2);
+  cursor: ew-resize;
+}
+
+#number-control input[type=range]:focus {
+  outline: none;
+}
+
+#number-control input[type=range]::-ms-track {
+  width: 200px;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  color: rgba(0, 0, 0, 0.2);
+  height: 20px;
+}
+
+#capture {
+  cursor: pointer;
+  font-style: italic;
+  position: absolute;
+  top: 40px;
+  left: 10px;
+  background: none;
+  border: none;
 }

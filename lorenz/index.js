@@ -1,303 +1,390 @@
-const regl = require('regl')({extensions: ['OES_texture_float'], pixelRatio: 1.0});
+'use strict';
+
+var canvas = document.createElement('canvas');
+document.body.appendChild(canvas);
+
+const regl = require('regl')({
+  extensions: ['OES_texture_float'],
+  pixelRatio: 1,
+  canvas: canvas,
+  onDone: (err, regl) => {
+    if (err) require('fail-nicely')(err);
+  }
+});
+
+canvas.width = 540;
+canvas.height = 540;
+canvas.style.width = '540px';
+canvas.style.height = '540px';
+const glslify = require('glslify')
 const gpgpu = require('../regl-cwise')(regl);
 const length = require('gl-vec3/length');
+const invert = require('gl-mat4/invert');
 const h = require('h');
 const fs = require('fs');
+const hsv = require('hsv2rgb');
+const hex = require('rgb-hex');
 require('insert-css')(fs.readFileSync(__dirname + '/index.css', 'utf8'));
+const styleDiv = h('div#colorStyles');
+document.body.appendChild(styleDiv);
 
-var attractor = 'lorenz';
+var doCapture = false;
+var needsStop = false;
+var mbframes = 1;
+const CCapture = require('ccapture.js');
+var capturer;
 
-const btns = [
-  h('button.selected', {'data-attractor': 'lorenz'}, 'Lorenz'),
-  h('button', {'data-attractor': 'rossler'}, 'Rössler'),
-  h('button', {'data-attractor': 'chua'}, 'Chua'),
-  h('button', {'data-attractor': 'arneodo'}, 'Arneodo'),
-  h('button', {'data-attractor': 'chenlee'}, 'Chen-Lee'),
-  h('button', {'data-attractor': 'coullet'}, 'Coullet'),
-  h('button', {'data-attractor': 'dadras'}, 'Dadras'),
-  h('button', {'data-attractor': 'aizawa'}, 'Aizawa'),
-  h('button', {'data-attractor': 'thomas'}, 'Thomas'),
-  h('button', {'data-attractor': 'tsucs2'}, 'TSUCS2'),
-  h('button', {'data-attractor': 'rayleighbenard'}, 'Rayleigh-Benard'),
-];
+const captureBtn = h('btn#capture', 'Capture', {class: 'fg-color'});
+captureBtn.addEventListener('click', () => {
+
+  doCapture = true;
+  mbframes = 5;
+  capturer = new CCapture({
+    format: 'jpg',
+    verbose: false,
+    framerate: 60,
+    motionBlurFrames: mbframes,
+  });
+
+  capturer.start();
+
+  document.body.removeChild(captureBtn);
+  const stopBtn = h('btn#capture', 'Stop', {class: 'fg-color'});
+  stopBtn.addEventListener('click', () => {
+    mbframes = 1;
+    needsStop = true;
+    document.body.removeChild(stopBtn);
+  });
+  document.body.appendChild(stopBtn);
+});
+
+document.body.appendChild(captureBtn);
+
+const attractors = {
+  lorenz: attractor(`
+    10.0 * (y - x),
+    x * (28.0 - z) - y,
+    x * y - 8.0 /  3.0 * z
+  `),
+  lorenzmod1: attractor(`
+    -0.1 * x + y * y - z * z + 0.1 * 14.0,
+    x * (y - 4.0 * z) + 0.08,
+    z + x * (4.0 * y + z)
+  `, {dt: 0.5, shift: 28, scale: 0.5}),
+  lorenzmod2: attractor(`
+    -0.9 * x + y * y - z * z + 0.9 * 9.9,
+    x * (y - 5.0 * z) + 1.0,
+    -z + x * (5.0 * y + z)
+  `, {dt: 0.3, shift: 28, scale: 1, clip: 1000}),
+  rossler: attractor(`
+    28.0 - z - y,
+    x + 0.1 * y,
+    0.1 + (z - 28.0) * (x - 14.0)
+  `, {dt: 4}),
+  chua: attractor(`
+      40.0 * (y - x),
+      -12.0 * x - x * z + 28.0 * y,
+      x * y - 3.0 * z
+  `, {dt: 0.3, zscale: 1.5}),
+  arneodo: attractor(`
+    y,
+    z,
+    5.5 * x - 3.5 * y - z - x * x * x
+  `, {dt: 2, shift: 28, clip: 1000, scale: 3}),
+  chenlee: attractor(`
+    5.0 * x - y * z,
+    -10.0 * y + x * z,
+    -0.38 * z + x * y / 3.0
+  `, {shift: 28}),
+  coullet: attractor(`
+    y,
+    z,
+    0.8 * x - 1.1 * y - 0.45 * z - x * x * x
+  `, {dt: 4, shift: 28, scale: 10, clip: 1000}),
+  dadras: attractor(`
+    y - 3.0 * x + 2.7 * y * z,
+    1.7 * y - x * z + z,
+    2.0 * x * y - 9.0 * z
+  `, {dt: 1, shift: 28, scale: 2}),
+  thomas: attractor(`
+    -0.19 * x + sin(y),
+    -0.19 * y + sin(z),
+    -0.19 * z + sin(x)
+  `, {dt: 8, shift: 28, scale: 5}),
+  tsucs1: attractor(`
+    40.0 * (y - x) + 0.5 * x * z,
+    20.0 * y - x * z,
+    0.833 * z + x * y - 0.65 * x * x
+  `, {dt: 0.25, shift: 10, scale: 0.5, clip: 1000}),
+  tsucs2: attractor(`
+    40.0 * (y - x) + 0.16 * x * z,
+    55.0 * x - x * z + 20.0 * y,
+    1.833 * z + x * y - 0.65 * x * x
+  `, {dt: 0.1, shift: 12, scale: 0.15}),
+  aizawa: attractor(`
+    (z - 0.7) * x - 3.5 * y,
+    3.5 * x + (z - 0.7) * y,
+    0.6 + 0.95 * z - (z * z * z / 3.0) - (x * x + y * y) * (1.0 + 0.25 * z) + 0.1 * z * (x * x * x)
+  `, {dt: 1.5, shift: 20, scale: 15, clip: 1000}),
+  nosehoover: attractor(`
+    y,
+    -x + y * z,
+    1.5 - y * y
+  `, {dt: 4, shift: 28, scale: 6}),
+  yuwang: attractor(`
+    10.0 * (y - x),
+    40.0 * x - 2.0 * x * z,
+    exp(x * y) - 2.5 * z
+  `, {dt: 0.3, scale: 6.0, clip: 1000, zscale: 0.25, shift: -5}),
+  fourwing: attractor(`
+    0.2 * x + y * z,
+    -0.01 * x - 0.4 * y - x * z,
+    -z - x * y
+  `, {dt: 4, shift: 28, scale: 10}),
+  liuchen: attractor(`
+    0.4 * x - y * z,
+    -12.0 * y + x * z,
+    -5.0 * z + x * y
+  `, {dt: 2, shift: 28, scale: 2, clip: 1000}),
+  genesiotesi: attractor(`
+    y,
+    z,
+    -x - 1.1 * y - 0.44 * z + x * x
+  `, {dt: 4, shift: 28, scale: 30, clip: 100}),
+  newtonleipnik: attractor(`
+    0.4 * x + y + 10.0 * y * z,
+    -x - 0.4 * y + 5.0 * x * z,
+    0.175 * z - 5.0 * x * y
+  `, {dt: 0.05, shift: 28, scale: 0.5, clip: 1000}),
+  luchen: attractor(`
+    -4.0 * x + z * y,
+    -10.0 * y + z * x,
+    (10.0 * 4.0 * z) / 14.0 - y * x + 18.1
+  `, {dt: 0.5, shift: 23, scale: 1.3}),
+  dequanli: attractor(`
+    40.0 * (y - x) + 0.16 * x * z,
+    55.0 * x + 20.0 * y - x * z,
+    1.833 * z + x * y - 0.65 * x * x
+  `, {dt: 0.1, shift: 2, clip: 1000, scale: 0.2}),
+  halvorsen: attractor(`
+    -1.4 * x - 4.0 * (y + z) - y * y,
+    -1.4 * y - 4.0 * (z + x) - z * z,
+    -1.4 * z - 4.0 * (x + y) - x * x
+  `, {dt: 0.5, shift: 28, clip: 1000, scale: 2}),
+  rucklidge: attractor(`
+    -2.0 * x + 6.7 * y - y * z,
+    x,
+    -z + y * y
+  `, {dt: 2.0, shift: 10, clip: 1000, scale: 3}),
+  hadley: attractor(`
+    4.0 * z * y + z * x - x,
+    z * y - 4.0 * z * x - y + 1.0,
+    -y * y - x * x - 0.2 * z + 0.2 * 8.0
+  `, {shift: 15, scale: 10}),
+  wangsun: attractor(`
+    x * 0.2 + y * z,
+    -0.01 * x + -0.4 * y - x * z,
+    -z - x * y
+  `, {dt: 6.0, shift: 28, scale: 15}),
+  sakarya: attractor(`
+    -x + y + y * z,
+    -x - y + 0.4 * x * z,
+    z - 0.3 * x * y
+  `, {dt: 1, shift: 22, scale: 1}),
+  burkeshaw: attractor(`
+    -10.0 * (x + y),
+    -y - 10.0 * x * z,
+    10.0 * x * y + 4.272
+  `, {dt: 0.5, shift: 28, clip: 100, scale: 5}),
+  bouali: attractor(`
+    x * (4.0 - y) + 0.3 * z,
+    -y * (1.0 - x * x),
+    -x * (1.5 - z) - 0.05 * z
+  `, {dt: 1.0, shift: 28, scale: 2, clip: 100, scale: 1}),
+  qichen: attractor(`
+    38.0 * (y - x) + y * z,
+    80.0 * x + y - x * z,
+    x * y - 8.0 / 3.0 * z
+  `, {dt: 0.2, shift: -50, clip: 10000, scale: 0.5, zscale: 2}),
+  finance: attractor(`
+    y - 1.1 * x,
+    (5.0 - 0.001) * y - x - y * z,
+    -0.2 * z + y * y
+  `, {dt: 5, shift: -12, scale: 10}),
+  rayleighbenard: attractor(`
+    -9.0 * x + 9.0 * y,
+    12.0 * x - y - x * z,
+    x * y - 0.5 * z
+  `, {dt: 2, shift: 5, clip: 10000, scale: 2}),
+};
+
+const attractorLabels = {
+  aizawa: 'Aizawa',
+  arneodo: 'Arneodo',
+  bouali: 'Bouali',
+  burkeshaw: 'Burke-Shaw',
+  chua: 'Chua',
+  chenlee: 'Chen-Lee',
+  coullet: 'Coullet',
+  dadras: 'Dadras',
+  finance: 'Finance',
+  fourwing: 'Four-Wing',
+  genesiotesi: 'Genesio-Tesi',
+  hadley: 'Hadley',
+  halvorsen: 'Halvorsen',
+  dequanli: 'Dequan-Li',
+  lorenz: 'Lorenz',
+  lorenzmod1: 'Lorenz Mod 1',
+  lorenzmod2: 'Lorenz Mod 2',
+  liuchen: 'Liu-Chen',
+  luchen: 'Lü-Chen',
+  newtonleipnik: 'Newton-Leipnik',
+  nosehoover: 'Nose-Hoover',
+  qichen: 'Qi-Chen',
+  thomas: 'Thomas',
+  tsucs1: 'TSUCS1',
+  tsucs2: 'TSUCS2',
+  rayleighbenard: 'Rayleigh-Benard',
+  rossler: 'Rössler',
+  rucklidge: 'Rucklidge',
+  sakarya: 'Sakarya',
+  wangsun: 'Wang-Sun',
+  yuwang: 'Yu-Wang',
+};
+
+// Set random colors and inject corresponding styles
+var fg, bg, isInverted;
+const randomizeColors = () => {
+  //let h1 = Math.random() * 360;
+  //let h2 = (h1 + 180 + (Math.random() - 0.5) * 60) % 360;
+  //let cf = hsv(h2, 0.6 * Math.random(), Math.random() * 0.2 + 0.8);
+  //let cb = hsv(h1, Math.random() * 0.3, Math.random() * 0.2);
+  let h1, h2, cf, cb;
+  switch(1) {
+    case 0:
+      h1 = 320;
+      h2 = 300;
+      cf = hsv(h2, 0.3, 1.0);
+      cb = hsv(h1, 0.1, 0.1);
+      break;
+    case 1:
+      cf = hsv(70, 0.5, 1.0);
+      cb = hsv((120 + 180) % 360, 0.1, 0.15);
+      break;
+  }
+  isInverted = true;
+  if (isInverted) {
+    cf = cf.map(i => 255 - i);
+    cb = cb.map(i => 255 - i);
+  }
+  fg = cf.map(i => i / 255);
+  bg = cb.map(i => i / 255);
+  let s = styleDiv.querySelector('style');
+  if (s) styleDiv.removeChild(s);
+  styleDiv.appendChild(h('style', {type: 'text/css'}, `
+    .selector button, .fg-color { color: #${hex.apply(null, cf)}; }
+  `));
+};
+randomizeColors();
+
+// Get selected attractor from the hash
+var selectedAttractor = /^#/.test(window.location.hash || '') ? window.location.hash.substr(1) : 'lorenz';
+
+// Create buttons for each attractor
+const btns = Object.keys(attractorLabels).map(name =>
+  h('button', {'data-attractor': name, class: name === selectedAttractor ? 'selected' : ''}, attractorLabels[name])
+);
+
+// Append the buttons
 document.body.appendChild(h('div.selector', btns));
 
+// Attach an event listener to switch the attractor on click
 btns.forEach(btn =>
   btn.addEventListener('click', function () {
     btns.forEach(b => b === btn ?  b.classList.add('selected') : b.classList.remove('selected'));
-    attractor = btn.getAttribute('data-attractor');
+    selectedAttractor = btn.getAttribute('data-attractor');
+    window.location.hash = selectedAttractor;
+    randomizeColors();
   })
 );
 
-const shape = [600, 600, 4];
-const n = shape[0] * shape[1];
-const y1 = gpgpu.array(null, shape);
-const y2 = gpgpu.array((i, j) => [
-  0 + (Math.random() * 2 - 1) * 0.5,
-  0 + (Math.random() * 2 - 1) * 0.5,
-  28 + (Math.random() * 2 - 1) * 0.5,
-  1.0
-], shape);
+// A slider to change the number of particles
+var numberRange = h('input', {type: 'range', min: 1, max: 100, value: 53});
+var numberOutput = h('span.fg-color');
+var numberControl = h('div#number-control', [numberRange, numberOutput]);
+document.body.appendChild(numberControl);
 
-const attractors = {
-  lorenz: gpgpu.map({
-    args: ['array', 'scalar'],
-    permute: [1, 0, 2],
-    body: `
-      vec4 deriv (vec4 p) {
-        return vec4(
-          10.0 * (p.y - p.x),
-          p.x * (28.0 - p.z) - p.y,
-          p.x * p.y - 8.0 /  3.0 * p.z,
-          0.0
-        );
-      }
-      vec4 compute (vec4 y, float dt) {
-        return y + dt * deriv(y + 0.5 * dt * deriv(y));
-      }
-    `,
-  }),
-  rossler: gpgpu.map({
-    args: ['array', 'scalar'],
-    permute: [1, 0, 2],
-    body: `
-      vec4 deriv (vec4 p) {
-        return 4.0 * vec4(
-          -p.y - (p.z - 28.0),
-          p.x + 0.1 * p.y,
-          0.1 + (p.z - 28.0) * (p.x - 14.0),
-          0.0
-        );
-      }
-      vec4 compute (vec4 y, float dt) {
-        return y + dt * deriv(y + 0.5 * dt * deriv(y));
-      }
-    `,
-  }),
-  chua: gpgpu.map({
-    args: ['array', 'scalar'],
-    permute: [1, 0, 2],
-    body: `
-      vec4 deriv (vec4 p) {
-        return vec4(
-          40.0 * (p.y - p.x),
-          -12.0 * p.x - p.x * p.z + 28.0 * p.y,
-          p.x * p.y - 3.0 * p.z,
-          0.0
-        );
-      }
-      vec4 compute (vec4 y, float dt) {
-        y.z -= 10.0;
-        y = y + dt * 0.5 * deriv(y + 0.25 * dt * deriv(y));
-        y.z += 10.0;
-        return y;
-      }
-    `,
-  }),
-  arneodo: gpgpu.map({
-    args: ['array', 'scalar'],
-    permute: [1, 0, 2],
-    body: `
-      const float mu = 1.2;
-      const float nu = 0.5;
-      vec4 deriv (vec4 p) {
-        return vec4(
-          p.y,
-          p.z,
-          5.5 * p.x - 3.5 * p.y - p.z - p.x * p.x * p.x,
-          0.0
-        );
-      }
-      vec4 compute (vec4 y, float dt) {
-        y.z -= 28.0;
-        y = y + dt * 1.0 * deriv(y + 0.5 * dt * deriv(y));
-        float r = length(y.xyz);
-        if (r > 1000.0) {
-          y.xyz /= r;
-        }
-        y.z += 28.0;
-        return y;
-      }
-    `,
-  }),
-  chenlee: gpgpu.map({
-    args: ['array', 'scalar'],
-    permute: [1, 0, 2],
-    body: `
-      const float mu = 1.2;
-      const float nu = 0.5;
-      vec4 deriv (vec4 p) {
-        return vec4(
-          5.0 * p.x - p.y * p.z,
-          -10.0 * p.y + p.x * p.z,
-          -0.38 * p.z + p.x * p.y / 3.0,
-          0.0
-        );
-      }
-      vec4 compute (vec4 y, float dt) {
-        y.z -= 28.0;
-        y = y + dt * 1.0 * deriv(y + 0.5 * dt * deriv(y));
-        float r = length(y.xyz);
-        if (r > 1000.0) {
-          y.xyz /= r;
-        }
-        y.z += 28.0;
-        return y;
-      }
-    `,
-  }),
-  coullet: gpgpu.map({
-    args: ['array', 'scalar'],
-    permute: [1, 0, 2],
-    body: `
-      vec4 deriv (vec4 p) {
-        return vec4(
-          p.y,
-          p.z,
-          0.8 * p.x - 1.1 * p.y - 0.45 * p.z - p.x * p.x * p.x,
-          0.0
-        );
-      }
-      vec4 compute (vec4 y, float dt) {
-        y.z -= 28.0;
-        y *= 0.1;
-        y = y + dt * 4.0 * deriv(y + 2.0 * dt * deriv(y));
-        float r = length(y.xyz);
-        if (r > 1000.0) {
-          y.xyz /= r;
-        }
-        y /= 0.1;
-        y.z += 28.0;
-        return y;
-      }
-    `,
-  }),
-  dadras: gpgpu.map({
-    args: ['array', 'scalar'],
-    permute: [1, 0, 2],
-    body: `
-      vec4 deriv (vec4 p) {
-        return vec4(
-          p.y - 3.0 * p.x + 2.7 * p.y * p.z,
-          1.7 * p.y - p.x * p.z + p.z,
-          2.0 * p.x * p.y - 9.0 * p.z,
-          0.0
-        );
-      }
-      vec4 compute (vec4 y, float dt) {
-        y.z -= 28.0;
-        y *= 0.4;
-        y = y + dt * 2.0 * deriv(y + dt * deriv(y));
-        float r = length(y.xyz);
-        if (r > 1000.0) {
-          y.xyz /= r;
-        }
-        y /= 0.4;
-        y.z += 28.0;
-        return y;
-      }
-    `,
-  }),
-  thomas: gpgpu.map({
+function setNumber () {
+  let min = parseInt(numberRange.getAttribute('min'));
+  let max = parseInt(numberRange.getAttribute('max'));
+  let interp = (parseInt(numberRange.value) - min) / (max - min);
+  let number = Math.pow(10, 4.0 + interp * 3.0);
+  let newside = Math.floor(Math.sqrt(number))
+  if (newside === side) return;
+
+  side = newside;
+  shape[0] = shape[1] = side;
+  n = shape[0] * shape[1];
+
+  numberOutput.textContent = 'Particles: ' + n;
+
+  if (args[0]) args[0].destroy();
+  if (args[1]) args[1].destroy();
+  args[0] = gpgpu.array(null, shape);
+  args[1] = gpgpu.array((i, j) => {
+    var vec;
+    do {
+      var vec = [Math.random(), Math.random(), Math.random()].map(i => i * 2 - 1);
+    } while(length(vec) > 1);
+
+    vec = vec.map(x => x * 0.01);
+    vec[2] += 28;
+    vec[3] = 1;
+
+    return vec;
+  }, shape);
+  if (uv) uv.destroy();
+  uv = args[0].samplerCoords();
+}
+
+numberRange.addEventListener('input', setNumber);
+numberRange.addEventListener('mousemove', e => e.stopPropagation());
+
+var side = 600;
+const shape = [side, side, 4];
+var n = shape[0] * shape[1];
+const args = [null, null, 0.01];
+setNumber();
+var uv = args[0].samplerCoords();
+
+function attractor(op, opts) {
+  opts = opts || {};
+  opts.dt = opts.dt || 1.0;
+  return gpgpu.map({
     args: ['array', 'scalar'],
     permute: [1, 0, 2],
     body: `
       vec3 deriv (float x, float y, float z) {
-        return vec3(
-          -0.19 * x + sin(y),
-          -0.19 * y + sin(z),
-          -0.19 * z + sin(x)
-        );
+        return vec3(${op});
       }
       vec4 compute (vec4 y, float dt) {
-        dt *= 8.0;
-        y.z -= 28.0;
-        y.xyz *= 0.2;
-        vec3 ytmp = y.xyz + 0.5 * dt * deriv(y.x, y.y, y.z);
-        y.xyz = y.xyz + dt * deriv(ytmp.x, ytmp.y, ytmp.z);
+        ${opts.shift ? `y.z -= ${opts.shift.toFixed(2)};` : ''}
+        ${opts.scale ? `y.xyz *= ${(1 / opts.scale).toFixed(10)};` : ''}
+        ${opts.zscale ? `y.z *= ${(1 / opts.zscale).toFixed(10)};` : ''}
+        vec3 yh = y.xyz + ${(opts.dt * 0.5).toFixed(2)} * dt * deriv(y.x, y.y, y.z);
+        y.xyz = y.xyz + ${opts.dt.toFixed(2)} * dt * deriv(yh.x, yh.y, yh.z);
+        ${opts.zscale ? `y.z *= ${opts.zscale.toFixed(10)};` : ''}
+        ${opts.scale ? `y.xyz *= ${opts.scale.toFixed(10)};` : ''}
+        ${opts.clip ? `
         float r = length(y.xyz);
-        y.xyz /= 0.2;
-        y.z += 28.0;
+        if (r > ${opts.clip.toFixed(2)}) y.xyz /= r;
+        ` : ''}
+        ${opts.shift ? `y.z += ${opts.shift.toFixed(2)};` : ''}
         return y;
       }
     `,
-  }),
-  tsucs2: gpgpu.map({
-    args: ['array', 'scalar'],
-    permute: [1, 0, 2],
-    body: `
-      vec3 deriv (float x, float y, float z) {
-        return vec3(
-          40.0 * (y - x) + 0.16 * x * z,
-          55.0 * x - x * z + 20.0 * y,
-          1.833 * z + x * y - 0.65 * x * x
-        );
-      }
-      vec4 compute (vec4 y, float dt) {
-        dt *= 0.1;
-        y.z -= 8.0;
-        y.xyz /= 0.15;
-        vec3 ytmp = y.xyz + 0.5 * dt * deriv(y.x, y.y, y.z);
-        y.xyz = y.xyz + dt * deriv(ytmp.x, ytmp.y, ytmp.z);
-        //float r = length(y.xyz);
-        y.xyz *= 0.15;
-        y.z += 8.0;
-        return y;
-      }
-    `,
-  }),
-  rayleighbenard: gpgpu.map({
-    args: ['array', 'scalar'],
-    permute: [1, 0, 2],
-    body: `
-      vec3 deriv (float x, float y, float z) {
-        return vec3(
-          9.0 * (y - x),
-          12.0 * x - y - x * z,
-          x * y - 0.5 * z
-        );
-      }
-      vec4 compute (vec4 y, float dt) {
-        dt *= 2.0;
-        //y.z -= 18.0;
-        y.xyz /= 2.5;
-        vec3 ytmp = y.xyz + 0.5 * dt * deriv(y.x, y.y, y.z);
-        y.xyz = y.xyz + dt * deriv(ytmp.x, ytmp.y, ytmp.z);
-        //float r = length(y.xyz);
-        y.xyz *= 2.5;
-        //y.z += 18.0;
-        return y;
-      }
-    `,
-  }),
-  aizawa: gpgpu.map({
-    args: ['array', 'scalar'],
-    permute: [1, 0, 2],
-    body: `
-      vec3 deriv (float x, float y, float z) {
-        return vec3(
-          (z - 0.7) * x - 3.5 * y,
-          3.5 * x + (z - 0.7) * y,
-          0.6 + 0.95 * z - (z * z * z / 3.0) - (x * x + y * y) * (1.0 + 0.25 * z) + 0.1 * z * (x * x * x)
-        );
-      }
-      vec4 compute (vec4 y, float dt) {
-        dt *= 1.0;
-        y.z -= 18.0;
-        y.xyz *= 0.1;
-        vec3 ytmp = y.xyz + 0.5 * dt * deriv(y.x, y.y, y.z);
-        y.xyz = y.xyz + dt * deriv(ytmp.x, ytmp.y, ytmp.z);
-        float r = length(y.xyz);
-        if (r > 2.0) {
-          y.xyz /= r;
-        }
-        y.xyz /= 0.1;
-        y.z += 18.0;
-        return y;
-      }
-    `,
-  }),
-};
+  });
+}
 
 const camera = require('regl-camera')(regl, {
   center: [0, 28, 0],
@@ -306,8 +393,43 @@ const camera = require('regl-camera')(regl, {
   damping: 0
 });
 
-const uv = y1.samplerCoords();
-const args = [y1, y2, 0.01];
+const invView = [];
+const drawBg = regl({
+  frag: glslify(`
+    precision mediump float;
+    #pragma glslify: camera = require('glsl-camera-ray')
+    uniform vec4 color;
+    varying vec3 dir;
+    #define PI 3.1415926535
+    void main() {
+      vec3 ndir = PI * dir / length(dir);
+      gl_FragColor = color * (0.6 + 0.4 * (0.5 +
+        0.2 * cos(2.0 * ndir.y) -
+        0.2 * cos(3.0 * ndir.z) +
+        0.2 * cos(2.0 * ndir.y) * sin(2.0 * ndir.x) * cos(ndir.z)
+      ));
+    }
+  `),
+  vert: `
+    precision mediump float;
+    attribute vec2 xy;
+    varying vec3 dir;
+    uniform mat4 invView;
+    uniform float aspect;
+    void main() {
+      dir = (invView * vec4(xy * vec2(aspect, 1.0), -1, 0)).xyz;
+      gl_Position = vec4(xy, 0, 1);
+    }
+  `,
+  attributes: {xy: [[-4, -4], [0, 4], [4, -4]]},
+  uniforms: {
+    color: regl.prop('color'),
+    invView: context => invert(invView, context.view),
+    aspect: context => context.viewportWidth / context.viewportHeight
+  },
+  depth: {enable: false},
+  count: 3
+});
 
 const drawPointsFromTexture = regl({
   frag: `
@@ -331,32 +453,74 @@ const drawPointsFromTexture = regl({
   attributes: {xy: regl.prop('sampleAt')},
   uniforms: {
     points: regl.prop('data'),
-    color: regl.prop('color')
+    color: regl.prop('color'),
   },
   blend: {
     enable: true,
-    func: {srcRGB: 'src alpha', srcAlpha: 1, dstRGB: 1, dstAlpha: 1},
-    equation: {rgb: 'add', alpha: 'add'}
+    func: {
+      srcRGB: 'src alpha',
+      srcAlpha: 1,
+      dstRGB: (context, props) => props.invert ? 'one minus src alpha' : 1,
+      dstAlpha: 1
+    },
+    equation: {
+      rgb: (context, props) => props.invert ? 'reverse subtract' : 'add',
+      alpha: 'add'
+    }
   },
   depth: {enable: false},
   primitive: 'points',
   count: regl.prop('count')
 });
 
-regl.frame(({tick}) => {
-  attractors[attractor](args);
+var tick = 0;
+var t = 0;
+var dt0 = 0.01;
+function render () {
+  regl.poll();
+  tick++;
 
-  regl.clear({color: [0, 0, 0, 1]});
+  var dt = dt0 / mbframes;
+  args[2] = dt;
+  attractors[selectedAttractor](args);
+  attractors[selectedAttractor](args);
 
-  camera((context) => {
-    let opac = Math.atan(1 / length(context.eye)) * context.viewportHeight * 0.02;
+  var rot = -dt * 0.5;
+  t += dt;
+
+  camera({
+    dtheta: rot,
+    //distance: Math.log(50 * (0.9 + 0.2 * Math.sin(t / 1000))),
+  }, (context) => {
+    bg[3] = 1;
+    drawBg({color: bg});
+    //regl.clear({color: bg});
+
+    fg[3] = Math.max(0, Math.min(1, Math.atan(1 / length(context.eye)) * context.viewportHeight * 0.02)) * (360000 / n);
     drawPointsFromTexture({
       count: n,
       data: args[0],
       sampleAt: uv,
-      color: [0.3, 0.7, 1, opac]
+      color: fg,
+      invert: isInverted
     });
   });
-});
+
+
+  raf = requestAnimationFrame(render);
+
+  if (doCapture) {
+    capturer.capture(canvas);
+
+    if (needsStop) {
+      capturer.stop();
+      capturer.save();
+      needsStop = false;
+      doCapture = false;
+    }
+  }
+}
+
+var raf = render();
 
 document.querySelector('canvas').addEventListener('wheel', function (e) {e.preventDefault();});

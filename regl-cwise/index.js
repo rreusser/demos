@@ -9,8 +9,8 @@ module.exports = function (regl) {
     map: function (args) {
       return compileMap(regl, parseMap(args));
     },
-    array: function (data, shape) {
-      return gpuArray(regl, data, shape);
+    array: function (data, shape, opts) {
+      return gpuArray(regl, data, shape, opts);
     }
   };
 };

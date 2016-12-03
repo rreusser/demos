@@ -5,10 +5,12 @@ module.exports = gpuArray;
 var isndarray = require('isndarray');
 var ndarray = require('ndarray');
 
-function gpuArray (regl, data, shape) {
+function gpuArray (regl, data, shape, opts) {
+  opts = opts || {};
+
   var dtype = 'float';
   if (!(this instanceof gpuArray)) {
-    return new gpuArray(regl, data, shape);
+    return new gpuArray(regl, data, shape, opts);
   }
 
   if (Array.isArray(data)) {
@@ -61,6 +63,10 @@ function gpuArray (regl, data, shape) {
     data: data,
     width: shape[0],
     height: shape[1],
+    wrapS: opts.xboundary || 'clamp',
+    wrapT: opts.yboundary || 'clamp',
+    mag: opts.magfilter || 'nearest',
+    min: opts.minfilter || 'nearest',
   });
 
   var fbo = regl.framebuffer({
@@ -71,18 +77,28 @@ function gpuArray (regl, data, shape) {
 
   var origDestroy = fbo.destroy.bind(fbo);
 
-  fbo.read = function () {
+  fbo.read = function (opts) {
     var a;
     fbo.use(function () {
-      a = regl.read();
+      a = regl.read(opts);
     });
     return ndarray(a, fullShape);
+  };
+
+  fbo.readraw = function (opts) {
+    var a;
+    fbo.use(function () {
+      a = regl.read(opts);
+    });
+    return a;
   };
 
   fbo.destroy = function () {
     origDestroy();
     tex.destroy();
   };
+
+  fbo.texture = tex;
 
   fbo.samplerCoords = function () {
     var xy = [];
