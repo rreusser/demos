@@ -6,6 +6,21 @@ html, body {
   text-align: center;
 }
 
+.equations {
+  font-size: 0.8em;
+  opacity: 0.7;
+  text-align: right;
+  display: inline-block;
+  position: absolute;
+  top: 10px;
+  right: 65px;
+}
+
+.equation {
+  margin-bottom: 0.5em;
+  text-align: left;
+}
+
 body.isInverted {
   background-color: white;
 }
@@ -14,6 +29,13 @@ canvas {
   margin-left: auto;
   margin-right: auto;
 }
+
+#equation {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 .selector {
   text-align: left;
   z-index: 10;

@@ -46,12 +46,31 @@ function run (regl) {
   css(fs.readFileSync(__dirname + '/node_modules/simple-color-picker/src/simple-color-picker.css', 'utf8'));
   const styleDiv = h('div#colorStyles');
   document.body.appendChild(styleDiv);
+  css(fs.readFileSync(__dirname + '/node_modules/katex/dist/katex.min.css', 'utf8'));
 
   var doCapture = false;
   var needsStop = false;
   var mbframes = 1;
   const CCapture = require('ccapture.js');
   var capturer;
+
+  const katex = require('katex');
+  const dxdt = h('div.equation', {class: 'fg-color equation'});
+  const dydt = h('div.equation', {class: 'fg-color equation'});
+  const dzdt = h('div.equation', {class: 'fg-color equation'});
+  const eqn = h('div.equations', [dxdt, dydt, dzdt]);
+  document.body.appendChild(eqn);
+
+  function makeEqn(letter, value) {
+    return `\\frac{d${letter}}{dt} = ${value}`;
+  }
+
+  function setEqns (name) {
+    var parts = eqns[name];
+    katex.render(makeEqn('x', parts[0]), dxdt);
+    katex.render(makeEqn('y', parts[1]), dydt);
+    katex.render(makeEqn('z', parts[2]), dzdt);
+  }
 
   const captureBtn = h('button#capture', 'Capture', {class: 'fg-color btn bg-color'});
   captureBtn.addEventListener('click', () => {
@@ -252,6 +271,164 @@ function run (regl) {
     `, {dt: 2, shift: 5, clip: 10000, scale: 2}),
   };
 
+  const eqns = {
+    lorenz: [
+      '10 (y - x)',
+      '(28 - z) x - y',
+      'x y - \\frac{8}{3} z'
+    ],
+    lorenzmod1: [
+      '-0.1 x + y^2 - z^2 + 0.14',
+      'x (y - 4 z) + 0.08',
+      'z + x (4 y + z)'
+    ],
+    lorenzmod2: [
+      '-0.9 x + y^2 - z^2 + 8.91',
+      'x (y - 5 z) + 1',
+      '-z + x (5 y + z)'
+    ],
+    rossler: [
+      '28 - z - y',
+      'x + 0.1 y',
+      '0.1 + (z - 28) (x - 14)'
+    ],
+    chua: [
+        '40 (y - x)',
+        '-12 x - x z + 28 y',
+        'x y - 3 z'
+    ],
+    arneodo: [
+      'y',
+      'z',
+      '5.5 x - 3.5 y - z - x^3'
+    ],
+    chenlee: [
+      '5 x - y z',
+      '-10 y + x z',
+      '-0.38 z + \\frac{1}{3} x y'
+    ],
+    coullet: [
+      'y',
+      'z',
+      '0.8 x - 1.1 y - 0.45 z - x^3'
+    ],
+    dadras: [
+      'y - 3 x + 2.7 y z',
+      '1.7 y - x z + z',
+      '2 x y - 9 z'
+    ],
+    thomas: [
+      '-0.19 x + \\sin(y)',
+      '-0.19 y + \\sin(z)',
+      '-0.19 z + \\sin(x)'
+    ],
+    tsucs1: [
+      '40 (y - x) + 0.5 x z',
+      '20 y - x z',
+      '0.833 z + x y - 0.65 x^2'
+    ],
+    tsucs2: [
+      '40 (y - x) + 0.16 x z',
+      '55 x - x z + 20 y',
+      '1.833 z + x y - 0.65 x^2'
+    ],
+    aizawa: [
+      '(z - 0.7) x - 3.5 y',
+      '3.5 x + (z - 0.7) y',
+      '0.6 + 0.95 z - \\frac{1}{3}z^3 - (x^2 + y^2) (1 + 0.25 z) + 0.1 z x^3'
+    ],
+    nosehoover: [
+      'y',
+      '-x + y z',
+      '1.5 - y^2'
+    ],
+    yuwang: [
+      '10 (y - x)',
+      '40 x - 2 x z',
+      'e^{x y} - 2.5 z'
+    ],
+    fourwing: [
+      '0.2 x + y z',
+      '-0.01 x - 0.4 y - x z',
+      '-z - x y'
+    ],
+    liuchen: [
+      '0.4 x - y z',
+      '-12 y + x z',
+      '-5 z + x y'
+    ],
+    genesiotesi: [
+      'y',
+      'z',
+      '-x - 1.1 y - 0.44 z + x^2'
+    ],
+    newtonleipnik: [
+      '0.4 x + y + 10 y z',
+      '-x - 0.4 y + 5 x z',
+      '0.175 z - 5 x y'
+    ],
+    luchen: [
+      '-4 x + z y',
+      '-10 y + z x',
+      '\\frac{20}{7} z - y x + 18.1'
+    ],
+    dequanli: [
+      '40 (y - x) + 0.16 x z',
+      '55 x + 20 y - x z',
+      '1.833 z + x y - 0.65 x^2'
+    ],
+    halvorsen: [
+      '-1.4 x - 4 (y + z) - y^2',
+      '-1.4 y - 4 (z + x) - z^2',
+      '-1.4 z - 4 (x + y) - x^2'
+    ],
+    rucklidge: [
+      '-2 x + 6.7 y - y z',
+      'x',
+      '-z + y^2'
+    ],
+    hadley: [
+      '4 z y + z x - x',
+      'z y - 4 z x - y + 1',
+      '-y^2 - x x - 0.2 z + 0.16'
+    ],
+    wangsun: [
+      '0.2 x + y z',
+      '-0.01 x + -0.4 y - x z',
+      '-z - x y'
+    ],
+    sakarya: [
+      '-x + y + y z',
+      '-x - y + 0.4 x z',
+      'z - 0.3 x y'
+    ],
+    burkeshaw: [
+      '-10 (x + y)',
+      '-y - 10 x z',
+      '10.0 x y + 4.272'
+    ],
+    bouali: [
+      'x (4 - y) + 0.3 z',
+      '-y (1 - x^2)',
+      '-x (1.5 - z) - 0.05 z'
+    ],
+    qichen: [
+      '38 (y - x) + y z',
+      '80 x + y - x z',
+      'x y - \\frac{8}{3}z'
+    ],
+    finance: [
+      'y - 1.1 x',
+      '4.999 y - x - y z',
+      '-0.2 z + y^2'
+    ],
+    rayleighbenard: [
+      '-9.0 x + 9.0 y',
+      '12.0 x - y - x z',
+      'x y - 0.5 z'
+    ],
+  };
+
   const attractorLabels = {
     aizawa: 'Aizawa',
     arneodo: 'Arneodo',
@@ -333,6 +510,8 @@ function run (regl) {
   // Get selected attractor from the hash
   var selectedAttractor = /^#/.test(window.location.hash || '') ? window.location.hash.substr(1) : 'lorenz';
 
+  setEqns(selectedAttractor);
+
   // Create buttons for each attractor
   const btns = Object.keys(attractorLabels).map(name =>
     h('button', {'data-attractor': name, class: name === selectedAttractor ? 'selected' : ''}, attractorLabels[name])
@@ -346,6 +525,7 @@ function run (regl) {
     btn.addEventListener('click', function () {
       btns.forEach(b => b === btn ?  b.classList.add('selected') : b.classList.remove('selected'));
       selectedAttractor = btn.getAttribute('data-attractor');
+      setEqns(selectedAttractor);
       window.location.hash = selectedAttractor;
       randomizeColors();
     })

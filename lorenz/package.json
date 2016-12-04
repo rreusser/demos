@@ -45,6 +45,7 @@
     "glsl-tokenizer": "^2.1.2",
     "glslify": "^6.0.1",
     "is-typedarray": "^1.0.0",
+    "katex": "^0.6.0",
     "ndarray": "^1.0.18",
     "ndarray-fft": "^1.0.3",
     "newton-raphson-method": "^1.0.0",
