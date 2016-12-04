@@ -49,6 +49,7 @@ require('regl/dist/regl.min.js')({
     pixelRatio: 1,
     canvas: canvas,
     onDone: function (err, regl) {
+        console.log('err:', err);
         if (err) {
             return require('fail-nicely')(err);
         }
@@ -747,7 +748,7 @@ function run(regl) {
         var dt = dt0 / mbframes;
         args[2] = dt;
         attractors[selectedAttractor](args);
-        var changes = doCapture ? {} : {};
+        var changes = {};
         if (rotation !== 0) {
             changes.dtheta = rotation * 0.03 / mbframes;
         }

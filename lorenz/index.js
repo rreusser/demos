@@ -22,6 +22,7 @@ require('regl/dist/regl.min.js')({
   pixelRatio: 1,
   canvas: canvas,
   onDone: (err, regl) => {
+    console.log('err:', err);
     if (err) {
       return require('fail-nicely')(err);
     }
@@ -707,8 +708,7 @@ function run (regl) {
     attractors[selectedAttractor](args);
 
     // Don't scale this with dt. otherwise it mess with camera rotation
-    let changes = doCapture ? {
-    } : {};
+    let changes = {}
 
     if (rotation !== 0) {
       changes.dtheta = rotation * 0.03 / mbframes;
