@@ -14,7 +14,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 
 - [⭐️⭐️⭐️ schrodinger](http://rickyreusser.com/demos/schrodinger/): A response to [this tweet](https://mobile.twitter.com/mathteacher1729/status/789489981966409728)
 - [⭐️⭐️⭐️⭐️⭐️ lorenz](http://rickyreusser.com/demos/lorenz/): A 500000 particle Lorenz Attractor, computed and displayed in WebGL
-- [⭐️⭐️ gravity](http://rickyreusser.com/demos/gravity/): [WIP] Gravity as a semi-lagrangian continuum via
+- [⭐️⭐️ gravity](http://rickyreusser.com/demos/gravity/): [WIP] Gravity as a semi-lagrangian continuum
 - [⭐️⭐️⭐️⭐️ waves](http://rickyreusser.com/demos/waves/): A 2D wave equation on the GPU
 - [⭐️⭐️⭐️ regl-scan](http://rickyreusser.com/demos/regl-scan/): The [scan (prefix-sum)](https://en.wikipedia.org/wiki/Prefix_sum) operation on the GPU
 - [⭐️⭐️⭐️ regl-cwise](http://rickyreusser.com/demos/regl-cwise/): A subset of [cwise](https://github.com/scijs/cwise) on the GPU
