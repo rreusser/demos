@@ -348,7 +348,7 @@ function run (regl) {
   );
 
   // A slider to change the number of particles
-  var numberRange = h('input', {type: 'range', min: 1, max: 100, value: 1});
+  var numberRange = h('input', {type: 'range', min: 1, max: 100, value: 60});
   var numberOutput = h('span');
   var numberField = h('div.field.fg-color', [numberRange, numberOutput]);
   numberRange.addEventListener('input', setNumber);
@@ -407,7 +407,7 @@ function run (regl) {
   });
 
   var dtOutput = h('span');
-  var dtRange = h('input', {type: 'range', min: 1, max: 100, value: 50});
+  var dtRange = h('input', {type: 'range', min: 1, max: 100, value: 25});
   var dtField = h('div.field.fg-color', [dtRange, dtOutput]);
   dtRange.addEventListener('input', setDt);
   dtRange.addEventListener('mousemove', e => e.stopPropagation());
@@ -416,7 +416,7 @@ function run (regl) {
     let min = parseInt(dtRange.getAttribute('min'));
     let max = parseInt(dtRange.getAttribute('max'));
     let interp = (parseInt(dtRange.value) - min) / (max - min);
-    dt0 = 0.0001 + 0.0199 * interp
+    dt0 = 0.0001 + 0.0399 * interp
     dtOutput.textContent = '∆t: ' + dt0.toFixed(4);
   }
 

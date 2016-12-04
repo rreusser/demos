@@ -374,7 +374,7 @@ function run(regl) {
         type: 'range',
         min: 1,
         max: 100,
-        value: 1
+        value: 60
     });
     var numberOutput = h('span');
     var numberField = h('div.field.fg-color', [
@@ -448,7 +448,7 @@ function run(regl) {
         type: 'range',
         min: 1,
         max: 100,
-        value: 50
+        value: 25
     });
     var dtField = h('div.field.fg-color', [
         dtRange,
@@ -462,7 +462,7 @@ function run(regl) {
         var min = parseInt(dtRange.getAttribute('min'));
         var max = parseInt(dtRange.getAttribute('max'));
         var interp = (parseInt(dtRange.value) - min) / (max - min);
-        dt0 = 0.0001 + 0.0199 * interp;
+        dt0 = 0.0001 + 0.0399 * interp;
         dtOutput.textContent = '\u2206t: ' + dt0.toFixed(4);
     }
     setDt();
