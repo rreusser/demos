@@ -3,8 +3,14 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: 'Arial', sans-serif;
+  text-align: center;
+}
+canvas {
+  margin-left: auto;
+  margin-right: auto;
 }
 .selector {
+  text-align: left;
   z-index: 10;
   position: absolute;
   bottom: 0;
@@ -22,7 +28,8 @@ html, body {
 .selector button.selected {
   opacity: 1.0;
 }
-#number-control {
+.fields {
+  text-align: left;
   font-size: 0.9em;
   font-style: italic;
   position: absolute;
@@ -32,48 +39,95 @@ html, body {
   padding: 10px;
 }
 
-#number-control input[type=range] {
+.field {
+  margin-bottom: 0.2em;
+  position: relative;
+}
+
+.field input[type=range] {
   -webkit-appearance: none;
   width: 200px;
-  background: rgba(0, 0, 0, 0.1);
   height: 20px;
   border: none;
   vertical-align: middle;
   cursor: ew-resize;
+  background: rgba(255, 255, 255, 0.1);
 }
 
-#number-control span {
+body.isInverted .field input[type=range] {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.field span {
   vertical-align: middle;
   margin-left: 10px;
+  position: absolute;
+  top: 4px;
+  right: 7px;
+  pointer-events: none;
+  opacity: 0.7;
 }
 
-#number-control input[type=range]::-webkit-slider-thumb {
+.field input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 20px;
   height: 20px;
-  background-color: rgba(0, 0, 0, 0.2);
   cursor: ew-resize;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
-#number-control input[type=range]:focus {
+body.isInverted .field input[type=range]::-webkit-slider-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.field input[type=range]:focus {
   outline: none;
 }
 
-#number-control input[type=range]::-ms-track {
+.field input[type=range]::-ms-track {
   width: 200px;
   cursor: pointer;
-  background: rgba(0, 0, 0, 0.1);
   border: none;
-  color: rgba(0, 0, 0, 0.2);
   height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.2);
 }
 
-#capture {
+body.isInverted .field input[type=range]::-ms-track {
+  background: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.2);
+}
+
+.btn {
+  outline: none;
+  font-size: 1em;
   cursor: pointer;
   font-style: italic;
-  position: absolute;
-  top: 40px;
-  left: 10px;
   background: none;
   border: none;
+  opacity: 0.7;
+  margin-left: 2px;
+  margin-right: 1em;
+  margin-top: 0.3em;
+  width: 70px;
+  text-align: center;
+}
+
+.bg-color {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body.isInverted .bg-color {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.fields input[type=text] {
+  border: none;
+  outline: none;
+  height: 1.4em;
+  line-height: 1.4em;
+  text-align: right;
+  width: 80px;
+  margin-left: 2px;
+  margin-top: 0.3em;
 }

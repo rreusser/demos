@@ -4,8 +4,8 @@
   "description": "Computing the lorenz attractor on the GPU",
   "main": "index.js",
   "scripts": {
-    "build": "browserify index.js -t es2040 -t brfs -t glslify | indexhtmlify | metadataify | github-cornerify > index.html",
-    "start": "budo --open --live --css index.css --host localhost index.js -- -t es2040 -t brfs -t glslify"
+    "build": "browserify index.js -t es2040 -t brfs -t glslify -g unassertify | indexhtmlify | metadataify | github-cornerify > index.html",
+    "start": "budo --open --live --host localhost index.js -- -t es2040 -t brfs -t glslify"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,8 @@
     "brfs": "^1.4.3",
     "browserify": "^13.1.1",
     "budo": "^9.2.1",
+    "bulkify": "^1.4.2",
+    "canvas-fit": "^1.5.0",
     "es2040": "^1.2.4",
     "h": "^0.1.0",
     "hsv2rgb": "^1.1.0",
@@ -26,7 +28,10 @@
     "metadataify": "^1.0.1",
     "rgb-hex": "^2.1.0",
     "rgb-to-hex": "0.0.0",
-    "uglify-js": "^2.7.3"
+    "simple-color-picker": "^0.1.1",
+    "uglify-js": "^2.7.3",
+    "uglifyify": "^3.0.4",
+    "unassertify": "^2.0.3"
   },
   "dependencies": {
     "control-panel": "^1.2.0",
@@ -35,6 +40,7 @@
     "github-cornerify": "^1.0.6",
     "gl-vec3": "^1.0.3",
     "glsl-camera-ray": "^1.0.0",
+    "glsl-noise": "0.0.0",
     "glsl-parser": "^2.0.0",
     "glsl-tokenizer": "^2.1.2",
     "glslify": "^6.0.1",
