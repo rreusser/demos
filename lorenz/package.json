@@ -59,7 +59,7 @@
   },
   "github-corner": {
     "url": "https://github.com/rreusser/demos/tree/master/lorenz",
-    "fg": "#f8f0e8",
+    "fg": "#dedede",
     "bg": "#444"
   }
 }

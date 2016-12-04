@@ -471,7 +471,7 @@ function run (regl) {
     let max = parseInt(exposureRange.getAttribute('max'));
     let interp = (parseInt(exposureRange.value) - min) / (max - min);
     exposure = interp;
-    exposureOutput.textContent = 'Exposure: ' + exposure.toFixed(2);
+    exposureOutput.textContent = 'Density: ' + exposure.toFixed(2);
     randomizeColors();
   }
 
@@ -494,6 +494,24 @@ function run (regl) {
   }
 
   setBackground();
+
+  var rotation = 0;
+  var rotationOutput = h('span');
+  var rotationRange = h('input', {type: 'range', min: 0, max: 100, value: 50});
+  var rotationField = h('div.field.fg-color', [rotationRange, rotationOutput]);
+  rotationRange.addEventListener('input', setRotation);
+  rotationRange.addEventListener('mousemove', e => e.stopPropagation());
+
+  function setRotation () {
+    let min = parseInt(rotationRange.getAttribute('min'));
+    let max = parseInt(rotationRange.getAttribute('max'));
+    let interp = (parseInt(rotationRange.value) - min) / (max - min);
+    rotation = interp * 2 - 1;
+    rotationOutput.textContent = 'Rotation: ' + rotation.toFixed(2);
+    randomizeColors();
+  }
+
+  setRotation();
 
   //const ColorPicker = require('simple-color-picker');
   /*var pickerField = h('div.field');
@@ -523,6 +541,7 @@ function run (regl) {
     satField,
     exposureField,
     bgField,
+    rotationField,
     invertField,
     //pickerField,
     captureField
@@ -689,8 +708,11 @@ function run (regl) {
 
     // Don't scale this with dt. otherwise it mess with camera rotation
     let changes = doCapture ? {
-      dtheta: -0.01 / mbframes
     } : {};
+
+    if (rotation !== 0) {
+      changes.dtheta = rotation * 0.03 / mbframes;
+    }
 
     camera(changes, (context) => {
       drawBg({color: bg, dest: screenbufferProxy});
