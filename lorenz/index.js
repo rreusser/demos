@@ -52,7 +52,7 @@ function run (regl) {
   const captureBtn = h('button#capture', 'Capture', {class: 'fg-color btn bg-color'});
   captureBtn.addEventListener('click', () => {
     doCapture = true;
-    mbframes = 1;
+    mbframes = 8;
     capturer = new CCapture({
       format: 'jpg',
       verbose: false,
