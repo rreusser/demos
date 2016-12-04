@@ -16,8 +16,8 @@ const boundaryOpts = {xboundary: 'repeat', yboundary: 'repeat', magfilter: 'line
 
 const ptexsize = 1024;
 const ctexsize = 512;
-const stexsize = 1024;
-const decay = 3.5;
+const stexsize = 512;
+const decay = 1.5;
 const multiplier = 1;
 const dt = 0.016;
 
