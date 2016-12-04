@@ -377,7 +377,7 @@ function run (regl) {
         var vec = [Math.random(), Math.random(), Math.random()].map(i => i * 2 - 1);
       } while(length(vec) > 1);
 
-      vec = vec.map(x => x * 0.01);
+      vec = vec.map(x => x * 0.3);
       vec[2] += 28;
       vec[3] = 1;
 
@@ -433,7 +433,8 @@ function run (regl) {
     let min = parseInt(hueRange.getAttribute('min'));
     let max = parseInt(hueRange.getAttribute('max'));
     let interp = (parseInt(hueRange.value) - min) / (max - min);
-    hb = hf = 360 * interp;
+    hf = 360 * interp;
+    hb = (hf + 180) % 180;
     hueOutput.textContent = 'Hue: ' + hf.toFixed(0);
     randomizeColors();
   }
