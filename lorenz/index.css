@@ -1,10 +1,15 @@
 html, body {
-  background-color: white;
+  background-color: black;
   margin: 0;
   padding: 0;
   font-family: 'Arial', sans-serif;
   text-align: center;
 }
+
+body.isInverted {
+  background-color: white;
+}
+
 canvas {
   margin-left: auto;
   margin-right: auto;

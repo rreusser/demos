@@ -1,5 +1,6 @@
 'use strict';
 
+document.body.classList.add('isInverted');
 var canvas = document.createElement('canvas');
 document.body.appendChild(canvas);
 
