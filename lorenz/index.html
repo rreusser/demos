@@ -49,9 +49,11 @@ require('regl/dist/regl.min.js')({
     pixelRatio: 1,
     canvas: canvas,
     onDone: function (err, regl) {
-        console.log('err:', err);
+        if (!regl.hasExtension('OES_texture_float')) {
+            return require('fail-nicely')('WebGL: "OES_texture_float" extension is not supported by the current WebGL context, try upgrading your system or a different browser');
+        }
         if (err) {
-            return require('fail-nicely')(err);
+            return require('fail-nicely')('WebGL: ', err);
         }
         run(regl);
     }

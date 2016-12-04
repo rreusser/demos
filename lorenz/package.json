@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "browserify index.js -t es2040 -t brfs -t glslify -g unassertify | indexhtmlify | metadataify | github-cornerify > index.html",
-    "start": "budo --open --live index.js -- -t es2040 -t brfs -t glslify"
+    "start": "budo --open --live --host localhost index.js -- -t es2040 -t brfs -t glslify"
   },
   "repository": {
     "type": "git",
