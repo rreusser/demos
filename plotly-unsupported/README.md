@@ -5,8 +5,8 @@
 
 These are provided strictly for sharability. **Do not** expect them to work with [the official plotly.js library](https://github.com/plotly/plotly.js).
 
-- [Carpet](http:/rickyreusser.com/demos/plotly/carpet.html)
-- [Scatter](http:/rickyreusser.com/demos/plotly/scatter.html)
+- [Carpet](http:/rickyreusser.com/demos/plotly-unsupported/carpet.html)
+- [Scatter](http:/rickyreusser.com/demos/plotly-unsupported/scatter.html)
 
 ## License
 
