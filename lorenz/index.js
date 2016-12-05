@@ -774,7 +774,7 @@ function run (regl) {
   const camera = require('regl-camera')(regl, {
     center: [0, 28, 0],
     distance: 100,
-    near: 5,
+    near: 0.1,
     far: 1000,
     damping: 0
   });
