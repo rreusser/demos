@@ -3,6 +3,8 @@
 
 ## Pages
 
+These are provided strictly for sharability. **Do not** expect them to work with [the official plotly.js library](https://github.com/plotly/plotly.js).
+
 - [Scatter](http:/rickyreusser.com/demos/plotly/scatter.html)
 
 ## License

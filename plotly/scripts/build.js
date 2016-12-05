@@ -81,6 +81,8 @@ function createReadme (results) {
 
 ## Pages
 
+These are provided strictly for sharability. **Do not** expect them to work with [the official plotly.js library](https://github.com/plotly/plotly.js).
+
 ${results.map(function(result) {
   return `- [${result.humanName}](${result.url})`;
 }).join('\n')}
