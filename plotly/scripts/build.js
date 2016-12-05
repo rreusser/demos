@@ -10,13 +10,10 @@ var hyperstream = require('hyperstream');
 var humanize = require('humanize-string');
 
 var repoUrl = 'https://github.com/rreusser/demos/tree/master/plotly';
-var webUrl = 'http://rickyreusser.com/demos/plotly/';
+var webUrlBase = 'http://rickyreusser.com/demos/plotly/';
+var srcUrlBase = 'https://github.com/rreusser/demos/blob/master/plotly/';
 
 var ghcornerify = require('github-cornerify')({url: repoUrl});
-
-var appendIndexLink = hyperstream({
-  body: {_prependHtml: '<a href="' + repoUrl + '">&larr; Back</a>'}
-});
 
 processFiles('src/*.js')
   .then(createReadme);
@@ -43,7 +40,16 @@ function processFiles (pattern) {
       var humanname = humanize(basename);
       var htmlname = filename.replace(/\.js$/, '.html').replace(/^src\//,'');
       var htmlstream = fs.createWriteStream(path.join(__dirname, '../', htmlname));
+      var srcUrl = path.join(srcUrlBase, filename);
+      var webUrl = path.join(webUrlBase, htmlname);
 
+      var appendIndexLink = hyperstream({
+        body: {_prependHtml:
+          `<div>
+            <a href="${repoUrl}#pages">&larr; Back</a> | <a href="${srcUrl}"><code>${basename}.js</code></a>
+          </div>`
+        }
+      });
 
       var b = browserify();
       b.add(path.join(__dirname, '../', filename));
@@ -59,7 +65,8 @@ function processFiles (pattern) {
       cb && cb({
         humanName: humanname,
         path: htmlname,
-        url: path.join(webUrl, htmlname)
+        url: webUrl,
+        srcUrl: srcUrl
       });
     }
   });
