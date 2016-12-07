@@ -66,6 +66,7 @@ function processFiles (pattern) {
 
       var b = browserify();
       b.add(path.join(__dirname, '../', filename));
+      b.transform(require('brfs'));
       b.bundle()
         .pipe(indexhtmlify())
         .pipe(appendIndexLink)
