@@ -34,5 +34,3 @@ regl.frame(() => {
     drawBunny();
   });
 });
-
-document.querySelector('canvas').addEventListener('wheel', e => e.stopPropagation());
