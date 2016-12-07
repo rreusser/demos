@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tinkerbell Map</title>
+<script src="plotly-1.20.5.min.js"></script>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+<meta charset=utf-8><style type="text/css">.github-corner{display:block;position:absolute;top:0;left:auto;right:0;z-index:10000}.github-corner svg{display:block}.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%{transform:rotate(0)}20%{transform:rotate(-25deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-25deg)}80%{transform:rotate(10deg)}100%{transform:rotate(0)}}@media(max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></head>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+}
+</style>
+<body><a href="https://github.com/rreusser/demos" class="github-corner" aria-label="View source on Github"><svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 250 250" fill="#fff">
+  <path d="M0 0l115 115h15l12 27 108 108V0z" fill="#333"/>
+  <path class="octo-arm" d="M128 109c-15-9-9-19-9-19 3-7 2-11 2-11-1-7 3-2 3-2 4 5 2 11 2 11-3 10 5 15 9 16" style="-webkit-transform-origin: 130px 106px; transform-origin: 130px 106px"/>
+  <path class="octo-body" d="M115 115s4 2 5 0l14-14c3-2 6-3 8-3-8-11-15-24 2-41 5-5 10-7 16-7 1-2 3-7 12-11 0 0 5 3 7 16 4 2 8 5 12 9s7 8 9 12c14 3 17 7 17 7-4 8-9 11-11 11 0 6-2 11-7 16-16 16-30 10-41 2 0 3-1 7-5 11l-12 11c-1 1 1 5 1 5z"/>
+</svg>
+</a>
+<div id="graph"></div>
+</body>
+<script>
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var frames = [];
+function makeStep(label) {
+  return {
+    method: 'animate',
+    args: [[label], {
+      transition: {
+        duration: 0
+      },
+      frame: {
+        duration: 0,
+        redraw: false
+      },
+      mode: 'immediate'
+    }],
+    label: label
+  };
+}
+var sliderSteps = [];
+var gd = document.getElementById('graph');
+
+var tinkerbell = [];
+var a = 0.9;
+var b = -0.6013;
+var c = 2.0;
+var d = 0.5;
+var x = [-0.72];
+var y = [-0.64];
+var nper = 2000;
+for (var j = 0; j < 200; j++) {
+  for (var i = 0; i < nper; i++) {
+    var xn = x[x.length - 1];
+    var yn = y[y.length - 1];
+    x.push(xn * xn - yn * yn + a * xn + b * yn);
+    y.push(2 * xn * yn + c * xn + d * yn);
+  }
+  var name = 'p' + (j + 1) * nper;
+  frames.push({
+    name: name,
+    data: [{
+      x: x.slice(0),
+      y: y.slice(0)
+    }]
+  });
+  sliderSteps.push(makeStep(name));
+}
+
+Plotly.plot(gd, [{
+  x: frames[0].data[0].x.slice(0),
+  y: frames[0].data[0].y.slice(0),
+  type: 'pointcloud',
+  mode: 'markers',
+  marker: { size: 1.5, color: 'black' }
+}], {
+  dragmode: 'pan',
+  hovermode: false,
+  title: 'Tinkerbell Map',
+  margin: { t: 50, l: 30, r: 20, b: 10 },
+  width: window.innerWidth,
+  height: window.innerHeight,
+  sliders: [{
+    x: 0.1,
+    len: 0.9,
+    transition: { duration: 0 },
+    steps: sliderSteps
+  }],
+  updatemenus: [{
+    x: 0.1,
+    xanchor: 'right',
+    y: 0,
+    yanchor: 'top',
+    pad: { r: 10, t: 45 },
+    type: 'buttons',
+    showactive: false,
+    buttons: [{
+      label: 'PLAY IT ALL',
+      method: 'animate',
+      args: [null, {
+        frame: {
+          duration: 0,
+          redraw: false
+        },
+        transition: {
+          duration: 0
+        },
+        mode: 'immediate',
+        fromcurrent: true
+      }]
+    }]
+  }]
+}, {
+  scrollZoom: true
+}).then(function () {
+  Plotly.addFrames(gd, frames);
+});
+},{}]},{},[1]);
+</script>
+</html>

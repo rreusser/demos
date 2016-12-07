@@ -10,6 +10,8 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 - [⭐️⭐️⭐️ sierpinski-shapes](http://codepen.io/rsreusser/pen/GjZwYb) Testing GPU limits using plotly.js point clouds
 - [⭐️⭐️⭐️ gaussian-mixture-em](http://rickyreusser.com/gaussian-mixture-estimator/) Fitting n-dimensional Gaussian mixture models to scatter data
 - [⭐️⭐️ k-means++](http://rickyreusser.com/kmpp/) K-means clustering based on the [kmpp module](https://github.com/cmtt/kmpp) of [cmtt](https://github.com/cmtt)
+- [tinkerbell-map](http://rickyreusser.com/demos/plots/tinkerbell.html) The tinkerbell map using plotly's point cloud feature
+- [tsucs2](http://rickyreusser.com/demos/plots/tsucs2.html) Precomputing a strange attractor (TSUCS2) and then animating it as a point cloud
 
 ## [regl](https://github.com/regl-project/regl)
 
