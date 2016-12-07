@@ -26,6 +26,7 @@ I took the time to create this in the first place. :)[0m`)
 
 var pattern = process.argv[2];
 pattern = /^src\//.test(pattern) ? pattern : path.join('src', pattern);
+pattern = /\.js/.test(pattern) ? pattern : pattern + '.js';
 
 processFiles(pattern);
 
