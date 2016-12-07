@@ -28,6 +28,10 @@ regl.frame(function () {
     drawBunny();
   });
 });
+
+document.querySelector('canvas').addEventListener('wheel', function (e) {
+  return e.stopPropagation();
+});
 },{"angle-normals":2,"bunny":3,"regl":12,"regl-camera":11}],2:[function(require,module,exports){
 'use strict'
 
