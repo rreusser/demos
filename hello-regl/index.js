@@ -1,7 +1,12 @@
 const regl = require('regl')();
 const bunny = require('bunny');
-const camera = require('regl-camera')(regl);
 const angleNormals = require('angle-normals');
+const camera = require('regl-camera')(regl, {
+  distance: 30,
+  phi: 0.7,
+  theta: 1.5,
+  center: [0, 5, 0]
+});
 
 const drawBunny = regl({
   vert: `
