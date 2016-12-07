@@ -5,7 +5,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 ## [plotly.js](https://github.com/plotly/plotly.js)
 
 - [plotly-unsupported](https://github.com/rreusser/demos/tree/master/plotly-unsupported) A grab bag of totally random tests while developing plotly.js.
-- [⭐️⭐️⭐️⭐️⭐️ schrodinger-1d](http://rickyreusser.com/demos/schrodinger-1d/) The Schrödinger Equation with a potential barrier in 1D
+- [⭐️⭐️⭐️⭐️⭐️ schrodinger-1d](http://rickyreusser.com/demos/schrodinger-1d/) The Schrödinger Equation with a potential barrier in 1D, using the FFT for spatial differencing, RK-4 for temporal integration, and Perfectly Matched Layers (PML) for non-reflecting boundary conditions.
 - [traveling waves](http://rickyreusser.com/demos/traveling-waves/) (broken at the moment) Visualizing the wavenumber representation of travling waves
 - [⭐️⭐️⭐️ sierpinski-shapes](http://codepen.io/rsreusser/pen/GjZwYb) Testing GPU limits using plotly.js point clouds
 - [⭐️⭐️⭐️ gaussian-mixture-em](http://rickyreusser.com/gaussian-mixture-estimator/) Fitting n-dimensional Gaussian mixture models to scatter data
