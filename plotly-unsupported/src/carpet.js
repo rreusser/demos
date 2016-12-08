@@ -71,7 +71,9 @@ Plotly.plot(gd, [{
     minorgridoffset: 1,
     minorgridstep: 2,
     minorgridwidth: 1,
-    minorgridcolor: '#ccc'
+    minorgridcolor: '#ccc',
+    showstartlabel: true,
+    showendlabel: false,
   }
 }], {
   xaxis: {
