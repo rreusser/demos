@@ -5,7 +5,7 @@ var unpack = require('ndarray-unpack');
 var fill = require('ndarray-fill');
 var linspace = require('ndarray-linspace');
 var h = require('h');
-var Plotly = require('plotly.js');
+var Plotly = window.Plotly = require('plotly.js');
 
 var gd = window.gd = h('div.plot');
 document.body.appendChild(gd);
@@ -33,7 +33,7 @@ Plotly.plot(gd, [{
   a: unpack(a),
   b: unpack(b),
   y: unpack(y),
-  cheaterslope: 0.5,
+  cheaterslope: 0.1,
   type: 'carpet',
   aaxis: {
     showlabels: 'both',
@@ -83,7 +83,19 @@ Plotly.plot(gd, [{
     showticklabels: false,
   },
   margin: {t: 20, r: 20, b: 20, l: 40},
-  dragmode: 'pan'
+  dragmode: 'pan',
+  sliders: [{
+    active: 10,
+    currentvalue: {
+      prefix: 'cheaterslope: ',
+    },
+    steps: unpack(linspace(ndarray([], [21]), -2, 2)).map(x => ({
+      value: x.toFixed(2),
+      label: x.toFixed(2),
+      method: 'animate',
+      args: [[{data: [{cheaterslope: [x.toFixed(2)]}]}], {frame: {duration: 0, redraw: false}, mode: 'immediate'}]
+    }))
+  }]
 }, {scrollZoom: true});
 
 
