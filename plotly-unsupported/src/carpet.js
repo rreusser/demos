@@ -33,7 +33,7 @@ Plotly.plot(gd, [{
   a: unpack(a),
   b: unpack(b),
   y: unpack(y),
-  cheaterslope: 0.1,
+  cheaterslope: 1.0,
   type: 'carpet',
   aaxis: {
     showlabels: 'both',
