@@ -59,7 +59,7 @@ function processFiles (pattern) {
 
       var appendIndexLink = hyperstream({
         body: {_prependHtml:
-          `<div>
+          `<div class="links">
             <a href="${repoUrl}#pages">&larr; Back</a> | <a href="${srcUrl}"><code>${basename}.js</code></a>
           </div>`
         }
