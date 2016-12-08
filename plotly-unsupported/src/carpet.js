@@ -29,6 +29,7 @@ const b = linspace(ndarray([], [nb]), brange[0], brange[1]);
 const y = fill(ndarray([], [na, nb]), (i, j) => ellipsoidSA(a.get(i), b.get(j)));
 
 Plotly.plot(gd, [{
+  carpetid: 'mycarpetplot',
   a: unpack(a),
   b: unpack(b),
   y: unpack(y),
@@ -36,16 +37,41 @@ Plotly.plot(gd, [{
   type: 'carpet',
   aaxis: {
     showlabels: 'both',
-    showlabelprefix: 'all',
+    showlabelprefix: 'first',
+    labelpadding: 10,
+    labelsuffix: '',
+    labelfont: {
+      color: '#c53',
+      size: 12,
+      family: 'sans-serif'
+    },
+    gridoffset: 0,
     gridstep: 10,
-    labelfont: {color: '#c53'}
+    gridwidth: 1,
+    gridcolor: '#444',
+    minorgridoffset: 0,
+    minorgridstep: 1,
+    minorgridwidth: 1,
+    minorgridcolor: '#ccc'
   },
   baxis: {
     showlabels: 'end',
-    showlabelprefix: 'first',
+    showlabelprefix: 'all',
+    labelpadding: 10,
     labelsuffix: 'm',
+    labelfont: {
+      color: '#35c',
+      size: 12,
+      family: 'sans-serif'
+    },
+    gridoffset: 5,
     gridstep: 10,
-    labelfont: {color: '#35c'}
+    gridwidth: 1,
+    gridcolor: '#444',
+    minorgridoffset: 1,
+    minorgridstep: 2,
+    minorgridwidth: 1,
+    minorgridcolor: '#ccc'
   }
 }], {
   xaxis: {
