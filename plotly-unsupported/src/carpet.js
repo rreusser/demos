@@ -85,7 +85,7 @@ Plotly.plot(gd, [{
   margin: {t: 20, r: 20, b: 20, l: 40},
   dragmode: 'pan',
   sliders: [{
-    active: 10,
+    active: 15,
     currentvalue: {
       prefix: 'cheaterslope: ',
     },
