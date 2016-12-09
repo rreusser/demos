@@ -1,33 +1,82 @@
-var regl = require('regl')();
 var length = require('gl-vec2/length');
 var sub = require('gl-vec2/subtract');
+var d3 = require('d3');
 
 require('insert-css')(`
 canvas {
   cursor: move;
 }
 `);
-
+//
 // generalized Catmull-Rom splines, per
 // http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
 var CatmullRomExp = 0.5;
-function makeContinuousTangent(p0, p1, p2, smoothness) {
-    var d1x = p0[0] - p1[0],
-        d1y = p0[1] - p1[1],
-        d2x = p2[0] - p1[0],
-        d2y = p2[1] - p1[1],
+var smoothopen = function(pts, smoothness) {
+    if(pts.length < 3) { return 'M' + pts.join('L');}
+    var path = 'M' + pts[0],
+        tangents = [], i;
+    for(i = 1; i < pts.length - 1; i++) {
+        tangents.push(makeTangent(pts[i - 1], pts[i], pts[i + 1], smoothness));
+    }
+    path += 'Q' + tangents[0][0] + ' ' + pts[1];
+    for(i = 2; i < pts.length - 1; i++) {
+        path += 'C' + tangents[i - 2][1] + ' ' + tangents[i - 1][0] + ' ' + pts[i];
+    }
+    path += 'Q' + tangents[pts.length - 3][1] + ' ' + pts[pts.length - 1];
+    return path;
+};
+
+function makeTangent(prevpt, thispt, nextpt, smoothness) {
+    var d1x = prevpt[0] - thispt[0],
+        d1y = prevpt[1] - thispt[1],
+        d2x = nextpt[0] - thispt[0],
+        d2y = nextpt[1] - thispt[1],
         d1a = Math.pow(d1x * d1x + d1y * d1y, CatmullRomExp / 2),
         d2a = Math.pow(d2x * d2x + d2y * d2y, CatmullRomExp / 2),
         numx = (d2a * d2a * d1x - d1a * d1a * d2x) * smoothness,
         numy = (d2a * d2a * d1y - d1a * d1a * d2y) * smoothness,
         denom1 = 3 * d2a * (d1a + d2a),
         denom2 = 3 * d1a * (d1a + d2a);
-      var dxL = p1[0] + (denom1 && numx / denom1);
-      var dyL = p1[1] + (denom1 && numy / denom1);
-      var dxU = p1[0] - (denom2 && numx / denom2);
-      var dyU = p1[1] - (denom2 && numy / denom2);
+    return [
+        [
+            thispt[0] + (denom1 && numx / denom1),
+            thispt[1] + (denom1 && numy / denom1)
+        ], [
+            thispt[0] - (denom2 && numx / denom2),
+            thispt[1] - (denom2 && numy / denom2)
+        ]
+    ];
+}
 
-    return [[dxL, dyL], [dxU, dyU]];
+var svg = d3.select('body').append('svg')
+  .attr('width', window.innerWidth)
+  .attr('height', window.innerHeight)
+  .style('stroke', 'blue')
+  .style('opacity', 0.2)
+  .style('fill', 'none')
+
+var path = svg.append('path');
+
+// generalized Catmull-Rom splines, per
+// http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
+var CatmullRomExp = 0.5;
+function makeContinuousTangent(p0, p1, p2, smoothness) {
+  var d1x = p0[0] - p1[0],
+      d1y = p0[1] - p1[1],
+      d2x = p2[0] - p1[0],
+      d2y = p2[1] - p1[1],
+      d1a = Math.pow(d1x * d1x + d1y * d1y, CatmullRomExp / 2),
+      d2a = Math.pow(d2x * d2x + d2y * d2y, CatmullRomExp / 2),
+      numx = (d2a * d2a * d1x - d1a * d1a * d2x) * smoothness,
+      numy = (d2a * d2a * d1y - d1a * d1a * d2y) * smoothness,
+      denom1 = 3 * d2a * (d1a + d2a),
+      denom2 = 3 * d1a * (d1a + d2a);
+    var dxL = p1[0] + (denom1 && numx / denom1);
+    var dyL = p1[1] + (denom1 && numy / denom1);
+    var dxU = p1[0] - (denom2 && numx / denom2);
+    var dyU = p1[1] - (denom2 && numy / denom2);
+
+  return [[dxL, dyL], [dxU, dyU]];
 }
 
 window.createSplineEvaluator = function splineEvaluator (pts, smoothness) {
@@ -122,12 +171,15 @@ var controlPoints = [
   [-0.6, Math.random() * 2 - 1],
   [-0.5, Math.random() * 2 - 1],
   [0, Math.random() * 2 - 1],
+  [0.3, Math.random() * 2 - 1],
   [0.7, Math.random() * 2 - 1]
 ];
+
+var cpScreen = [];
+
+var regl = require('regl')();
 var nctrl = controlPoints.length;
 var controlPointBuf;
-var evaluator = createSplineEvaluator(controlPoints, 1);
-
 var neval = 100;
 var evalPoints = [];
 var evalPointBuf;
@@ -135,13 +187,25 @@ var evalPointBuf;
 var dirty = true;
 function update () {
   dirty = true;
-  controlPointBuf = (controlPointBuf ? controlPointBuf : regl.buffer)(controlPoints);
-  evaluator = createSplineEvaluator(controlPoints, 1);
+
+  for (i = 0; i < controlPoints.length; i++) {
+    cpScreen[i] = [
+      (controlPoints[i][0] + 1) * 0.5 * window.innerWidth,
+      (-controlPoints[i][1] + 1) * 0.5 * window.innerHeight
+    ];
+  }
+
+  controlPointBuf = (controlPointBuf ? controlPointBuf : regl.buffer)(cpScreen);
+
+  evaluator = createSplineEvaluator(cpScreen, 1);
 
   for (var i = 0; i < neval; i++) {
-    evalPoints[i] = evaluator(i / (neval - 1) * controlPoints.length);
+    evalPoints[i] = evaluator(i / neval * cpScreen.length);
   }
+
   evalPointBuf = (evalPointBuf ? evalPointBuf : regl.buffer)(evalPoints);
+
+  path.attr('d', smoothopen(cpScreen, 1.0));
 }
 
 update();
@@ -158,9 +222,10 @@ var drawPoints = regl({
   vert: `
     precision mediump float;
     attribute vec2 xy;
+    uniform float w, h;
     uniform float rad;
     void main () {
-      gl_Position = vec4(xy, 0, 1);
+      gl_Position = vec4((xy * vec2(1.0 / w, 1.0 / h) * 4.0 - 1.0) * vec2(1.0, -1.0), 0, 1);
       gl_PointSize = rad;
     }
   `,
@@ -172,6 +237,8 @@ var drawPoints = regl({
   },
   count: regl.prop('n'),
   uniforms: {
+    w: regl.context('viewportWidth'),
+    h: regl.context('viewportHeight'),
     rad: regl.prop('rad'),
     color: regl.prop('color')
   },
