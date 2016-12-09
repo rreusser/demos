@@ -1,10 +1,61 @@
 var length = require('gl-vec2/length');
 var sub = require('gl-vec2/subtract');
 var d3 = require('d3');
+var h = require('h');
+
+
+var ptcnt = h('input.pts', {type: 'number', value: 10});
+document.body.appendChild(h('div.explanation', [
+  h('h3', 'Catmull-Rom Splines'),
+  h('p', `
+The blue spline is an SVG path using plotly.js Catmull-Rom implementation. The black points
+are the corresponding directly evaluated points. The math is all very simple, but it's a pain
+to work through the details. Most important lesson learned: the tangents (obviously, in hindsight)
+must either be computed in screen-space or scaled by the correct aspect ratio, otherwise they'll
+be slightly incorrect.
+`),
+  ptcnt
+]));
+
+ptcnt.addEventListener('click', e => e.stopPropagation());
+ptcnt.addEventListener('mousedown', e => e.stopPropagation());
+ptcnt.addEventListener('mousemove', e => e.stopPropagation());
+ptcnt.addEventListener('mouseup', e => e.stopPropagation());
+ptcnt.addEventListener('input', reinitialize);
 
 require('insert-css')(`
+html, body {
+  font-family: 'Helvetica', 'Arial', sans-serif;
+}
+h3 {
+  margin-top: 0;
+}
+
+.pts {
+  pointer-events: all;
+}
+
+svg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+
 canvas {
   cursor: move;
+  vertical-align: top;
+}
+
+.explanation {
+  max-width: 600px;
+  padding: 10px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
 }
 `);
 //
@@ -82,6 +133,7 @@ function makeContinuousTangent(p0, p1, p2, smoothness) {
 window.createSplineEvaluator = function splineEvaluator (pts, smoothness) {
   if (pts.length < 3) {
     return function (t) {
+      console.log('t:', t);
       var x = (1 - t) * pts[0][0] + t * pts[1][0];
       var y = (1 - t) * pts[0][1] + t * pts[1][1];
       return [x, y];
@@ -166,14 +218,22 @@ require('mouse-change')(function (buttons, i, j) {
   pbuttons = buttons;
 });
 
-var controlPoints = [
-  [-0.7, Math.random() * 2 - 1],
-  [-0.6, Math.random() * 2 - 1],
-  [-0.5, Math.random() * 2 - 1],
-  [0, Math.random() * 2 - 1],
-  [0.3, Math.random() * 2 - 1],
-  [0.7, Math.random() * 2 - 1]
-];
+function r (t) {
+  return Math.sin(2 * t * Math.PI) * 0.5;
+}
+
+var controlPoints = [];
+function reinitialize () {
+  controlPoints = [];
+  var cnt = parseInt(ptcnt.value);
+  for (var j = 0; j < cnt; j++) {
+    var t = j / (cnt - 1) * 2 - 1;
+    controlPoints.push([t * 0.5, r(t)]);
+  }
+  nctrl = controlPoints.length;
+
+  update();
+}
 
 var cpScreen = [];
 
@@ -188,6 +248,7 @@ var dirty = true;
 function update () {
   dirty = true;
 
+  cpScreen = [];
   for (i = 0; i < controlPoints.length; i++) {
     cpScreen[i] = [
       (controlPoints[i][0] + 1) * 0.5 * window.innerWidth,
@@ -200,7 +261,7 @@ function update () {
   evaluator = createSplineEvaluator(cpScreen, 1);
 
   for (var i = 0; i < neval; i++) {
-    evalPoints[i] = evaluator(i / neval * cpScreen.length);
+    evalPoints[i] = evaluator(i / neval * (cpScreen.length - 1));
   }
 
   evalPointBuf = (evalPointBuf ? evalPointBuf : regl.buffer)(evalPoints);
@@ -208,7 +269,7 @@ function update () {
   path.attr('d', smoothopen(cpScreen, 1.0));
 }
 
-update();
+reinitialize();
 
 var drawPoints = regl({
   frag: `

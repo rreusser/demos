@@ -22,8 +22,26 @@
 var length = require('gl-vec2/length');
 var sub = require('gl-vec2/subtract');
 var d3 = require('d3');
+var h = require('h');
 
-require('insert-css')('\ncanvas {\n  cursor: move;\n}\n');
+var ptcnt = h('input.pts', { type: 'number', value: 10 });
+document.body.appendChild(h('div.explanation', [h('h3', 'Catmull-Rom Splines'), h('p', '\nThe blue spline is an SVG path using plotly.js Catmull-Rom implementation. The black points\nare the corresponding directly evaluated points. The math is all very simple, but it\'s a pain\nto work through the details. Most important lesson learned: the tangents (obviously, in hindsight)\nmust either be computed in screen-space or scaled by the correct aspect ratio, otherwise they\'ll\nbe slightly incorrect.\n'), ptcnt]));
+
+ptcnt.addEventListener('click', function (e) {
+  return e.stopPropagation();
+});
+ptcnt.addEventListener('mousedown', function (e) {
+  return e.stopPropagation();
+});
+ptcnt.addEventListener('mousemove', function (e) {
+  return e.stopPropagation();
+});
+ptcnt.addEventListener('mouseup', function (e) {
+  return e.stopPropagation();
+});
+ptcnt.addEventListener('input', reinitialize);
+
+require('insert-css')('\nhtml, body {\n  font-family: \'Helvetica\', \'Arial\', sans-serif;\n}\nh3 {\n  margin-top: 0;\n}\n\n.pts {\n  pointer-events: all;\n}\n\nsvg {\n  position: absolute;\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n}\n\ncanvas {\n  cursor: move;\n  vertical-align: top;\n}\n\n.explanation {\n  max-width: 600px;\n  padding: 10px;\n  pointer-events: none;\n  position: absolute;\n  z-index: 100;\n  top: 0;\n  left: 0;\n}\n');
 //
 // generalized Catmull-Rom splines, per
 // http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
@@ -89,6 +107,7 @@ function makeContinuousTangent(p0, p1, p2, smoothness) {
 window.createSplineEvaluator = function splineEvaluator(pts, smoothness) {
   if (pts.length < 3) {
     return function (t) {
+      console.log('t:', t);
       var x = (1 - t) * pts[0][0] + t * pts[1][0];
       var y = (1 - t) * pts[0][1] + t * pts[1][1];
       return [x, y];
@@ -164,7 +183,22 @@ require('mouse-change')(function (buttons, i, j) {
   pbuttons = buttons;
 });
 
-var controlPoints = [[-0.7, Math.random() * 2 - 1], [-0.6, Math.random() * 2 - 1], [-0.5, Math.random() * 2 - 1], [0, Math.random() * 2 - 1], [0.3, Math.random() * 2 - 1], [0.7, Math.random() * 2 - 1]];
+function r(t) {
+  return Math.sin(2 * t * Math.PI) * 0.5;
+}
+
+var controlPoints = [];
+function reinitialize() {
+  controlPoints = [];
+  var cnt = parseInt(ptcnt.value);
+  for (var j = 0; j < cnt; j++) {
+    var t = j / (cnt - 1) * 2 - 1;
+    controlPoints.push([t * 0.5, r(t)]);
+  }
+  nctrl = controlPoints.length;
+
+  update();
+}
 
 var cpScreen = [];
 
@@ -179,6 +213,7 @@ var dirty = true;
 function update() {
   dirty = true;
 
+  cpScreen = [];
   for (i = 0; i < controlPoints.length; i++) {
     cpScreen[i] = [(controlPoints[i][0] + 1) * 0.5 * window.innerWidth, (-controlPoints[i][1] + 1) * 0.5 * window.innerHeight];
   }
@@ -188,7 +223,7 @@ function update() {
   evaluator = createSplineEvaluator(cpScreen, 1);
 
   for (var i = 0; i < neval; i++) {
-    evalPoints[i] = evaluator(i / neval * cpScreen.length);
+    evalPoints[i] = evaluator(i / neval * (cpScreen.length - 1));
   }
 
   evalPointBuf = (evalPointBuf ? evalPointBuf : regl.buffer)(evalPoints);
@@ -196,7 +231,7 @@ function update() {
   path.attr('d', smoothopen(cpScreen, 1.0));
 }
 
-update();
+reinitialize();
 
 var drawPoints = regl({
   frag: '\n    precision mediump float;\n    uniform vec3 color;\n    void main () {\n      if(length(gl_PointCoord.xy - 0.5) > 0.5) discard;\n      gl_FragColor = vec4(color, 1);\n    }\n  ',
@@ -226,7 +261,7 @@ regl.frame(function (_ref) {
   drawPoints({ xy: evalPointBuf, n: neval, rad: 5, color: [0, 0, 0] });
   drawPoints({ xy: controlPointBuf, n: nctrl, rad: 10, color: [1, 0, 0] });
 });
-},{"d3":2,"gl-vec2/length":3,"gl-vec2/subtract":4,"insert-css":5,"mouse-change":6,"regl":8}],2:[function(require,module,exports){
+},{"d3":2,"gl-vec2/length":3,"gl-vec2/subtract":4,"h":5,"insert-css":6,"mouse-change":7,"regl":9}],2:[function(require,module,exports){
 // https://d3js.org Version 4.4.0. Copyright 2016 Mike Bostock.
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -16652,6 +16687,71 @@ function subtract(out, a, b) {
     return out
 }
 },{}],5:[function(require,module,exports){
+;(function () {
+
+function h() {
+  var args = [].slice.call(arguments), e = null
+  function item (l) {
+    
+    function parseClass (string) {
+      var m = string.split(/([\.#]?[a-zA-Z0-9_-]+)/)
+      m.forEach(function (v) {
+        var s = v.substring(1,v.length)
+        if(!v) return 
+        if(!e)
+          e = document.createElement(v)
+        else if (v[0] === '.')
+          e.classList.add(s)
+        else if (v[0] === '#')
+          e.setAttribute('id', s)
+        
+      })
+    }
+
+    if(l == null)
+      ;
+    else if('string' === typeof l) {
+      if(!e)
+        parseClass(l)
+      else
+        e.appendChild(document.createTextNode(l))
+    }
+    else if('number' === typeof l 
+      || 'boolean' === typeof l
+      || l instanceof Date 
+      || l instanceof RegExp ) {
+        e.appendChild(document.createTextNode(l.toString()))
+    }
+    else if (Array.isArray(l))
+      l.forEach(item)
+    else if(l instanceof HTMLElement)
+      e.appendChild(l)
+    else if ('object' === typeof l) {
+      for (var k in l) {
+        if('function' === typeof l[k])
+          e.addEventListener(k, l[k])
+        else if(k === 'style') {
+          for (var s in l[k])
+            e.style.setProperty(s, l[k][s])
+        }
+        else
+          e.setAttribute(k, l[k])
+      }
+    }
+  }
+  while(args.length) {
+    item(args.shift())
+  }
+  return e
+}
+
+if(typeof module === 'object')
+  module.exports = h
+else
+  this.h = h
+})()
+
+},{}],6:[function(require,module,exports){
 var containers = []; // will store container HTMLElement references
 var styleElements = []; // will store {prepend: HTMLElement, append: HTMLElement}
 
@@ -16711,7 +16811,7 @@ function createStyleElement() {
 module.exports = insertCss;
 module.exports.insertCss = insertCss;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -16918,7 +17018,7 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":7}],7:[function(require,module,exports){
+},{"mouse-event":8}],8:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -16980,7 +17080,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
