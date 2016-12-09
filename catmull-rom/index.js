@@ -2,6 +2,12 @@ var regl = require('regl')();
 var length = require('gl-vec2/length');
 var sub = require('gl-vec2/subtract');
 
+require('insert-css')(`
+canvas {
+  cursor: move;
+}
+`);
+
 // generalized Catmull-Rom splines, per
 // http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
 var CatmullRomExp = 0.5;
@@ -111,7 +117,13 @@ require('mouse-change')(function (buttons, i, j) {
   pbuttons = buttons;
 });
 
-var controlPoints = [[-0.7, 0], [-0.6, 0], [-0.5, 0], [0, 0.1], [0.7, 0]];
+var controlPoints = [
+  [-0.7, Math.random() * 2 - 1],
+  [-0.6, Math.random() * 2 - 1],
+  [-0.5, Math.random() * 2 - 1],
+  [0, Math.random() * 2 - 1],
+  [0.7, Math.random() * 2 - 1]
+];
 var nctrl = controlPoints.length;
 var controlPointBuf;
 var evaluator = createSplineEvaluator(controlPoints, 1);
@@ -120,7 +132,9 @@ var neval = 100;
 var evalPoints = [];
 var evalPointBuf;
 
+var dirty = true;
 function update () {
+  dirty = true;
   controlPointBuf = (controlPointBuf ? controlPointBuf : regl.buffer)(controlPoints);
   evaluator = createSplineEvaluator(controlPoints, 1);
 
@@ -166,6 +180,8 @@ var drawPoints = regl({
 });
 
 regl.frame(({tick}) => {
+  if (!dirty) return;
+  dirty = false;
   drawPoints({xy: evalPointBuf, n: neval, rad: 5, color: [0, 0, 0]});
   drawPoints({xy: controlPointBuf, n: nctrl, rad: 10, color: [1, 0, 0]});
 });

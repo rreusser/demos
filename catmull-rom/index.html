@@ -23,6 +23,8 @@ var regl = require('regl')();
 var length = require('gl-vec2/length');
 var sub = require('gl-vec2/subtract');
 
+require('insert-css')('\ncanvas {\n  cursor: move;\n}\n');
+
 // generalized Catmull-Rom splines, per
 // http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
 var CatmullRomExp = 0.5;
@@ -123,7 +125,7 @@ require('mouse-change')(function (buttons, i, j) {
   pbuttons = buttons;
 });
 
-var controlPoints = [[-0.7, 0], [-0.6, 0], [-0.5, 0], [0, 0.1], [0.7, 0]];
+var controlPoints = [[-0.7, Math.random() * 2 - 1], [-0.6, Math.random() * 2 - 1], [-0.5, Math.random() * 2 - 1], [0, Math.random() * 2 - 1], [0.7, Math.random() * 2 - 1]];
 var nctrl = controlPoints.length;
 var controlPointBuf;
 var evaluator = createSplineEvaluator(controlPoints, 1);
@@ -132,7 +134,9 @@ var neval = 100;
 var evalPoints = [];
 var evalPointBuf;
 
+var dirty = true;
 function update() {
+  dirty = true;
   controlPointBuf = (controlPointBuf ? controlPointBuf : regl.buffer)(controlPoints);
   evaluator = createSplineEvaluator(controlPoints, 1);
 
@@ -165,10 +169,12 @@ var drawPoints = regl({
 regl.frame(function (_ref) {
   var tick = _ref.tick;
 
+  if (!dirty) return;
+  dirty = false;
   drawPoints({ xy: evalPointBuf, n: neval, rad: 5, color: [0, 0, 0] });
   drawPoints({ xy: controlPointBuf, n: nctrl, rad: 10, color: [1, 0, 0] });
 });
-},{"gl-vec2/length":2,"gl-vec2/subtract":3,"mouse-change":4,"regl":6}],2:[function(require,module,exports){
+},{"gl-vec2/length":2,"gl-vec2/subtract":3,"insert-css":4,"mouse-change":5,"regl":7}],2:[function(require,module,exports){
 module.exports = length
 
 /**
@@ -199,6 +205,66 @@ function subtract(out, a, b) {
     return out
 }
 },{}],4:[function(require,module,exports){
+var containers = []; // will store container HTMLElement references
+var styleElements = []; // will store {prepend: HTMLElement, append: HTMLElement}
+
+var usage = 'insert-css: You need to provide a CSS string. Usage: insertCss(cssString[, options]).';
+
+function insertCss(css, options) {
+    options = options || {};
+
+    if (css === undefined) {
+        throw new Error(usage);
+    }
+
+    var position = options.prepend === true ? 'prepend' : 'append';
+    var container = options.container !== undefined ? options.container : document.querySelector('head');
+    var containerId = containers.indexOf(container);
+
+    // first time we see this container, create the necessary entries
+    if (containerId === -1) {
+        containerId = containers.push(container) - 1;
+        styleElements[containerId] = {};
+    }
+
+    // try to get the correponding container + position styleElement, create it otherwise
+    var styleElement;
+
+    if (styleElements[containerId] !== undefined && styleElements[containerId][position] !== undefined) {
+        styleElement = styleElements[containerId][position];
+    } else {
+        styleElement = styleElements[containerId][position] = createStyleElement();
+
+        if (position === 'prepend') {
+            container.insertBefore(styleElement, container.childNodes[0]);
+        } else {
+            container.appendChild(styleElement);
+        }
+    }
+
+    // strip potential UTF-8 BOM if css was read from a file
+    if (css.charCodeAt(0) === 0xFEFF) { css = css.substr(1, css.length); }
+
+    // actually add the stylesheet
+    if (styleElement.styleSheet) {
+        styleElement.styleSheet.cssText += css
+    } else {
+        styleElement.textContent += css;
+    }
+
+    return styleElement;
+};
+
+function createStyleElement() {
+    var styleElement = document.createElement('style');
+    styleElement.setAttribute('type', 'text/css');
+    return styleElement;
+}
+
+module.exports = insertCss;
+module.exports.insertCss = insertCss;
+
+},{}],5:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -405,7 +471,7 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":5}],5:[function(require,module,exports){
+},{"mouse-event":6}],6:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -467,7 +533,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
