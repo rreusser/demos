@@ -37,7 +37,7 @@ h3 {
   pointer-events: all;
 }
 
-svg {
+.svg {
   position: absolute;
   top: 0;
   right: 0;
@@ -102,6 +102,7 @@ function makeTangent(prevpt, thispt, nextpt, smoothness) {
 }
 
 var svg = d3.select('body').append('svg')
+  .classed('svg', true)
   .attr('width', window.innerWidth)
   .attr('height', window.innerHeight)
   .style('stroke', 'blue')

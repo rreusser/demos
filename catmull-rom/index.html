@@ -43,7 +43,7 @@ ptcnt.addEventListener('mouseup', function (e) {
 });
 ptcnt.addEventListener('input', reinitialize);
 
-require('insert-css')('\nhtml, body {\n  font-family: \'Helvetica\', \'Arial\', sans-serif;\n}\nh3 {\n  margin-top: 0;\n}\n\n.pts {\n  pointer-events: all;\n}\n\nsvg {\n  position: absolute;\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n}\n\ncanvas {\n  cursor: move;\n  vertical-align: top;\n}\n\n.explanation {\n  max-width: 600px;\n  padding: 10px;\n  pointer-events: none;\n  position: absolute;\n  z-index: 100;\n  top: 0;\n  left: 0;\n}\n');
+require('insert-css')('\nhtml, body {\n  font-family: \'Helvetica\', \'Arial\', sans-serif;\n}\nh3 {\n  margin-top: 0;\n}\n\n.pts {\n  pointer-events: all;\n}\n\n.svg {\n  position: absolute;\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n}\n\ncanvas {\n  cursor: move;\n  vertical-align: top;\n}\n\n.explanation {\n  max-width: 600px;\n  padding: 10px;\n  pointer-events: none;\n  position: absolute;\n  z-index: 100;\n  top: 0;\n  left: 0;\n}\n');
 //
 // generalized Catmull-Rom splines, per
 // http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
@@ -80,7 +80,7 @@ function makeTangent(prevpt, thispt, nextpt, smoothness) {
   return [[thispt[0] + (denom1 && numx / denom1), thispt[1] + (denom1 && numy / denom1)], [thispt[0] - (denom2 && numx / denom2), thispt[1] - (denom2 && numy / denom2)]];
 }
 
-var svg = d3.select('body').append('svg').attr('width', window.innerWidth).attr('height', window.innerHeight).style('stroke', 'blue').style('opacity', 0.2).style('fill', 'none');
+var svg = d3.select('body').append('svg').classed('svg', true).attr('width', window.innerWidth).attr('height', window.innerHeight).style('stroke', 'blue').style('opacity', 0.2).style('fill', 'none');
 
 var path = svg.append('path');
 
