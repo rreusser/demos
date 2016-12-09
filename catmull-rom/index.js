@@ -17,6 +17,8 @@ be slightly incorrect.
   ptcnt
 ]));
 
+window.addEventListener('resize', update);
+
 ptcnt.addEventListener('click', e => e.stopPropagation());
 ptcnt.addEventListener('mousedown', e => e.stopPropagation());
 ptcnt.addEventListener('mousemove', e => e.stopPropagation());

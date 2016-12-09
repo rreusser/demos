@@ -27,6 +27,8 @@ var h = require('h');
 var ptcnt = h('input.pts', { type: 'number', value: 10 });
 document.body.appendChild(h('div.explanation', [h('h3', 'Catmull-Rom Splines'), h('p', '\nThe blue spline is an SVG path using plotly.js Catmull-Rom implementation. The black points\nare the corresponding directly evaluated points. The math is all very simple, but it\'s a pain\nto work through the details. Most important lesson learned: the tangents (obviously, in hindsight)\nmust either be computed in screen-space or scaled by the correct aspect ratio, otherwise they\'ll\nbe slightly incorrect.\n'), ptcnt]));
 
+window.addEventListener('resize', update);
+
 ptcnt.addEventListener('click', function (e) {
   return e.stopPropagation();
 });
