@@ -6,10 +6,12 @@ var fill = require('ndarray-fill');
 var linspace = require('ndarray-linspace');
 var h = require('h');
 var Plotly = window.Plotly = require('plotly.js');
+var controlPanel = require('control-panel');
+var Lib = require('plotly.js/src/lib');
+var ops = require('ndarray-ops');
 
 var gd = window.gd = h('div.plot');
 document.body.appendChild(gd);
-
 
 const ellipsoidSA = (a, b) => {
   return Math.pow(4 * Math.PI * Math.pow((
@@ -19,30 +21,49 @@ const ellipsoidSA = (a, b) => {
   ) / 3, 1 / 1.6), 0.1);
 }
 
-const na = 4;
-const nb = 3;
-const abrange = [[0.1, 7], [0.1, 5]];
-const arange = [0.5, 7];
-const brange = [0.5, 5];
-//const a = linspace(ndarray([], [na]), arange[0], arange[1]);
-//const b = linspace(ndarray([], [nb]), brange[0], brange[1]);
-const a = ndarray([0.1, 0.5, 2, 4]);
-const b = ndarray([0.5, 4.5, 5.0]);
-const y = fill(ndarray([], [na, nb]), (i, j) => ellipsoidSA(a.get(i), b.get(j)));
+var arange = [0.1, 5.1];
+var brange = [0.1, 5.1];
 
-Plotly.plot(gd, [{
+function initialize() {
+  trace.a = linspace(ndarray([], [trace.na]), arange[0], arange[1]);
+  trace.b = linspace(ndarray([], [trace.nb]), brange[0], brange[1]);
+  ops.powseq(trace.a, trace.apower);
+  ops.powseq(trace.b, trace.bpower);
+
+  ops.subseq(trace.a, Math.pow(arange[0], trace.apower));
+  ops.divseq(trace.a, Math.pow(arange[1], trace.apower) - Math.pow(arange[0], trace.apower))
+  ops.mulseq(trace.a, arange[1] - arange[0])
+  ops.addseq(trace.a, arange[0])
+
+  ops.subseq(trace.b, Math.pow(brange[0], trace.bpower));
+  ops.divseq(trace.b, Math.pow(brange[1], trace.bpower) - Math.pow(brange[0], trace.bpower))
+  ops.mulseq(trace.b, brange[1] - brange[0])
+  ops.addseq(trace.b, brange[0])
+
+  trace.y = fill(ndarray([], [trace.na, trace.nb]), (i, j) => ellipsoidSA(trace.a.get(i), trace.b.get(j)));
+  trace.a = unpack(trace.a);
+  trace.b = unpack(trace.b);
+  trace.y = unpack(trace.y);
+}
+
+var trace = {
+  // These are just for convenience with the control panel
+  na: 3,
+  nb: 4,
+  apower: 1.0,
+  bpower: 1.0,
+
+  // These are trace properties:
   carpetid: 'mycarpetplot',
-  a: unpack(a),
-  b: unpack(b),
-  y: unpack(y),
+  //x: unpack(x),
   cheaterslope: 1.0,
   type: 'carpet',
   aaxis: {
-    tickmode: 'linear',
-    tick0: 0.2,
-    dtick: 0.2,
-    smoothing: 1.0,
-    cheatertype: 'index',
+    tickmode: 'array',
+    tick0: 0.1,
+    dtick: 0.5,
+    smoothing: 1,
+    cheatertype: 'value',
     showlabels: 'both',
     showlabelprefix: 'first',
     labelpadding: 10,
@@ -62,11 +83,11 @@ Plotly.plot(gd, [{
     minorgridcolor: '#ccc'
   },
   baxis: {
-    tickmode: 'linear',
-    tick0: 0.2,
-    dtick: 0.2,
+    tickmode: 'array',
+    tick0: 0.1,
+    dtick: 0.5,
     smoothing: 1,
-    cheatertype: 'index',
+    cheatertype: 'value',
     showlabels: 'end',
     showlabelprefix: 'all',
     labelpadding: 10,
@@ -87,7 +108,11 @@ Plotly.plot(gd, [{
     showstartlabel: true,
     showendlabel: false,
   }
-}], {
+}
+
+initialize();
+
+Plotly.plot(gd, [trace], {
   xaxis: {
     showgrid: false,
     showline: false,
@@ -96,18 +121,127 @@ Plotly.plot(gd, [{
   },
   margin: {t: 20, r: 20, b: 20, l: 40},
   dragmode: 'pan',
-  sliders: [{
-    active: 15,
-    currentvalue: {
-      prefix: 'cheaterslope: ',
-    },
-    steps: unpack(linspace(ndarray([], [21]), -2, 2)).map(x => ({
-      value: x.toFixed(2),
-      label: x.toFixed(2),
-      method: 'animate',
-      args: [[{data: [{cheaterslope: [x.toFixed(2)]}]}], {frame: {duration: 0, redraw: false}, mode: 'immediate'}]
-    }))
-  }]
-}, {scrollZoom: true});
+}, {scrollZoom: true}).then(function () {
+  window.panel = panel;
+});
 
+
+var panel = controlPanel([
+  {
+    type: 'range',
+    label: 'na',
+    min: 2,
+    max: 20,
+    initial: trace.na,
+    step: 1
+  }, {
+    type: 'range',
+    label: 'nb',
+    min: 2,
+    max: 20,
+    initial: trace.nb,
+    step: 1
+  }, {
+    type: 'range',
+    label: 'apower',
+    min: 0.2,
+    max: 3,
+    initial: trace.apower,
+    step: 0.1
+  }, {
+    type: 'range',
+    label: 'bpower',
+    min: 0.2,
+    max: 3,
+    initial: trace.bpower,
+    step: 0.1
+  }, {
+    type: 'range',
+    label: 'cheaterslope',
+    min: -2,
+    max: 2,
+    initial: trace.cheaterslope
+  }, {
+    type: 'select',
+    label: 'aaxis.cheatertype',
+    options: ['index', 'value'],
+    initial: trace.aaxis.cheatertype
+  }, {
+    type: 'select',
+    label: 'aaxis.tickmode',
+    options: ['array',
+    'linear'],
+    initial: trace.aaxis.tickmode
+  }, {
+    type: 'range',
+    label: 'aaxis.dtick',
+    min: 0.1,
+    max: 1,
+    step: 0.01,
+    initial: trace.aaxis.dtick
+  }, {
+    type: 'range',
+    label: 'aaxis.tick0',
+    min: arange[0],
+    max: arange[0] + (arange[1] - arange[0]) * 0.3,
+    step: 0.01,
+    initial: trace.aaxis.tick0
+  }, {
+    type: 'range',
+    label: 'aaxis.smoothing',
+    min: 0,
+    max: 1,
+    step: 0.05,
+    initial: trace.aaxis.smoothing
+  }, {
+    type: 'select',
+    label: 'baxis.tickmode',
+    options: ['array',
+    'linear'],
+    initial: trace.baxis.tickmode
+  }, {
+    type: 'select',
+    label: 'baxis.cheatertype',
+    options: ['index', 'value'],
+    initial: trace.baxis.cheatertype
+  }, {
+    type: 'range', label: 'baxis.dtick',
+    min: 0.1,
+    max: 1,
+    step: 0.01,
+    initial: trace.baxis.dtick
+  }, {
+    type: 'range',
+    label: 'baxis.tick0',
+    min: brange[0],
+    max: brange[0]+ (brange[1] - brange[0]) * 0.3,
+    step: 0.01,
+    initial: trace.baxis.tick0
+  }, {
+    type: 'range',
+    label: 'baxis.smoothing',
+    min: 0,
+    max: 1,
+    step: 0.05,
+    initial: trace.baxis.smoothing
+  },
+], {
+  width: 350
+}).on('input', update);
+
+function update (data) {
+  trace.na = data.na;
+  trace.nb = data.nb;
+  trace.apower = data.apower;
+  trace.bpower = data.bpower;
+  initialize();
+
+  Plotly.animate(gd, [{
+    data: [data],
+    traces: [0]
+  }], {
+    mode: 'immediate',
+    frame: {redraw: false, duration: 0}
+  });
+}
 

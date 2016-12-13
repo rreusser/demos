@@ -13,7 +13,7 @@ html, body {
   position: absolute;
   top: 0;
   right: 0;
-  left: 0;
+  left: 350px;
   bottom: 0;
   z-index: 1;
 }
@@ -22,4 +22,12 @@ html, body {
   display: inline-block;
   position: relative;
   z-index: 1000;
+}
+
+.control-panel {
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  bottom: 0 !important;
+  left: 0 !important;
 }

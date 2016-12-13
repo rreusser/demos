@@ -14,6 +14,7 @@
   "devDependencies": {
     "brfs": "^1.4.3",
     "budo": "^9.2.2",
+    "control-panel": "^1.2.0",
     "es2040": "^1.2.4",
     "github-cornerify": "^1.0.6",
     "h": "^0.1.0",
@@ -25,6 +26,7 @@
     "minimist": "^1.2.0",
     "ndarray": "^1.0.18",
     "ndarray-fill": "^1.0.1",
+    "ndarray-ops": "^1.2.2",
     "ndarray-pack": "^1.2.1",
     "ndarray-unpack": "^1.0.0"
   },
