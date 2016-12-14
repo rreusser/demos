@@ -21,8 +21,8 @@ const ellipsoidSA = (a, b) => {
   ) / 3, 1 / 1.6), 0.1);
 }
 
-var arange = [0.1, 5.1];
-var brange = [0.1, 5.1];
+var arange = [0.1, 7.1];
+var brange = [0.1, 3.1];
 
 function initialize() {
   trace.a = linspace(ndarray([], [trace.na]), arange[0], arange[1]);
@@ -48,10 +48,10 @@ function initialize() {
 
 var trace = {
   // These are just for convenience with the control panel
-  na: 3,
-  nb: 4,
-  apower: 1.0,
-  bpower: 1.0,
+  na: 7,
+  nb: 5,
+  apower: 2.0,
+  bpower: 2.0,
 
   // These are trace properties:
   carpetid: 'mycarpetplot',
@@ -59,10 +59,12 @@ var trace = {
   cheaterslope: 1.0,
   type: 'carpet',
   aaxis: {
-    tickmode: 'array',
+    tickmode: 'linear',
     tick0: 0.1,
     dtick: 0.5,
-    smoothing: 1,
+    arraytick0: 0,
+    arraydtick: 1,
+    smoothing: true,
     cheatertype: 'value',
     showlabels: 'both',
     showlabelprefix: 'first',
@@ -73,20 +75,27 @@ var trace = {
       size: 12,
       family: 'sans-serif'
     },
+    startline: true,
+    endline: true,
+    startlinecolor: '#33b',
+    endlinecolor: '#33b',
     gridoffset: 0,
     gridstep: 1,
     gridwidth: 1,
-    gridcolor: '#444',
-    minorgridoffset: 0,
-    minorgridstep: 1,
+    startlinewidth: 1.5,
+    endlinewidth: 1.5,
+    gridcolor: '#aaa',
+    minorgridcount: 3,
     minorgridwidth: 1,
-    minorgridcolor: '#ccc'
+    minorgridcolor: '#eee'
   },
   baxis: {
-    tickmode: 'array',
+    tickmode: 'linear',
     tick0: 0.1,
     dtick: 0.5,
-    smoothing: 1,
+    arraytick0: 0,
+    arraydtick: 1,
+    smoothing: true,
     cheatertype: 'value',
     showlabels: 'end',
     showlabelprefix: 'all',
@@ -97,14 +106,19 @@ var trace = {
       size: 12,
       family: 'sans-serif'
     },
+    startline: true,
+    endline: true,
+    startlinecolor: '#b33',
+    endlinecolor: '#b33',
     gridoffset: 0,
     gridstep: 1,
     gridwidth: 1,
-    gridcolor: '#444',
-    minorgridoffset: 0,
-    minorgridstep: 1,
+    gridcolor: '#aaa',
+    startlinewidth: 1.5,
+    endlinewidth: 1.5,
+    minorgridcount: 3,
     minorgridwidth: 1,
-    minorgridcolor: '#ccc',
+    minorgridcolor: '#eee',
     showstartlabel: true,
     showendlabel: false,
   }
@@ -169,8 +183,7 @@ var panel = controlPanel([
   }, {
     type: 'select',
     label: 'aaxis.tickmode',
-    options: ['array',
-    'linear'],
+    options: ['array', 'linear'],
     initial: trace.aaxis.tickmode
   }, {
     type: 'range',
@@ -188,22 +201,63 @@ var panel = controlPanel([
     initial: trace.aaxis.tick0
   }, {
     type: 'range',
-    label: 'aaxis.smoothing',
+    label: 'aaxis.arraydtick',
+    min: 1,
+    max: 5,
+    step: 1,
+    initial: trace.aaxis.arraydtick
+  }, {
+    type: 'range',
+    label: 'aaxis.arraytick0',
     min: 0,
-    max: 1,
-    step: 0.05,
+    max: 10,
+    step: 1,
+    initial: trace.aaxis.arraytick0
+  }, {
+    type: 'range',
+    label: 'aaxis.minorgridcount',
+    min: 0,
+    max: 10,
+    step: 1,
+    initial: trace.aaxis.minorgridcount
+  }, {
+    type: 'color',
+    label: 'aaxis.gridcolor',
+    initial: trace.aaxis.gridcolor
+  }, {
+    type: 'color',
+    label: 'aaxis.minorgridcolor',
+    initial: trace.aaxis.minorgridcolor
+  }, {
+    type: 'color',
+    label: 'aaxis.startlinecolor',
+    initial: trace.aaxis.startlinecolor
+  }, {
+    type: 'color',
+    label: 'aaxis.endlinecolor',
+    initial: trace.aaxis.endlinecolor
+  }, {
+    type: 'checkbox',
+    label: 'aaxis.smoothing',
     initial: trace.aaxis.smoothing
   }, {
-    type: 'select',
-    label: 'baxis.tickmode',
-    options: ['array',
-    'linear'],
-    initial: trace.baxis.tickmode
+    type: 'checkbox',
+    label: 'aaxis.startline',
+    initial: trace.aaxis.startline
+  }, {
+    type: 'checkbox',
+    label: 'aaxis.endline',
+    initial: trace.aaxis.endline
   }, {
     type: 'select',
     label: 'baxis.cheatertype',
     options: ['index', 'value'],
     initial: trace.baxis.cheatertype
+  }, {
+    type: 'select',
+    label: 'baxis.tickmode',
+    options: ['array', 'linear'],
+    initial: trace.baxis.tickmode
   }, {
     type: 'range', label: 'baxis.dtick',
     min: 0.1,
@@ -219,14 +273,56 @@ var panel = controlPanel([
     initial: trace.baxis.tick0
   }, {
     type: 'range',
-    label: 'baxis.smoothing',
+    label: 'baxis.arraydtick',
+    min: 1,
+    max: 5,
+    step: 1,
+    initial: trace.baxis.arraydtick
+  }, {
+    type: 'range',
+    label: 'baxis.arraytick0',
     min: 0,
-    max: 1,
-    step: 0.05,
+    max: 10,
+    step: 1,
+    initial: trace.baxis.arraytick0
+  }, {
+    type: 'range',
+    label: 'baxis.minorgridcount',
+    min: 0,
+    max: 10,
+    step: 1,
+    initial: trace.baxis.minorgridcount
+  }, {
+    type: 'color',
+    label: 'baxis.gridcolor',
+    initial: trace.baxis.gridcolor
+  }, {
+    type: 'color',
+    label: 'baxis.minorgridcolor',
+    initial: trace.baxis.minorgridcolor
+  }, {
+    type: 'color',
+    label: 'baxis.startlinecolor',
+    initial: trace.baxis.startlinecolor
+  }, {
+    type: 'color',
+    label: 'baxis.endlinecolor',
+    initial: trace.baxis.endlinecolor
+  }, {
+    type: 'checkbox',
+    label: 'baxis.smoothing',
     initial: trace.baxis.smoothing
-  },
+  }, {
+    type: 'checkbox',
+    label: 'baxis.startline',
+    initial: trace.baxis.startline
+  }, {
+    type: 'checkbox',
+    label: 'baxis.endline',
+    initial: trace.baxis.endline
+  }
 ], {
-  width: 300
+  width: 380
 }).on('input', update);
 
 function update (data) {

@@ -13,7 +13,7 @@ html, body {
   position: absolute;
   top: 0;
   right: 0;
-  left: 300px;
+  left: 380px;
   bottom: 0;
   z-index: 1;
 }
@@ -30,4 +30,5 @@ html, body {
   z-index: 1;
   bottom: 0 !important;
   left: 0 !important;
+  overflow-y: scroll;
 }
