@@ -226,7 +226,7 @@ var panel = controlPanel([
     initial: trace.baxis.smoothing
   },
 ], {
-  width: 350
+  width: 300
 }).on('input', update);
 
 function update (data) {
