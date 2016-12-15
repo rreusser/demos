@@ -142,9 +142,29 @@ var scatter = {
   b: bscatter
 };
 
+var a2scatter = [];
+var b2scatter = [];
+var nscatter = 100;
+
+for (var i = 0; i < nscatter; i++) {
+  var t = i / (nscatter - 1);
+  a = 1.8 + (Math.random() - 0.5) * (Math.random() - 0.5) * 4;
+  b = 1.6 + (Math.random() - 0.5) * (Math.random() - 0.5) * 4;
+  a2scatter.push(a);
+  b2scatter.push(b);
+}
+
+var scatter2 = {
+  carpetid: 'mycarpetplot',
+  type: 'scattercarpet',
+  a: a2scatter,
+  b: b2scatter,
+  mode: 'markers',
+};
+
 initialize();
 
-Plotly.plot(gd, [trace, scatter], {
+Plotly.plot(gd, [trace, scatter, scatter2], {
   xaxis: {
     showgrid: false,
     showline: false,
