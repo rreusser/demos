@@ -21,8 +21,8 @@ const ellipsoidSA = (a, b) => {
   ) / 3, 1 / 1.6), 0.1);
 }
 
-var arange = [0.1, 7.1];
-var brange = [0.1, 3.1];
+var arange = [0.2, 7.2];
+var brange = [0.2, 3.2];
 
 function initialize() {
   trace.a = linspace(ndarray([], [trace.na]), arange[0], arange[1]);
@@ -60,7 +60,7 @@ var trace = {
   type: 'carpet',
   aaxis: {
     tickmode: 'linear',
-    tick0: 0.1,
+    tick0: arange[0],
     dtick: 1.0,
     arraytick0: 0,
     arraydtick: 1,
@@ -91,7 +91,7 @@ var trace = {
   },
   baxis: {
     tickmode: 'linear',
-    tick0: 0.1,
+    tick0: brange[0],
     dtick: 1.0,
     arraytick0: 0,
     arraydtick: 1,
@@ -124,9 +124,27 @@ var trace = {
   }
 }
 
+var ascatter = [];
+var bscatter = [];
+var nscatter = 100;
+
+for (var i = 0; i < nscatter; i++) {
+  var t = i / (nscatter - 1);
+  var a = arange[0] + (arange[1] - arange[0]) * t;
+  ascatter.push(a);
+  bscatter.push(Math.pow(a - 3.2, 2) + 1.0);
+}
+
+var scatter = {
+  carpetid: 'mycarpetplot',
+  type: 'scattercarpet',
+  a: ascatter,
+  b: bscatter
+};
+
 initialize();
 
-Plotly.plot(gd, [trace], {
+Plotly.plot(gd, [trace, scatter], {
   xaxis: {
     showgrid: false,
     showline: false,
