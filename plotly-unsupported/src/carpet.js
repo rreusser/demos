@@ -49,9 +49,9 @@ function initialize() {
 var trace = {
   // These are just for convenience with the control panel
   na: 7,
-  nb: 5,
-  apower: 2.0,
-  bpower: 2.0,
+  nb: 7,
+  apower: 2,
+  bpower: 2,
 
   // These are trace properties:
   carpetid: 'mycarpetplot',
@@ -61,7 +61,7 @@ var trace = {
   aaxis: {
     tickmode: 'linear',
     tick0: 0.1,
-    dtick: 0.5,
+    dtick: 1.0,
     arraytick0: 0,
     arraydtick: 1,
     smoothing: true,
@@ -92,12 +92,12 @@ var trace = {
   baxis: {
     tickmode: 'linear',
     tick0: 0.1,
-    dtick: 0.5,
+    dtick: 1.0,
     arraytick0: 0,
     arraydtick: 1,
     smoothing: true,
     cheatertype: 'value',
-    showlabels: 'end',
+    showlabels: 'both',
     showlabelprefix: 'all',
     labelpadding: 10,
     labelsuffix: 'm',
@@ -221,6 +221,11 @@ var panel = controlPanel([
     step: 1,
     initial: trace.aaxis.minorgridcount
   }, {
+    type: 'select',
+    label: 'aaxis.showlabels',
+    options: ['both', 'start', 'end', 'none'],
+    initial: trace.aaxis.showlabels
+  }, {
     type: 'color',
     label: 'aaxis.gridcolor',
     initial: trace.aaxis.gridcolor
@@ -292,6 +297,11 @@ var panel = controlPanel([
     max: 10,
     step: 1,
     initial: trace.baxis.minorgridcount
+  }, {
+    type: 'select',
+    label: 'baxis.showlabels',
+    options: ['both', 'start', 'end', 'none'],
+    initial: trace.baxis.showlabels
   }, {
     type: 'color',
     label: 'baxis.gridcolor',
