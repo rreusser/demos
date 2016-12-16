@@ -8,5 +8,5 @@ if (args[0]) {
   args[0] = /\.js/.test(args[0]) ? args[0] : args[0] + '.js';
 }
 
-args = args.concat(['--host', 'localhost', '--live', '--open', '--', '-t', 'brfs']);
+args = args.concat(['--host', 'localhost', '--force-default-index', '--live', '--open', '--', '-t', 'brfs']);
 require('../node_modules/budo').cli(args)

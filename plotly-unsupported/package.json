@@ -13,7 +13,7 @@
   "license": "ISC",
   "devDependencies": {
     "brfs": "^1.4.3",
-    "budo": "^9.2.2",
+    "budo": "^9.3.0",
     "control-panel": "^1.2.0",
     "es2040": "^1.2.4",
     "github-cornerify": "^1.0.6",
@@ -22,13 +22,16 @@
     "hyperstream": "^1.2.2",
     "indexhtmlify": "^1.3.1",
     "insert-css": "^2.0.0",
+    "iota-array": "^1.0.0",
     "metadataify": "^1.0.2",
     "minimist": "^1.2.0",
     "ndarray": "^1.0.18",
     "ndarray-fill": "^1.0.1",
     "ndarray-ops": "^1.2.2",
     "ndarray-pack": "^1.2.1",
-    "ndarray-unpack": "^1.0.0"
+    "ndarray-unpack": "^1.0.0",
+    "ode-rk4": "^1.1.3",
+    "transpose": "0.0.2"
   },
   "dependencies": {
     "h": "^0.1.0",
