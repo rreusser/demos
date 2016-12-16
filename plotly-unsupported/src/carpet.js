@@ -25,22 +25,22 @@ var arange = [0.2, 7.2];
 var brange = [0.2, 3.2];
 
 function initialize() {
-  trace.a = linspace(ndarray([], [trace.na]), arange[0], arange[1]);
-  trace.b = linspace(ndarray([], [trace.nb]), brange[0], brange[1]);
-  ops.powseq(trace.a, trace.apower);
-  ops.powseq(trace.b, trace.bpower);
+  trace.a = linspace(ndarray([], [trace.exampleNumA]), arange[0], arange[1]);
+  trace.b = linspace(ndarray([], [trace.exampleNumB]), brange[0], brange[1]);
+  ops.powseq(trace.a, trace.exampleApower);
+  ops.powseq(trace.b, trace.exampleBpower);
 
-  ops.subseq(trace.a, Math.pow(arange[0], trace.apower));
-  ops.divseq(trace.a, Math.pow(arange[1], trace.apower) - Math.pow(arange[0], trace.apower))
+  ops.subseq(trace.a, Math.pow(arange[0], trace.exampleApower));
+  ops.divseq(trace.a, Math.pow(arange[1], trace.exampleApower) - Math.pow(arange[0], trace.exampleApower))
   ops.mulseq(trace.a, arange[1] - arange[0])
   ops.addseq(trace.a, arange[0])
 
-  ops.subseq(trace.b, Math.pow(brange[0], trace.bpower));
-  ops.divseq(trace.b, Math.pow(brange[1], trace.bpower) - Math.pow(brange[0], trace.bpower))
+  ops.subseq(trace.b, Math.pow(brange[0], trace.exampleBpower));
+  ops.divseq(trace.b, Math.pow(brange[1], trace.exampleBpower) - Math.pow(brange[0], trace.exampleBpower))
   ops.mulseq(trace.b, brange[1] - brange[0])
   ops.addseq(trace.b, brange[0])
 
-  trace.y = fill(ndarray([], [trace.na, trace.nb]), (i, j) => ellipsoidSA(trace.a.get(i), trace.b.get(j)));
+  trace.y = fill(ndarray([], [trace.exampleNumA, trace.exampleNumB]), (i, j) => ellipsoidSA(trace.a.get(i), trace.b.get(j)));
   trace.a = unpack(trace.a);
   trace.b = unpack(trace.b);
   trace.y = unpack(trace.y);
@@ -48,10 +48,10 @@ function initialize() {
 
 var trace = {
   // These are just for convenience with the control panel
-  na: 7,
-  nb: 7,
-  apower: 2,
-  bpower: 2,
+  exampleNumA: 2,
+  exampleNumB: 2,
+  exampleApower: 1,
+  exampleBpower: 1,
 
   // These are trace properties:
   carpetid: 'mycarpetplot',
@@ -59,17 +59,19 @@ var trace = {
   cheaterslope: 1.0,
   type: 'carpet',
   aaxis: {
-    tickmode: 'linear',
+    tickmode: 'array',
     tick0: arange[0],
     dtick: 1.0,
     arraytick0: 0,
     arraydtick: 1,
-    smoothing: true,
-    cheatertype: 'value',
+    smoothing: false,
+    cheatertype: 'index',
     showlabels: 'both',
     showlabelprefix: 'first',
+    showlabelsuffix: 'all',
     labelpadding: 10,
     labelsuffix: '',
+    labelprefix: 'a = ',
     labelfont: {
       color: '#c53',
       size: 12,
@@ -90,15 +92,17 @@ var trace = {
     minorgridcolor: '#eee'
   },
   baxis: {
-    tickmode: 'linear',
+    tickmode: 'array',
     tick0: brange[0],
     dtick: 1.0,
     arraytick0: 0,
     arraydtick: 1,
-    smoothing: true,
-    cheatertype: 'value',
+    smoothing: false,
+    cheatertype: 'index',
     showlabels: 'both',
     showlabelprefix: 'all',
+    showlabelsuffix: 'all',
+    labelprefix: 'b = ',
     labelpadding: 10,
     labelsuffix: 'm',
     labelfont: {
@@ -181,31 +185,31 @@ Plotly.plot(gd, [trace, scatter, scatter2], {
 var panel = controlPanel([
   {
     type: 'range',
-    label: 'na',
+    label: 'exampleNumA',
     min: 2,
     max: 20,
-    initial: trace.na,
+    initial: trace.exampleNumA,
     step: 1
   }, {
     type: 'range',
-    label: 'nb',
+    label: 'exampleNumB',
     min: 2,
     max: 20,
-    initial: trace.nb,
+    initial: trace.exampleNumB,
     step: 1
   }, {
     type: 'range',
-    label: 'apower',
+    label: 'exampleApower',
     min: 0.2,
     max: 3,
-    initial: trace.apower,
+    initial: trace.exampleApower,
     step: 0.1
   }, {
     type: 'range',
-    label: 'bpower',
+    label: 'exampleBpower',
     min: 0.2,
     max: 3,
-    initial: trace.bpower,
+    initial: trace.exampleBpower,
     step: 0.1
   }, {
     type: 'range',
@@ -263,6 +267,24 @@ var panel = controlPanel([
     label: 'aaxis.showlabels',
     options: ['both', 'start', 'end', 'none'],
     initial: trace.aaxis.showlabels
+  }, {
+    type: 'select',
+    label: 'aaxis.showlabelprefix',
+    options: ['all', 'first', 'last', 'none'],
+    initial: trace.aaxis.showlabelprefix
+  }, {
+    type: 'select',
+    label: 'aaxis.showlabelsuffix',
+    options: ['all', 'first', 'last', 'none'],
+    initial: trace.aaxis.showlabelsuffix
+  }, {
+    type: 'text',
+    label: 'aaxis.labelprefix',
+    initial: trace.aaxis.labelprefix
+  }, {
+    type: 'text',
+    label: 'aaxis.labelsuffix',
+    initial: trace.aaxis.labelsuffix
   }, {
     type: 'color',
     label: 'aaxis.gridcolor',
@@ -341,6 +363,24 @@ var panel = controlPanel([
     options: ['both', 'start', 'end', 'none'],
     initial: trace.baxis.showlabels
   }, {
+    type: 'select',
+    label: 'baxis.showlabelprefix',
+    options: ['all', 'first', 'last', 'none'],
+    initial: trace.baxis.showlabelprefix
+  }, {
+    type: 'select',
+    label: 'baxis.showlabelsuffix',
+    options: ['all', 'first', 'last', 'none'],
+    initial: trace.baxis.showlabelsuffix
+  }, {
+    type: 'text',
+    label: 'baxis.labelprefix',
+    initial: trace.baxis.labelprefix
+  }, {
+    type: 'text',
+    label: 'baxis.labelsuffix',
+    initial: trace.baxis.labelsuffix
+  }, {
     type: 'color',
     label: 'baxis.gridcolor',
     initial: trace.baxis.gridcolor
@@ -374,10 +414,10 @@ var panel = controlPanel([
 }).on('input', update);
 
 function update (data) {
-  trace.na = data.na;
-  trace.nb = data.nb;
-  trace.apower = data.apower;
-  trace.bpower = data.bpower;
+  trace.exampleNumA = data.exampleNumA;
+  trace.exampleNumB = data.exampleNumB;
+  trace.exampleApower = data.exampleApower;
+  trace.exampleBpower = data.exampleBpower;
   initialize();
 
   Plotly.animate(gd, [{
