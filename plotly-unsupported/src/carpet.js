@@ -71,7 +71,7 @@ var trace = {
     showlabelsuffix: 'all',
     labelpadding: 10,
     labelsuffix: '',
-    labelprefix: 'a = ',
+    labelprefix: 'a: ',
     labelfont: {
       color: '#c53',
       size: 12,
@@ -102,7 +102,7 @@ var trace = {
     showlabels: 'both',
     showlabelprefix: 'all',
     showlabelsuffix: 'all',
-    labelprefix: 'b = ',
+    labelprefix: 'b: ',
     labelpadding: 10,
     labelsuffix: 'm',
     labelfont: {
@@ -175,6 +175,7 @@ Plotly.plot(gd, [trace, scatter, scatter2], {
     zeroline: false,
     showticklabels: false,
   },
+  hovermode: 'closest',
   margin: {t: 20, r: 20, b: 20, l: 40},
   dragmode: 'pan',
 }, {scrollZoom: true}).then(function () {
