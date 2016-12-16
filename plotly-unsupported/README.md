@@ -7,6 +7,7 @@
 
 - [Carpet](http:/rickyreusser.com/demos/plotly-unsupported/carpet.html)
 - [Gapminder](http:/rickyreusser.com/demos/plotly-unsupported/gapminder.html)
+- [Lorenz slices](http:/rickyreusser.com/demos/plotly-unsupported/lorenz-slices.html)
 - [Numbered frames bugfix](http:/rickyreusser.com/demos/plotly-unsupported/numbered-frames-bugfix.html)
 - [Scatter](http:/rickyreusser.com/demos/plotly-unsupported/scatter.html)
 - [Slider bug](http:/rickyreusser.com/demos/plotly-unsupported/slider-bug.html)
