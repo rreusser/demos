@@ -1,3 +1,4 @@
+require('insert-css')(require('fs').readFileSync(__dirname + '/index.css', 'utf8'));
 var Plotly = require('plotly.js');
 var odeRk4 = require('ode-rk4');
 var transpose = require('transpose');
