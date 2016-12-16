@@ -13,9 +13,12 @@ html, body {
   position: absolute;
   top: 0;
   right: 0;
-  left: 380px;
   bottom: 0;
   z-index: 1;
+}
+
+.plot-left {
+  left: 380px;
 }
 
 .links {

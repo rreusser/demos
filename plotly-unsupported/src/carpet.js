@@ -10,7 +10,7 @@ var controlPanel = require('control-panel');
 var Lib = require('plotly.js/src/lib');
 var ops = require('ndarray-ops');
 
-var gd = window.gd = h('div.plot');
+var gd = window.gd = h('div', {class: 'plot plot-left'});
 document.body.appendChild(gd);
 
 const ellipsoidSA = (a, b) => {

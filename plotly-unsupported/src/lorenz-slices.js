@@ -12,7 +12,7 @@ var idx = iota(2000);
 var frameWindow = 500;
 var frameStep = iota(idx.length / 10).map(i => i * 10);
 var data = transpose(idx.map(() => lorenz.step().y.slice()));
-var gd = require('h')('div');
+var gd = require('h')('div.plot');
 document.body.appendChild(gd);
 
 Plotly.plot(gd, {
