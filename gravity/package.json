@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "browserify index.js -t es2040 -t brfs -t glslify | indexhtmlify | metadataify | github-cornerify > index.html",
-    "start": "budo --open --live --host localhost index.js -- -t es2040 -t brfs -t glslify"
+    "start": "budo --open --live --host localhost --force-default-index index.js -- -t es2040 -t brfs -t glslify"
   },
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
   "devDependencies": {
     "brfs": "^1.4.3",
     "browserify": "^13.1.1",
-    "budo": "^9.2.1",
+    "budo": "^9.3.0",
     "es2040": "^1.2.4",
     "h": "^0.1.0",
     "hsv2rgb": "^1.1.0",
