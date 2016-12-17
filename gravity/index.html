@@ -47,20 +47,20 @@ var randn = require('random-normal');
 var swap = require('./swap');
 var fboOpts = { xboundary: 'repeat', yboundary: 'repeat', magfilter: 'linear', minfilter: 'linear' };
 
-var ptexsize = 512;
+var ptexsize = 1024;
 var ctexsize = 256;
 var stexsize = 512;
 var decayTime = 1000;
-var viscosityTime = 32;
+var viscosityTime = 64;
 var multiplier = 0.014;
-var dt = 0.002;
+var dt = 0.001;
 var G = 1.0;
 
 // Particle fbos:
 var dist;
 if (true) {
   dist = function () {
-    return [Math.random(), Math.random(), randn() * 0.1, randn() * 0.1];
+    return [Math.random(), Math.random(), randn() * 0.02, randn() * 0.02];
   };
 } else if (false) {
   dist = function () {
@@ -115,7 +115,7 @@ var cshape = [ctexsize, ctexsize, 4];
 var h = 1.0 / cshape[0];
 var rho = gpu.array(function () {
   return [0, 0, 0, 0];
-}, cshape);
+}, cshape, fboOpts);
 var phi = [gpu.array(function () {
   return [0, 0, 0, 0];
 }, cshape, fboOpts), gpu.array(function () {
@@ -144,7 +144,7 @@ var splatParticles = regl({
 });
 
 var renderToTexture = regl({
-  frag: '\n    precision mediump float;\n    uniform float alpha;\n    varying vec4 state;\n    uniform float viscosity;\n    varying vec4 dens;\n    void main () {\n      vec2 vavg = dens.yz / max(dens.x, 1.0);\n      float heating = length(state.zw - vavg) * exp(-dens.x * viscosity);\n      gl_FragColor = vec4(\n        0.2 * (1.0 - heating) + 0.8 * heating,\n        0.1,\n        1.0 * (1.0 - heating),\n        1.0\n      ) * alpha;\n    }',
+  frag: '\n    precision mediump float;\n    uniform float alpha;\n    varying vec4 state;\n    uniform float viscosity;\n    varying vec4 dens;\n    void main () {\n      vec2 vavg = dens.yz / max(dens.x, 1.0);\n      float heating = length(state.zw - vavg) * exp(-dens.x * viscosity);\n      gl_FragColor = vec4(\n        0.2 * (1.0 - heating) + 0.8 * heating,\n        0.1,\n        0.8 + 0.2 * (1.0 - heating),\n        1.0\n      ) * alpha * 0.5;\n    }',
   vert: '\n    attribute vec2 xy;\n    uniform sampler2D src;\n    uniform sampler2D rho;\n    varying vec4 dens;\n    varying vec4 state;\n    void main () {\n      state = texture2D(src, xy);\n      dens = texture2D(rho, state.xy);\n      state.xy = state.xy * 2.0 - 1.0;\n      gl_Position = vec4(state.xy, 0, 1);\n      gl_PointSize = 1.0;\n    }\n  ',
   attributes: { xy: ycoords },
   uniforms: {

@@ -14,13 +14,13 @@ const randn = require('random-normal');
 const swap = require('./swap');
 const fboOpts = {xboundary: 'repeat', yboundary: 'repeat', magfilter: 'linear', minfilter: 'linear'};
 
-const ptexsize = 512;
+const ptexsize = 1024;
 const ctexsize = 256;
 const stexsize = 512;
 const decayTime = 1000;
-const viscosityTime = 32;
+const viscosityTime = 64;
 const multiplier = 0.014;
-const dt = 0.002;
+const dt = 0.001;
 const G = 1.0;
 
 
@@ -33,8 +33,8 @@ if (true) {
   dist = () => [
     Math.random(),
     Math.random(),
-    randn() * 0.1,
-    randn() * 0.1
+    randn() * 0.02,
+    randn() * 0.02
   ];
 } else if (false) {
   dist = () => {
@@ -94,7 +94,7 @@ const ycoords = y[0].samplerCoords();
 // Continuum fbos:
 const cshape = [ctexsize, ctexsize, 4];
 const h = 1.0 / cshape[0];
-const rho = gpu.array(() => [0, 0, 0, 0], cshape);
+const rho = gpu.array(() => [0, 0, 0, 0], cshape, fboOpts);
 const phi = [
   gpu.array(() => [0, 0, 0, 0], cshape, fboOpts),
   gpu.array(() => [0, 0, 0, 0], cshape, fboOpts)
@@ -148,9 +148,9 @@ const renderToTexture = regl({
       gl_FragColor = vec4(
         0.2 * (1.0 - heating) + 0.8 * heating,
         0.1,
-        1.0 * (1.0 - heating),
+        0.8 + 0.2 * (1.0 - heating),
         1.0
-      ) * alpha;
+      ) * alpha * 0.5;
     }`,
   vert: `
     attribute vec2 xy;
