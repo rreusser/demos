@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "browserify index.js -t es2040 -t brfs | indexhtmlify | metadataify | github-cornerify > index.html",
-    "start": "budo --open --live --host localhost index.js -- -t es2040 -t brfs"
+    "start": "budo --open --live --force-default-index --host localhost index.js -- -t es2040 -t brfs"
   },
   "repository": {
     "type": "git",
@@ -17,10 +17,11 @@
   "devDependencies": {
     "brfs": "^1.4.3",
     "browserify": "^13.1.1",
-    "budo": "^9.2.1",
+    "budo": "^9.3.0",
     "es2040": "^1.2.4",
     "indexhtmlify": "^1.3.1",
     "metadataify": "^1.0.1",
+    "throttle-debounce": "^1.0.1",
     "uglify-js": "^2.7.3"
   },
   "dependencies": {

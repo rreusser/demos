@@ -2,9 +2,9 @@
 
 html,
 body {
-  margin-top: 30px;
+  margin: 0;
   padding: 0;
-  background-color: #333333;
+  background-color: black;
   text-align: center;
   font-family: 'Open Sans', 'Helvetica', sans-serif;
   font-weight: 300;
@@ -14,25 +14,9 @@ body > pre {
   text-align: left;
   white-space: pre-wrap;
 }
-h1 {
-  text-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-  margin-bottom: 30px;
-}
-#sim,
-#sim canvas {
-  width: 512px !important;
-  height: 512px !important;
-}
-#sim {
-  margin-top: 50px;
-  display: inline-block;
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-}
+
 .control-panel {
-  text-align: left;
-  margin: 50px auto 0 auto;
-  box-sizing: border-box;
-}
-.btn {
-  font-family: 'Hack';
+  position: 'absolute;
+  top: 0 !important;
+  left: 0 !important;
 }
