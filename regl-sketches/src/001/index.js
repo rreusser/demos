@@ -13,9 +13,11 @@ require('regl')({
 });
 
 let analyser;
+let scaleContribution = 1;
 if (false) {
   var audio = require('./audio')((err, src, json, audio, a) => {
     analyser = a;
+    scaleContribution = 0;
   });
 }
 
@@ -48,6 +50,8 @@ function run(regl) {
   let st = 0;
   let avg = 0;
 
+  let scaleFunc = (t) => Math.pow(0.5 + 0.5 * Math.sin(t * Math.PI * 2), 20);
+
   regl.frame(() => {
     let t1 = Date.now();
     let dt = (Date.now() - t0) / 1000.0;
@@ -68,7 +72,7 @@ function run(regl) {
 
     let level = sum - avg;
 
-    scale = level * 0.01
+    scale = level * 0.01 + 1.0 * scaleFunc(t) * scaleContribution;
     st += dt * (0.3 + 5.0 * scale);
     t0 = t1;
 
