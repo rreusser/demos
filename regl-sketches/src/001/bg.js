@@ -24,8 +24,8 @@ module.exports = function (regl) {
       varying vec3 dir;
       void main () {
         vec3 ndir = normalize(dir);
-        vec3 color = vec3(snoise4(vec4(ndir * 3.0, t)));
-        gl_FragColor = vec4((0.8 + 0.05 * color) * (0.3 + 0.1 * ndir.y) * vec3(0.8, 0.95, 1.0), 1);
+        vec3 color = vec3(snoise4(vec4(ndir * 3.0, t)) + snoise4(vec4(ndir * 800.0, t)));
+        gl_FragColor = vec4((0.75 + 0.075 * color) * (0.3 + 0.1 * ndir.y) * vec3(0.8, 0.95, 1.0), 1);
       }
     `),
     uniforms: {
