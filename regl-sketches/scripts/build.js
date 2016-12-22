@@ -8,6 +8,7 @@ var path = require('path');
 var metadataify = require('metadataify');
 var hyperstream = require('hyperstream');
 var humanize = require('humanize-string');
+var es2040 = require('es2040');
 
 var repoUrl = 'https://github.com/rreusser/demos/tree/master/regl-sketches';
 var webUrlBase = 'http://rickyreusser.com/demos/regl-sketches/';
@@ -73,6 +74,7 @@ function processFiles (pattern) {
       b.add(path.join(__dirname, '../', filename));
       b.transform(require('brfs'));
       b.transform(require('glslify'));
+      b.transform(require('es2040'));
       b.bundle()
         .pipe(indexhtmlify())
         //.pipe(appendIndexLink)

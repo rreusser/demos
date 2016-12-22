@@ -12222,7 +12222,7 @@ function once (fn) {
 }
 
 },{}],41:[function(require,module,exports){
-const analyse = require('web-audio-analyser');
+var analyse = require('web-audio-analyser');
 
 module.exports = function (cb) {
   var div = require('soundcloud-badge')({
@@ -12230,54 +12230,40 @@ module.exports = function (cb) {
     song: 'https://soundcloud.com/madeinheights/viices',
     dark: false,
     getFonts: true
-  }, function(err, src, json) {
-    var audio = new Audio;
+  }, function (err, src, json) {
+    var audio = new Audio();
     audio.src = src;
     audio.crossOrigin = "anonymous";
 
-    audio.addEventListener('canplay', function() {
-      analyser = analyse(audio, { audible: true, stereo: false })
+    audio.addEventListener('canplay', function () {
+      analyser = analyse(audio, { audible: true, stereo: false });
       analyser.analyser.smoothingTimeConstant = 0.5;
-      audio.play()
+      audio.play();
 
       cb && cb(err, src, json, audio, analyser);
-    })
+    });
   });
-}
-
+};
 },{"soundcloud-badge":31,"web-audio-analyser":38}],42:[function(require,module,exports){
-const glslify = require('glslify');
+var glslify = require('glslify');
 
 module.exports = function (regl) {
   return regl({
-    vert: `
-      precision mediump float;
-      uniform mat4 iview;
-      uniform float aspect;
-      attribute vec2 xy;
-      varying vec2 uv;
-      varying vec3 dir;
-      void main () {
-        uv = 0.5 * (1.0 + xy);
-        dir = (iview * vec4(xy * vec2(aspect, 1.0), -1, 0)).xyz;
-        gl_Position = vec4(xy, 0, 1);
-      }
-    `,
+    vert: '\n      precision mediump float;\n      uniform mat4 iview;\n      uniform float aspect;\n      attribute vec2 xy;\n      varying vec2 uv;\n      varying vec3 dir;\n      void main () {\n        uv = 0.5 * (1.0 + xy);\n        dir = (iview * vec4(xy * vec2(aspect, 1.0), -1, 0)).xyz;\n        gl_Position = vec4(xy, 0, 1);\n      }\n    ',
     frag: glslify(["\n      precision mediump float;\n#define GLSLIFY 1\n\n      //\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0; }\n\nfloat mod289(float x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0; }\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nfloat permute(float x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat taylorInvSqrt(float r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nvec4 grad4(float j, vec4 ip)\n  {\n  const vec4 ones = vec4(1.0, 1.0, 1.0, -1.0);\n  vec4 p,s;\n\n  p.xyz = floor( fract (vec3(j) * ip.xyz) * 7.0) * ip.z - 1.0;\n  p.w = 1.5 - dot(abs(p.xyz), ones.xyz);\n  s = vec4(lessThan(p, vec4(0.0)));\n  p.xyz = p.xyz + (s.xyz*2.0 - 1.0) * s.www;\n\n  return p;\n  }\n\n// (sqrt(5) - 1)/4 = F4, used once below\n#define F4 0.309016994374947451\n\nfloat snoise(vec4 v)\n  {\n  const vec4  C = vec4( 0.138196601125011,  // (5 - sqrt(5))/20  G4\n                        0.276393202250021,  // 2 * G4\n                        0.414589803375032,  // 3 * G4\n                       -0.447213595499958); // -1 + 4 * G4\n\n// First corner\n  vec4 i  = floor(v + dot(v, vec4(F4)) );\n  vec4 x0 = v -   i + dot(i, C.xxxx);\n\n// Other corners\n\n// Rank sorting originally contributed by Bill Licea-Kane, AMD (formerly ATI)\n  vec4 i0;\n  vec3 isX = step( x0.yzw, x0.xxx );\n  vec3 isYZ = step( x0.zww, x0.yyz );\n//  i0.x = dot( isX, vec3( 1.0 ) );\n  i0.x = isX.x + isX.y + isX.z;\n  i0.yzw = 1.0 - isX;\n//  i0.y += dot( isYZ.xy, vec2( 1.0 ) );\n  i0.y += isYZ.x + isYZ.y;\n  i0.zw += 1.0 - isYZ.xy;\n  i0.z += isYZ.z;\n  i0.w += 1.0 - isYZ.z;\n\n  // i0 now contains the unique values 0,1,2,3 in each channel\n  vec4 i3 = clamp( i0, 0.0, 1.0 );\n  vec4 i2 = clamp( i0-1.0, 0.0, 1.0 );\n  vec4 i1 = clamp( i0-2.0, 0.0, 1.0 );\n\n  //  x0 = x0 - 0.0 + 0.0 * C.xxxx\n  //  x1 = x0 - i1  + 1.0 * C.xxxx\n  //  x2 = x0 - i2  + 2.0 * C.xxxx\n  //  x3 = x0 - i3  + 3.0 * C.xxxx\n  //  x4 = x0 - 1.0 + 4.0 * C.xxxx\n  vec4 x1 = x0 - i1 + C.xxxx;\n  vec4 x2 = x0 - i2 + C.yyyy;\n  vec4 x3 = x0 - i3 + C.zzzz;\n  vec4 x4 = x0 + C.wwww;\n\n// Permutations\n  i = mod289(i);\n  float j0 = permute( permute( permute( permute(i.w) + i.z) + i.y) + i.x);\n  vec4 j1 = permute( permute( permute( permute (\n             i.w + vec4(i1.w, i2.w, i3.w, 1.0 ))\n           + i.z + vec4(i1.z, i2.z, i3.z, 1.0 ))\n           + i.y + vec4(i1.y, i2.y, i3.y, 1.0 ))\n           + i.x + vec4(i1.x, i2.x, i3.x, 1.0 ));\n\n// Gradients: 7x7x6 points over a cube, mapped onto a 4-cross polytope\n// 7*7*6 = 294, which is close to the ring size 17*17 = 289.\n  vec4 ip = vec4(1.0/294.0, 1.0/49.0, 1.0/7.0, 0.0) ;\n\n  vec4 p0 = grad4(j0,   ip);\n  vec4 p1 = grad4(j1.x, ip);\n  vec4 p2 = grad4(j1.y, ip);\n  vec4 p3 = grad4(j1.z, ip);\n  vec4 p4 = grad4(j1.w, ip);\n\n// Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n  p4 *= taylorInvSqrt(dot(p4,p4));\n\n// Mix contributions from the five corners\n  vec3 m0 = max(0.6 - vec3(dot(x0,x0), dot(x1,x1), dot(x2,x2)), 0.0);\n  vec2 m1 = max(0.6 - vec2(dot(x3,x3), dot(x4,x4)            ), 0.0);\n  m0 = m0 * m0;\n  m1 = m1 * m1;\n  return 49.0 * ( dot(m0*m0, vec3( dot( p0, x0 ), dot( p1, x1 ), dot( p2, x2 )))\n               + dot(m1*m1, vec2( dot( p3, x3 ), dot( p4, x4 ) ) ) ) ;\n\n  }\n\n      uniform float t;\n      varying vec2 uv;\n      varying vec3 dir;\n      void main () {\n        vec3 ndir = normalize(dir);\n        vec3 color = vec3(snoise(vec4(ndir * 3.0, t)) + snoise(vec4(ndir * 800.0, t)));\n        gl_FragColor = vec4((0.75 + 0.075 * color) * (0.3 + 0.1 * ndir.y) * vec3(0.8, 0.95, 1.0), 1);\n      }\n    "]),
     uniforms: {
-      t: regl.prop('t'),
+      t: regl.prop('t')
     },
-    attributes: {xy: [[-4, -4], [0, 4], [4, -4]]},
+    attributes: { xy: [[-4, -4], [0, 4], [4, -4]] },
     count: 3,
-    depth: {enable: false}
+    depth: { enable: false }
   });
 };
-
 },{"glslify":12}],43:[function(require,module,exports){
-const glslify = require('glslify');
+var glslify = require('glslify');
 
 module.exports = function (regl) {
-  const ico = require('icosphere')(5);
+  var ico = require('icosphere')(5);
 
   return regl({
     vert: glslify(["\n      precision mediump float;\n#define GLSLIFY 1\n\n      //\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0; }\n\nfloat mod289(float x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0; }\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nfloat permute(float x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat taylorInvSqrt(float r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nvec4 grad4(float j, vec4 ip)\n  {\n  const vec4 ones = vec4(1.0, 1.0, 1.0, -1.0);\n  vec4 p,s;\n\n  p.xyz = floor( fract (vec3(j) * ip.xyz) * 7.0) * ip.z - 1.0;\n  p.w = 1.5 - dot(abs(p.xyz), ones.xyz);\n  s = vec4(lessThan(p, vec4(0.0)));\n  p.xyz = p.xyz + (s.xyz*2.0 - 1.0) * s.www;\n\n  return p;\n  }\n\n// (sqrt(5) - 1)/4 = F4, used once below\n#define F4 0.309016994374947451\n\nfloat snoise(vec4 v)\n  {\n  const vec4  C = vec4( 0.138196601125011,  // (5 - sqrt(5))/20  G4\n                        0.276393202250021,  // 2 * G4\n                        0.414589803375032,  // 3 * G4\n                       -0.447213595499958); // -1 + 4 * G4\n\n// First corner\n  vec4 i  = floor(v + dot(v, vec4(F4)) );\n  vec4 x0 = v -   i + dot(i, C.xxxx);\n\n// Other corners\n\n// Rank sorting originally contributed by Bill Licea-Kane, AMD (formerly ATI)\n  vec4 i0;\n  vec3 isX = step( x0.yzw, x0.xxx );\n  vec3 isYZ = step( x0.zww, x0.yyz );\n//  i0.x = dot( isX, vec3( 1.0 ) );\n  i0.x = isX.x + isX.y + isX.z;\n  i0.yzw = 1.0 - isX;\n//  i0.y += dot( isYZ.xy, vec2( 1.0 ) );\n  i0.y += isYZ.x + isYZ.y;\n  i0.zw += 1.0 - isYZ.xy;\n  i0.z += isYZ.z;\n  i0.w += 1.0 - isYZ.z;\n\n  // i0 now contains the unique values 0,1,2,3 in each channel\n  vec4 i3 = clamp( i0, 0.0, 1.0 );\n  vec4 i2 = clamp( i0-1.0, 0.0, 1.0 );\n  vec4 i1 = clamp( i0-2.0, 0.0, 1.0 );\n\n  //  x0 = x0 - 0.0 + 0.0 * C.xxxx\n  //  x1 = x0 - i1  + 1.0 * C.xxxx\n  //  x2 = x0 - i2  + 2.0 * C.xxxx\n  //  x3 = x0 - i3  + 3.0 * C.xxxx\n  //  x4 = x0 - 1.0 + 4.0 * C.xxxx\n  vec4 x1 = x0 - i1 + C.xxxx;\n  vec4 x2 = x0 - i2 + C.yyyy;\n  vec4 x3 = x0 - i3 + C.zzzz;\n  vec4 x4 = x0 + C.wwww;\n\n// Permutations\n  i = mod289(i);\n  float j0 = permute( permute( permute( permute(i.w) + i.z) + i.y) + i.x);\n  vec4 j1 = permute( permute( permute( permute (\n             i.w + vec4(i1.w, i2.w, i3.w, 1.0 ))\n           + i.z + vec4(i1.z, i2.z, i3.z, 1.0 ))\n           + i.y + vec4(i1.y, i2.y, i3.y, 1.0 ))\n           + i.x + vec4(i1.x, i2.x, i3.x, 1.0 ));\n\n// Gradients: 7x7x6 points over a cube, mapped onto a 4-cross polytope\n// 7*7*6 = 294, which is close to the ring size 17*17 = 289.\n  vec4 ip = vec4(1.0/294.0, 1.0/49.0, 1.0/7.0, 0.0) ;\n\n  vec4 p0 = grad4(j0,   ip);\n  vec4 p1 = grad4(j1.x, ip);\n  vec4 p2 = grad4(j1.y, ip);\n  vec4 p3 = grad4(j1.z, ip);\n  vec4 p4 = grad4(j1.w, ip);\n\n// Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n  p4 *= taylorInvSqrt(dot(p4,p4));\n\n// Mix contributions from the five corners\n  vec3 m0 = max(0.6 - vec3(dot(x0,x0), dot(x1,x1), dot(x2,x2)), 0.0);\n  vec2 m1 = max(0.6 - vec2(dot(x3,x3), dot(x4,x4)            ), 0.0);\n  m0 = m0 * m0;\n  m1 = m1 * m1;\n  return 49.0 * ( dot(m0*m0, vec3( dot( p0, x0 ), dot( p1, x1 ), dot( p2, x2 )))\n               + dot(m1*m1, vec2( dot( p3, x3 ), dot( p4, x4 ) ) ) ) ;\n\n  }\n\n      uniform float st, scale, t;\n      uniform mat4 projection, view;\n      varying vec3 n, p;\n      attribute vec3 xyz, normal;\n\n      float noise (vec4 p, float t) {\n        return pow(abs(snoise(p)), 2.0) + 0.2 * sin(3.0 * p.y + 1.0 * t * 3.14159) * p.y;\n      }\n\n      void main () {\n        n = normal;\n        p = xyz * (0.8 + 1.0 * scale);\n\n        float freq = 2.0;\n        float n0 = noise(vec4(p * freq, st), t);\n\n        float h = 0.01;\n        vec3 np = p * freq;\n        vec3 grad = (vec3(\n          noise(vec4(np + vec3(h, 0, 0), st), t),\n          noise(vec4(np + vec3(0, h, 0), st), t),\n          noise(vec4(np + vec3(0, 0, h), st), t)\n        ) - n0) / h;\n\n        p *= 1.0 + scale * n0;\n        n -= grad * scale * 0.5;\n        n = normalize(n);\n\n        gl_Position = projection * view * vec4(p, 1);\n      }\n    "]),
@@ -12295,26 +12281,25 @@ module.exports = function (regl) {
     count: ico.cells.length * 3
   });
 };
-
 },{"angle-normals":1,"glslify":12,"icosphere":16}],44:[function(require,module,exports){
-var mouseChange = require('mouse-change')
-var mouseWheel = require('mouse-wheel')
-var identity = require('gl-mat4/identity')
-var perspective = require('gl-mat4/perspective')
-var lookAt = require('gl-mat4/lookAt')
-var invert = require('gl-mat4/invert')
+var mouseChange = require('mouse-change');
+var mouseWheel = require('mouse-wheel');
+var identity = require('gl-mat4/identity');
+var perspective = require('gl-mat4/perspective');
+var lookAt = require('gl-mat4/lookAt');
+var invert = require('gl-mat4/invert');
 
-module.exports = createCamera
+module.exports = createCamera;
 
-var isBrowser = typeof window !== 'undefined'
+var isBrowser = typeof window !== 'undefined';
 
-function createCamera (regl, props_) {
+function createCamera(regl, props_) {
   var element = regl._gl.canvas;
   element.addEventListener('mousewheel', function (e) {
     e.preventDefault();
   });
 
-  var props = props_ || {}
+  var props = props_ || {};
   var cameraState = {
     view: identity(new Float32Array(16)),
     iview: identity(new Float32Array(16)),
@@ -12332,212 +12317,205 @@ function createCamera (regl, props_) {
     flipY: !!props.flipY,
     dtheta: 0,
     dphi: 0
-  }
+  };
 
   var iview = [];
 
-  var damping = typeof props.damping !== 'undefined' ? props.damping : 0.0
+  var damping = typeof props.damping !== 'undefined' ? props.damping : 0.0;
 
-  var right = new Float32Array([1, 0, 0])
-  var front = new Float32Array([0, 0, 1])
+  var right = new Float32Array([1, 0, 0]);
+  var front = new Float32Array([0, 0, 1]);
 
-  var minDistance = Math.log('minDistance' in props ? props.minDistance : 0.1)
-  var maxDistance = Math.log('maxDistance' in props ? props.maxDistance : 1000)
+  var minDistance = Math.log('minDistance' in props ? props.minDistance : 0.1);
+  var maxDistance = Math.log('maxDistance' in props ? props.maxDistance : 1000);
 
-  var ddistance = 0
+  var ddistance = 0;
 
-  var prevX = 0
-  var prevY = 0
+  var prevX = 0;
+  var prevY = 0;
 
   if (isBrowser && props.mouse !== false) {
     mouseChange(function (buttons, x, y) {
       if (buttons & 1) {
-        var dx = (x - prevX) / window.innerWidth
-        var dy = (y - prevY) / window.innerHeight
-        var w = Math.max(cameraState.distance, 0.5)
+        var dx = (x - prevX) / window.innerWidth;
+        var dy = (y - prevY) / window.innerHeight;
+        var w = Math.max(cameraState.distance, 0.5);
 
-        cameraState.dtheta += w * dx
-        cameraState.dphi += w * dy
+        cameraState.dtheta += w * dx;
+        cameraState.dphi += w * dy;
       }
-      prevX = x
-      prevY = y
-    })
+      prevX = x;
+      prevY = y;
+    });
     mouseWheel(function (dx, dy) {
-      ddistance += dy / window.innerHeight
-    })
+      ddistance += dy / window.innerHeight;
+    });
   }
 
-  function damp (x) {
-    var xd = x * damping
+  function damp(x) {
+    var xd = x * damping;
     if (Math.abs(xd) < 0.1) {
-      return 0
+      return 0;
     }
-    return xd
+    return xd;
   }
 
-  function clamp (x, lo, hi) {
-    return Math.min(Math.max(x, lo), hi)
+  function clamp(x, lo, hi) {
+    return Math.min(Math.max(x, lo), hi);
   }
 
-  function updateCamera (props) {
+  function updateCamera(props) {
     Object.keys(props).forEach(function (prop) {
-      cameraState[prop] = props[prop]
-    })
+      cameraState[prop] = props[prop];
+    });
 
-    var center = cameraState.center
-    var eye = cameraState.eye
-    var up = cameraState.up
-    var dtheta = cameraState.dtheta
-    var dphi = cameraState.dphi
+    var center = cameraState.center;
+    var eye = cameraState.eye;
+    var up = cameraState.up;
+    var dtheta = cameraState.dtheta;
+    var dphi = cameraState.dphi;
 
-    cameraState.theta += dtheta
-    cameraState.phi = clamp(
-      cameraState.phi + dphi,
-      -Math.PI / 2.0,
-      Math.PI / 2.0)
-    cameraState.distance = clamp(
-      cameraState.distance + ddistance,
-      minDistance,
-      maxDistance)
+    cameraState.theta += dtheta;
+    cameraState.phi = clamp(cameraState.phi + dphi, -Math.PI / 2.0, Math.PI / 2.0);
+    cameraState.distance = clamp(cameraState.distance + ddistance, minDistance, maxDistance);
 
-    cameraState.dtheta = damp(dtheta)
-    cameraState.dphi = damp(dphi)
-    ddistance = damp(ddistance)
+    cameraState.dtheta = damp(dtheta);
+    cameraState.dphi = damp(dphi);
+    ddistance = damp(ddistance);
 
-    var theta = cameraState.theta
-    var phi = cameraState.phi
-    var r = Math.exp(cameraState.distance)
+    var theta = cameraState.theta;
+    var phi = cameraState.phi;
+    var r = Math.exp(cameraState.distance);
 
-    var vf = r * Math.sin(theta) * Math.cos(phi)
-    var vr = r * Math.cos(theta) * Math.cos(phi)
-    var vu = r * Math.sin(phi)
+    var vf = r * Math.sin(theta) * Math.cos(phi);
+    var vr = r * Math.cos(theta) * Math.cos(phi);
+    var vu = r * Math.sin(phi);
 
     for (var i = 0; i < 3; ++i) {
-      eye[i] = center[i] + vf * front[i] + vr * right[i] + vu * up[i]
+      eye[i] = center[i] + vf * front[i] + vr * right[i] + vu * up[i];
     }
 
-    lookAt(cameraState.view, eye, center, up)
+    lookAt(cameraState.view, eye, center, up);
     invert(cameraState.iview, cameraState.view);
   }
 
   var injectContext = regl({
     context: Object.assign({}, cameraState, {
       projection: function (context) {
-        perspective(cameraState.projection,
-          cameraState.fovy,
-          context.viewportWidth / context.viewportHeight,
-          cameraState.near,
-          cameraState.far)
-        if (cameraState.flipY) { cameraState.projection[5] *= -1 }
-        return cameraState.projection
+        perspective(cameraState.projection, cameraState.fovy, context.viewportWidth / context.viewportHeight, cameraState.near, cameraState.far);
+        if (cameraState.flipY) {
+          cameraState.projection[5] *= -1;
+        }
+        return cameraState.projection;
       },
       aspect: function (context) {
-        return context.viewportWidth / context.viewportHeight
+        return context.viewportWidth / context.viewportHeight;
       }
     }),
     uniforms: Object.keys(cameraState).reduce(function (uniforms, name) {
-      uniforms[name] = regl.context(name)
-      return uniforms
+      uniforms[name] = regl.context(name);
+      return uniforms;
     }, {})
-  })
+  });
 
-  function setupCamera (props, block) {
+  function setupCamera(props, block) {
     if (!block) {
-      block = props
-      props = {}
+      block = props;
+      props = {};
     }
-    updateCamera(props)
-    injectContext(block)
+    updateCamera(props);
+    injectContext(block);
   }
 
   Object.keys(cameraState).forEach(function (name) {
-    setupCamera[name] = cameraState[name]
-  })
+    setupCamera[name] = cameraState[name];
+  });
 
-  return setupCamera
+  return setupCamera;
 }
-
 },{"gl-mat4/identity":7,"gl-mat4/invert":8,"gl-mat4/lookAt":9,"gl-mat4/perspective":10,"mouse-change":19,"mouse-wheel":21}],45:[function(require,module,exports){
 'use strict';
 
-const glslify = require('glslify');
-const simplex = new (require('simplex-noise'))();
-const hsv = require('hsv-rgb');
-const tap = require('tap-to-start');
-const hasAudio = window.location.search.match(/audio=true/);
+var glslify = require('glslify');
+var simplex = new (require('simplex-noise'))();
+var hsv = require('hsv-rgb');
+var tap = require('tap-to-start');
+var hasAudio = window.location.search.match(/audio=true/);
 
 require('regl')({
   pixelRatio: 1,
-  onDone: (err, regl) => {
+  onDone: function (err, regl) {
     if (err) return require('fail-nicely')(err);
     tap({
       foreground: '#fff',
       background: '#2a3235',
       accent: '#2a3235',
       skip: !hasAudio
-    }, () => run(regl));
+    }, function () {
+      return run(regl);
+    });
   }
 });
 
-function randomColor (a, b) {
-  let h = ((simplex.noise2D(a, b) + 1) % 1) * 360;
-  let col = hsv(h, 30, 100).map(i => i / 255);
+function randomColor(a, b) {
+  var h = (simplex.noise2D(a, b) + 1) % 1 * 360;
+  var col = hsv(h, 30, 100).map(function (i) {
+    return i / 255;
+  });
   return col;
 }
 
 function run(regl) {
-  let analyser;
-  let scaleContribution = 1;
+  var analyser = void 0;
+  var scaleContribution = 1;
   if (hasAudio) {
-    var audio = require('./audio')((err, src, json, audio, a) => {
+    var audio = require('./audio')(function (err, src, json, audio, a) {
       analyser = a;
       scaleContribution = 0;
     });
   }
 
-  const camera = require('./camera')(regl, {
-    distance: 5,
+  var camera = require('./camera')(regl, {
+    distance: 5
   });
 
-  const lighting = require('./lighting')(regl, {
-    lights: [
-      {position: [100, 100, 100],  color: [0.6, 0.8, 1, 0.4], power: 1},
-      {position: [100, 100, -100], color: [0.6, 1, 0.8, 0.4], power: 1},
-      {position: [40, -100, -40],   color: [1, 0.8, 0.6, 0.4], power: 5},
-    ],
+  var lighting = require('./lighting')(regl, {
+    lights: [{ position: [100, 100, 100], color: [0.6, 0.8, 1, 0.4], power: 1 }, { position: [100, 100, -100], color: [0.6, 1, 0.8, 0.4], power: 1 }, { position: [40, -100, -40], color: [1, 0.8, 0.6, 0.4], power: 5 }],
     ambient: [1, 1, 1, 0.1]
   });
 
-  let drawBlob = require('./blob')(regl);
-  let drawBg = require('./bg')(regl);
+  var drawBlob = require('./blob')(regl);
+  var drawBg = require('./bg')(regl);
 
-  let t0 = Date.now();
-  let t = 0;
-  let scale = 0;
-  let st = 0;
-  let avg = 0;
+  var t0 = Date.now();
+  var t = 0;
+  var scale = 0;
+  var st = 0;
+  var avg = 0;
 
-  let scaleFunc = (t) => Math.pow(0.5 + 0.5 * Math.sin(t * Math.PI * 2), 20);
+  var scaleFunc = function (t) {
+    return Math.pow(0.5 + 0.5 * Math.sin(t * Math.PI * 2), 20);
+  };
 
-  regl.frame(() => {
-    let t1 = Date.now();
-    let dt = (Date.now() - t0) / 1000.0;
+  regl.frame(function () {
+    var t1 = Date.now();
+    var dt = (Date.now() - t0) / 1000.0;
     t += dt;
 
-    let sum = 0;
+    var sum = 0;
     if (analyser) {
-      let w = analyser.frequencies();
-      let cnt = 0;
-      for (let i = w.length * 1 / 8; i < w.length * 1/4; i++) {
+      var w = analyser.frequencies();
+      var cnt = 0;
+      for (var i = w.length * 1 / 8; i < w.length * 1 / 4; i++) {
         cnt++;
         sum += w[i];
       }
       sum /= cnt;
-      let decay = Math.exp(-dt / 5);
+      var decay = Math.exp(-dt / 5);
       avg = decay * avg + (1 - decay) * sum;
     }
 
-    let level = sum - avg;
+    var level = sum - avg;
 
     scale = level * 0.01 + 1.0 * scaleFunc(t) * scaleContribution;
     st += dt * (0.3 + 5.0 * scale);
@@ -12547,9 +12525,9 @@ function run(regl) {
     lighting.setColor(1, randomColor(8, st / 10));
     lighting.setColor(2, randomColor(20, st / 10));
 
-    lighting(() => {
-      camera(() => {
-        drawBg({t: t});
+    lighting(function () {
+      camera(function () {
+        drawBg({ t: t });
 
         drawBlob({
           t: t,
@@ -12560,27 +12538,34 @@ function run(regl) {
     });
   });
 }
-
 },{"./audio":41,"./bg":42,"./blob":43,"./camera":44,"./lighting":46,"fail-nicely":6,"glslify":12,"hsv-rgb":15,"regl":29,"simplex-noise":30,"tap-to-start":35}],46:[function(require,module,exports){
 module.exports = function (regl, opts) {
   opts = opts || {};
   var lights = opts.lights || [];
   var name = opts.name || 'light';
 
-  var uniforms = {}
+  var uniforms = {};
   for (i = 0; i < lights.length; i++) {
     (function (light) {
-      uniforms[name + i + 'position'] = () => light.position;
-      uniforms[name + i + 'color'] = () => light.color;
-      uniforms[name + i + 'power'] = () => light.power;
-    }(lights[i]));
+      uniforms[name + i + 'position'] = function () {
+        return light.position;
+      };
+      uniforms[name + i + 'color'] = function () {
+        return light.color;
+      };
+      uniforms[name + i + 'power'] = function () {
+        return light.power;
+      };
+    })(lights[i]);
   }
 
   if (opts.ambient) {
-    uniforms[name + 'ambient'] = () => opts.ambient;
+    uniforms[name + 'ambient'] = function () {
+      return opts.ambient;
+    };
   }
 
-  let ret = regl({
+  var ret = regl({
     uniforms: uniforms
   });
 
@@ -12591,7 +12576,6 @@ module.exports = function (regl, opts) {
 
   return ret;
 };
-
 },{}]},{},[45]);
 </script>
 </html>
