@@ -14,19 +14,20 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 
 ## [regl](https://github.com/regl-project/regl)
 
-- [⭐️⭐️⭐️ schrodinger](http://rickyreusser.com/demos/schrodinger/): A response to [this tweet](https://mobile.twitter.com/mathteacher1729/status/789489981966409728)
 - [⭐️⭐️⭐️⭐️⭐️ lorenz](http://rickyreusser.com/demos/lorenz/): A 500000 particle Lorenz Attractor, computed and displayed in WebGL
-- [⭐️⭐️ gravity](http://rickyreusser.com/demos/gravity/): [WIP] 2D not-particularly-physical gravity as a semi-lagrangian continuum. 
 - [⭐️⭐️⭐️⭐️ waves](http://rickyreusser.com/demos/waves/): A 2D wave equation on the GPU
+- [⭐️⭐️⭐️⭐️ elastodynamics](http://rickyreusser.com/demos/elastodynamics/) Rayleigh waves on the GPU!
+- [⭐️⭐️⭐️⭐️ lamb-wave-dispersion](http://rickyreusser.com/complex-zeros-delves-lyness/lamb.html) Plotting the dispersion equation for [Lamb waves](https://en.wikipedia.org/wiki/Lamb_waves) in the complex domain. (Root-finding didn't work so well, but at least it was real trippy.)
+- [⭐️⭐️⭐️ gravity](http://rickyreusser.com/demos/gravity/): [WIP] 2D not-particularly-physical gravity as a semi-lagrangian continuum. 
+- [⭐️⭐️⭐️ schrodinger](http://rickyreusser.com/demos/schrodinger/): A response to [this tweet](https://mobile.twitter.com/mathteacher1729/status/789489981966409728)
 - [⭐️⭐️⭐️ regl-scan](http://rickyreusser.com/demos/regl-scan/): The [scan (prefix-sum)](https://en.wikipedia.org/wiki/Prefix_sum) operation on the GPU
 - [⭐️⭐️⭐️ regl-cwise](http://rickyreusser.com/demos/regl-cwise/): A subset of [cwise](https://github.com/scijs/cwise) on the GPU
 - [⭐️⭐️⭐️ carpet](http://rickyreusser.com/demos/carpet/): Carpet plots with regl
-- [⭐️⭐️⭐️⭐️ elastodynamics](http://rickyreusser.com/demos/elastodynamics/) Rayleigh waves on the GPU!
 - [⭐️⭐️⭐️ smooth-life](http://rickyreusser.com/demos/smooth-life/) SmoothLife on the GPU 
 - [⭐️⭐️⭐️ domain coloring](http://rickyreusser.com/glsl-domain-coloring/eqn.html) Domain coloring for complex analytic functions (see: [repo](https://github.com/rreusser/glsl-domain-coloring))
 - [⭐️⭐️ complex-zeros-delves-lyness](http://rickyreusser.com/complex-zeros-delves-lyness/zeros.html) Uses contour integrals to try to find all the zeros of a complex analytic function within the current view.
-- [⭐️⭐️⭐️⭐️ lamb-wave-dispersion](http://rickyreusser.com/complex-zeros-delves-lyness/lamb.html) Plotting the dispersion equation for [Lamb waves](https://en.wikipedia.org/wiki/Lamb_waves) in the complex domain. (Root-finding didn't work so well, but at least it was real trippy.)
 - [⭐️⭐️ ndarray-transfinite-interpolation](http://demos.rickyreusser.com/ndarray-transfinite-interpolation/volume.html) A module for transfinite interpolation. [See repo here](https://github.com/rreusser/ndarray-transfinite-interpolation#ndarray-transfinite-interpolation)
+- [⭐️ catmull-rom](http://rickyreusser.com/demos/catmull-rom/): Testing out Catmull-Rom splines
 
 ## [three.js](https://threejs.org/)
 
