@@ -13,7 +13,11 @@ var repoUrl = 'https://github.com/rreusser/demos/tree/master/regl-sketches';
 var webUrlBase = 'http://rickyreusser.com/demos/regl-sketches/';
 var srcUrlBase = 'https://github.com/rreusser/demos/blob/master/regl-sketches/';
 
-var ghcornerify = require('github-cornerify')({url: repoUrl});
+var ghcornerify = require('github-cornerify')({
+  url: repoUrl,
+  fg: '#fff',
+  bg: '#2a3235',
+});
 
 if (!process.argv[2]) {
   console.error(`[0;31mOops! You need to specify a source file.
@@ -71,7 +75,7 @@ function processFiles (pattern) {
       b.transform(require('glslify'));
       b.bundle()
         .pipe(indexhtmlify())
-        .pipe(appendIndexLink)
+        //.pipe(appendIndexLink)
         .pipe(metadataify({
           name: humanname
         }))
