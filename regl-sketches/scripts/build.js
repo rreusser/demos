@@ -15,8 +15,8 @@ var srcUrlBase = 'https://github.com/rreusser/demos/blob/master/regl-sketches/';
 
 var ghcornerify = require('github-cornerify')({
   url: repoUrl,
-  fg: '#fff',
-  bg: '#2a3235',
+  bg: '#fff',
+  fg: '#2a3235',
 });
 
 if (!process.argv[2]) {
