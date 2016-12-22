@@ -9,9 +9,9 @@ var metadataify = require('metadataify');
 var hyperstream = require('hyperstream');
 var humanize = require('humanize-string');
 
-var repoUrl = 'https://github.com/rreusser/demos/tree/master/plotly-unsupported';
-var webUrlBase = 'http://rickyreusser.com/demos/plotly-unsupported/';
-var srcUrlBase = 'https://github.com/rreusser/demos/blob/master/plotly-unsupported/';
+var repoUrl = 'https://github.com/rreusser/demos/tree/master/regl-sketches';
+var webUrlBase = 'http://rickyreusser.com/demos/regl-sketches/';
+var srcUrlBase = 'https://github.com/rreusser/demos/blob/master/regl-sketches/';
 
 var ghcornerify = require('github-cornerify')({url: repoUrl});
 
