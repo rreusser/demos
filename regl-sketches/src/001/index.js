@@ -4,6 +4,7 @@ const glslify = require('glslify');
 const simplex = new (require('simplex-noise'))();
 const hsv = require('hsv-rgb');
 const tap = require('tap-to-start');
+const hasAudio = window.location.search.match(/audio=true/);
 
 require('regl')({
   pixelRatio: 1,
@@ -12,7 +13,8 @@ require('regl')({
     tap({
       foreground: '#fff',
       background: '#2a3235',
-      accent: '#2a3235'
+      accent: '#2a3235',
+      skip: !hasAudio
     }, () => run(regl));
   }
 });
@@ -26,7 +28,7 @@ function randomColor (a, b) {
 function run(regl) {
   let analyser;
   let scaleContribution = 1;
-  if (false) {
+  if (hasAudio) {
     var audio = require('./audio')((err, src, json, audio, a) => {
       analyser = a;
       scaleContribution = 0;
