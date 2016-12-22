@@ -3,23 +3,19 @@
 const glslify = require('glslify');
 const simplex = new (require('simplex-noise'))();
 const hsv = require('hsv-rgb');
+const tap = require('tap-to-start');
 
 require('regl')({
   pixelRatio: 1,
   onDone: (err, regl) => {
     if (err) return require('fail-nicely')(err);
-    run(regl);
+    tap({
+      foreground: '#fff',
+      background: '#2a3235',
+      accent: '#2a3235'
+    }, () => run(regl));
   }
 });
-
-let analyser;
-let scaleContribution = 1;
-if (false) {
-  var audio = require('./audio')((err, src, json, audio, a) => {
-    analyser = a;
-    scaleContribution = 0;
-  });
-}
 
 function randomColor (a, b) {
   let h = ((simplex.noise2D(a, b) + 1) % 1) * 360;
@@ -28,6 +24,15 @@ function randomColor (a, b) {
 }
 
 function run(regl) {
+  let analyser;
+  let scaleContribution = 1;
+  if (false) {
+    var audio = require('./audio')((err, src, json, audio, a) => {
+      analyser = a;
+      scaleContribution = 0;
+    });
+  }
+
   const camera = require('./camera')(regl, {
     distance: 5,
   });

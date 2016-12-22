@@ -14,7 +14,7 @@ module.exports = function (regl) {
       attribute vec3 xyz, normal;
 
       float noise (vec4 p, float t) {
-        return pow(snoise4(p), 2.0) + 0.2 * sin(3.0 * p.y + 1.0 * t * 3.14159) * p.y;
+        return pow(abs(snoise4(p)), 2.0) + 0.2 * sin(3.0 * p.y + 1.0 * t * 3.14159) * p.y;
       }
 
       void main () {

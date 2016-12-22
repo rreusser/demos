@@ -115,6 +115,136 @@ function angleNormals(cells, positions) {
 },{}],2:[function(require,module,exports){
 
 },{}],3:[function(require,module,exports){
+
+/**
+ * Expose `parse`.
+ */
+
+module.exports = parse;
+
+/**
+ * Tests for browser support.
+ */
+
+var innerHTMLBug = false;
+var bugTestDiv;
+if (typeof document !== 'undefined') {
+  bugTestDiv = document.createElement('div');
+  // Setup
+  bugTestDiv.innerHTML = '  <link/><table></table><a href="/a">a</a><input type="checkbox"/>';
+  // Make sure that link elements get serialized correctly by innerHTML
+  // This requires a wrapper element in IE
+  innerHTMLBug = !bugTestDiv.getElementsByTagName('link').length;
+  bugTestDiv = undefined;
+}
+
+/**
+ * Wrap map from jquery.
+ */
+
+var map = {
+  legend: [1, '<fieldset>', '</fieldset>'],
+  tr: [2, '<table><tbody>', '</tbody></table>'],
+  col: [2, '<table><tbody></tbody><colgroup>', '</colgroup></table>'],
+  // for script/link/style tags to work in IE6-8, you have to wrap
+  // in a div with a non-whitespace character in front, ha!
+  _default: innerHTMLBug ? [1, 'X<div>', '</div>'] : [0, '', '']
+};
+
+map.td =
+map.th = [3, '<table><tbody><tr>', '</tr></tbody></table>'];
+
+map.option =
+map.optgroup = [1, '<select multiple="multiple">', '</select>'];
+
+map.thead =
+map.tbody =
+map.colgroup =
+map.caption =
+map.tfoot = [1, '<table>', '</table>'];
+
+map.polyline =
+map.ellipse =
+map.polygon =
+map.circle =
+map.text =
+map.line =
+map.path =
+map.rect =
+map.g = [1, '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">','</svg>'];
+
+/**
+ * Parse `html` and return a DOM Node instance, which could be a TextNode,
+ * HTML DOM Node of some kind (<div> for example), or a DocumentFragment
+ * instance, depending on the contents of the `html` string.
+ *
+ * @param {String} html - HTML string to "domify"
+ * @param {Document} doc - The `document` instance to create the Node for
+ * @return {DOMNode} the TextNode, DOM Node, or DocumentFragment instance
+ * @api private
+ */
+
+function parse(html, doc) {
+  if ('string' != typeof html) throw new TypeError('String expected');
+
+  // default to the global `document` object
+  if (!doc) doc = document;
+
+  // tag name
+  var m = /<([\w:]+)/.exec(html);
+  if (!m) return doc.createTextNode(html);
+
+  html = html.replace(/^\s+|\s+$/g, ''); // Remove leading/trailing whitespace
+
+  var tag = m[1];
+
+  // body support
+  if (tag == 'body') {
+    var el = doc.createElement('html');
+    el.innerHTML = html;
+    return el.removeChild(el.lastChild);
+  }
+
+  // wrap map
+  var wrap = map[tag] || map._default;
+  var depth = wrap[0];
+  var prefix = wrap[1];
+  var suffix = wrap[2];
+  var el = doc.createElement('div');
+  el.innerHTML = prefix + html + suffix;
+  while (depth--) el = el.lastChild;
+
+  // one element
+  if (el.firstChild == el.lastChild) {
+    return el.removeChild(el.firstChild);
+  }
+
+  // several elements
+  var fragment = doc.createDocumentFragment();
+  while (el.firstChild) {
+    fragment.appendChild(el.removeChild(el.firstChild));
+  }
+
+  return fragment;
+}
+
+},{}],4:[function(require,module,exports){
+function circOut(t) {
+  return Math.sqrt(1 - ( --t * t ))
+}
+
+module.exports = circOut
+},{}],5:[function(require,module,exports){
+function expoInOut(t) {
+  return (t === 0.0 || t === 1.0)
+    ? t
+    : t < 0.5
+      ? +0.5 * Math.pow(2.0, (20.0 * t) - 10.0)
+      : -0.5 * Math.pow(2.0, 10.0 - (t * 20.0)) + 1.0
+}
+
+module.exports = expoInOut
+},{}],6:[function(require,module,exports){
 'use strict';
 
 var h = require('h');
@@ -183,7 +313,7 @@ function failNicely (msg, options) {
   ]));
 }
 
-},{"h":11}],4:[function(require,module,exports){
+},{"h":14}],7:[function(require,module,exports){
 module.exports = identity;
 
 /**
@@ -211,7 +341,7 @@ function identity(out) {
     out[15] = 1;
     return out;
 };
-},{}],5:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = invert;
 
 /**
@@ -267,7 +397,7 @@ function invert(out, a) {
 
     return out;
 };
-},{}],6:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var identity = require('./identity');
 
 module.exports = lookAt;
@@ -358,7 +488,7 @@ function lookAt(out, eye, center, up) {
 
     return out;
 };
-},{"./identity":4}],7:[function(require,module,exports){
+},{"./identity":7}],10:[function(require,module,exports){
 module.exports = perspective;
 
 /**
@@ -392,7 +522,7 @@ function perspective(out, fovy, aspect, near, far) {
     out[15] = 0;
     return out;
 };
-},{}],8:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 (function (global){
 if (typeof window !== "undefined") {
     module.exports = window
@@ -403,7 +533,7 @@ if (typeof window !== "undefined") {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],9:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = function(strings) {
   if (typeof strings === 'string') strings = [strings]
   var exprs = [].slice.call(arguments,1)
@@ -415,7 +545,7 @@ module.exports = function(strings) {
   return parts.join('')
 }
 
-},{}],10:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = asString
 module.exports.add = append
 
@@ -455,7 +585,7 @@ function makeArray(arr) {
   return Array.isArray(arr) ? arr : [arr]
 }
 
-},{}],11:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 ;(function () {
 
 function h() {
@@ -520,7 +650,7 @@ else
   this.h = h
 })()
 
-},{}],12:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 // http://www.rapidtables.com/convert/color/hsv-to-rgb.htm
 var round = Math.round
 
@@ -549,7 +679,7 @@ module.exports = function (h, s, v) {
   ]
 }
 
-},{}],13:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var normalize = require('vectors/normalize-nd')
 
 module.exports = icosphere
@@ -696,7 +826,7 @@ function subdivide(complex) {
   }
 }
 
-},{"vectors/normalize-nd":28}],14:[function(require,module,exports){
+},{"vectors/normalize-nd":37}],17:[function(require,module,exports){
 var inserted = [];
 
 module.exports = function (css) {
@@ -715,7 +845,7 @@ module.exports = function (css) {
     }
 };
 
-},{}],15:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 
 /**
  * Expose `render()`.`
@@ -866,7 +996,7 @@ function escape(html) {
     .replace(/>/g, '&gt;');
 }
 
-},{}],16:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -1073,7 +1203,7 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":17}],17:[function(require,module,exports){
+},{"mouse-event":20}],20:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -1135,7 +1265,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],18:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict'
 
 var toPX = require('to-px')
@@ -1177,7 +1307,7 @@ function mouseWheelListen(element, callback, noScroll) {
   return listener
 }
 
-},{"to-px":27}],19:[function(require,module,exports){
+},{"to-px":36}],22:[function(require,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -1188,7 +1318,225 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],20:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
+(function (process){
+// Generated by CoffeeScript 1.7.1
+(function() {
+  var getNanoSeconds, hrtime, loadTime;
+
+  if ((typeof performance !== "undefined" && performance !== null) && performance.now) {
+    module.exports = function() {
+      return performance.now();
+    };
+  } else if ((typeof process !== "undefined" && process !== null) && process.hrtime) {
+    module.exports = function() {
+      return (getNanoSeconds() - loadTime) / 1e6;
+    };
+    hrtime = process.hrtime;
+    getNanoSeconds = function() {
+      var hr;
+      hr = hrtime();
+      return hr[0] * 1e9 + hr[1];
+    };
+    loadTime = getNanoSeconds();
+  } else if (Date.now) {
+    module.exports = function() {
+      return Date.now() - loadTime;
+    };
+    loadTime = Date.now();
+  } else {
+    module.exports = function() {
+      return new Date().getTime() - loadTime;
+    };
+    loadTime = new Date().getTime();
+  }
+
+}).call(this);
+
+}).call(this,require('_process'))
+},{"_process":24}],24:[function(require,module,exports){
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}],25:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1274,7 +1622,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],21:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1361,13 +1709,89 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],22:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":20,"./encode":21}],23:[function(require,module,exports){
+},{"./decode":25,"./encode":26}],28:[function(require,module,exports){
+(function (global){
+var now = require('performance-now')
+  , root = typeof window === 'undefined' ? global : window
+  , vendors = ['moz', 'webkit']
+  , suffix = 'AnimationFrame'
+  , raf = root['request' + suffix]
+  , caf = root['cancel' + suffix] || root['cancelRequest' + suffix]
+
+for(var i = 0; !raf && i < vendors.length; i++) {
+  raf = root[vendors[i] + 'Request' + suffix]
+  caf = root[vendors[i] + 'Cancel' + suffix]
+      || root[vendors[i] + 'CancelRequest' + suffix]
+}
+
+// Some versions of FF have rAF but not cAF
+if(!raf || !caf) {
+  var last = 0
+    , id = 0
+    , queue = []
+    , frameDuration = 1000 / 60
+
+  raf = function(callback) {
+    if(queue.length === 0) {
+      var _now = now()
+        , next = Math.max(0, frameDuration - (_now - last))
+      last = next + _now
+      setTimeout(function() {
+        var cp = queue.slice(0)
+        // Clear queue here to prevent
+        // callbacks from appending listeners
+        // to the current frame's queue
+        queue.length = 0
+        for(var i = 0; i < cp.length; i++) {
+          if(!cp[i].cancelled) {
+            try{
+              cp[i].callback(last)
+            } catch(e) {
+              setTimeout(function() { throw e }, 0)
+            }
+          }
+        }
+      }, Math.round(next))
+    }
+    queue.push({
+      handle: ++id,
+      callback: callback,
+      cancelled: false
+    })
+    return id
+  }
+
+  caf = function(handle) {
+    for(var i = 0; i < queue.length; i++) {
+      if(queue[i].handle === handle) {
+        queue[i].cancelled = true
+      }
+    }
+  }
+}
+
+module.exports = function(fn) {
+  // Wrap in a new function to prevent
+  // `cancel` potentially being assigned
+  // to the native rAF function
+  return raf.call(root, fn)
+}
+module.exports.cancel = function() {
+  caf.apply(root, arguments)
+}
+module.exports.polyfill = function() {
+  root.requestAnimationFrame = raf
+  root.cancelAnimationFrame = caf
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"performance-now":23}],29:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
@@ -10872,7 +11296,7 @@ return wrapREGL;
 })));
 
 
-},{}],24:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /*
  * A fast javascript implementation of simplex noise by Jonas Wagner
  *
@@ -11278,7 +11702,7 @@ if (typeof module !== 'undefined') {
 
 })();
 
-},{}],25:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var resolve = require('soundcloud-resolve')
 var fonts = require('google-fonts')
 var minstache = require('minstache')
@@ -11343,7 +11767,7 @@ function badge(options, callback) {
   return div
 }
 
-},{"fs":2,"google-fonts":10,"insert-css":14,"minstache":15,"soundcloud-resolve":26}],26:[function(require,module,exports){
+},{"fs":2,"google-fonts":13,"insert-css":17,"minstache":18,"soundcloud-resolve":32}],32:[function(require,module,exports){
 var qs  = require('querystring')
 var xhr = require('xhr')
 
@@ -11376,7 +11800,140 @@ function resolve(id, goal, callback) {
   })
 }
 
-},{"querystring":22,"xhr":30}],27:[function(require,module,exports){
+},{"querystring":27,"xhr":39}],33:[function(require,module,exports){
+var has = require('has');
+
+module.exports = function (name, attr) {
+    var elem = document.createElementNS('http://www.w3.org/2000/svg', name);
+    if (!attr) return elem;
+    for (var key in attr) {
+        if (!has(attr, key)) continue;
+        var nkey = key.replace(/([a-z])([A-Z])/g, function (_, a, b) {
+            return a + '-' + b.toLowerCase();
+        });
+        elem.setAttribute(nkey, attr[key]);
+    }
+    return elem;
+}
+
+},{"has":34}],34:[function(require,module,exports){
+var hasOwn = Object.prototype.hasOwnProperty;
+
+
+module.exports = function has(obj, property) {
+  return hasOwn.call(obj, property);
+};
+
+},{}],35:[function(require,module,exports){
+module.exports = tapToStart
+
+var domify = require('domify')
+var circ = require('eases/circ-out')
+var expo = require('eases/expo-in-out')
+var SVG = require('svg-create-element')
+var raf = require('raf')
+
+function tapToStart (options, done) {
+  options = options || {}
+
+  var bgColor = options.background || 'transparent'
+  var fgColor = options.foreground || '#000'
+  var acColor = options.accent || options.background || '#fff'
+  var parentEl = options.parent || document.body
+  if (options.skip) return raf(done)
+
+  var container = SVG('svg')
+  var pulser = container.appendChild(SVG('circle'))
+  var circle = container.appendChild(SVG('circle'))
+  var start = Date.now()
+  var touchTime = null
+
+  container.style.position = 'absolute'
+  container.style.width = '100%'
+  container.style.height = '100%'
+  container.style.left = 0
+  container.style.top = 0
+  container.style.background = bgColor
+  container.style.cursor = 'pointer'
+
+  circle.setAttribute('r', 50)
+  circle.setAttribute('fill', fgColor)
+  pulser.setAttribute('fill', fgColor)
+
+  // Thanks for the icon Nick Bluth!
+  // https://thenounproject.com/npbluth/collection/cursors/?oq=cursor&cidx=1&i=415116
+  var icon = options.icon || domify('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;" xml:space="preserve"><g><path d="M72.3,43.2c-1.1-0.1-2.1,0.1-3,0.5c-0.9-2.5-3.1-4.4-5.9-4.5c-1.3-0.1-2.5,0.2-3.6,0.8c-1.1-1.9-3.1-3.2-5.3-3.4   c-0.9-0.1-1.8,0.1-2.6,0.4v-6.5c0-3.7-2.8-6.7-6.3-6.9c-1.8-0.1-3.6,0.5-4.9,1.8c-1.3,1.2-2.1,3-2.1,4.8v24.6l-1.9-1.7   c-3.1-2.5-5.9-3-8.4-1.6c-1.5,0.9-2.6,2.4-3,4.2c-0.4,1.8-0.1,3.8,1,5.4l15.6,23.5v6.2c0,1.2,1,2.2,2.2,2.2h26.7   c1.2,0,2.2-1,2.2-2.2v-8.3l4.5-8.3c0.8-1.4,1.1-2.9,1.1-4.5V50C78.6,46.4,75.8,43.4,72.3,43.2z M74.6,61.1l-0.4,8.7   c0,0.9-0.2,1.7-0.6,2.4L68.8,81c-0.2,0.3-0.3,0.7-0.3,1v6.7H46.2V84c0-0.4-0.1-0.8-0.4-1.2l-16-24c-0.4-0.6-0.5-1.3-0.4-2   c0.1-0.3,0.3-1,1-1.4c0.4-0.2,1.2-0.7,3.5,1.1l3.7,3.2c0.6,0.6,1,1.4,1,2.2v1.4c0,1.2,1,2.2,2.2,2.2s2.2-1,2.2-2.2v-3.7V57V30.3   c0-0.6,0.3-1.2,0.7-1.7c0.5-0.4,1.1-0.7,1.7-0.6c1.2,0.1,2.2,1.2,2.2,2.5v7.8v4.9v10.1c0,1.2,1,2.2,2.2,2.2c1.2,0,2.2-1,2.2-2.2   v-10c0-0.6,0.3-1.2,0.7-1.7c0.4-0.4,1.1-0.7,1.7-0.6c1.2,0.1,2.2,1.2,2.2,2.5v0.6v1.7v7.6c0,1.2,1,2.2,2.2,2.2c1.2,0,2.2-1,2.2-2.2   v-7.6c0-0.6,0.3-1.2,0.7-1.7c0.5-0.4,1.1-0.6,1.7-0.6c1.2,0.1,2.2,1.2,2.2,2.5v1v2.7v6.5c0,1.2,1,2.2,2.2,2.2c1.2,0,2.2-1,2.2-2.2   v-6.5c0-0.6,0.3-1.2,0.7-1.7c0.5-0.4,1.1-0.6,1.7-0.6c1.2,0.1,2.2,1.2,2.2,2.5V61.1z"></path><path d="M45,18.5c1.1,0,2-0.9,2-1.9V7.8c0-1.1-0.9-2-2-2s-2,0.9-2,2v8.7C43,17.6,43.9,18.5,45,18.5z"></path><path d="M53.9,21.2c0.5,0,1-0.2,1.4-0.6l6.2-6.2c0.8-0.8,0.8-2,0-2.8c-0.8-0.8-2-0.8-2.8,0l-6.2,6.2c-0.8,0.8-0.8,2,0,2.8   C52.9,21,53.4,21.2,53.9,21.2z"></path><path d="M34.7,20.6c0.4,0.4,0.9,0.6,1.4,0.6s1-0.2,1.4-0.6c0.8-0.8,0.8-2,0-2.8l-6.2-6.2c-0.8-0.8-2-0.8-2.8,0   c-0.8,0.8-0.8,2,0,2.8L34.7,20.6z"></path><path d="M34.3,27.1c0-1.1-0.9-2-2-2h-8.8c-1.1,0-2,0.9-2,2c0,1.1,0.9,2,2,2h8.8C33.4,29.1,34.3,28.2,34.3,27.1z"></path><path d="M55.5,27.1c0,1.1,0.9,2,2,2h8.8c1.1,0,2-0.9,2-2c0-1.1-0.9-2-2-2h-8.8C56.4,25.1,55.5,26,55.5,27.1z"></path></g></svg>')
+    .querySelector('g')
+
+  var iconPaths = icon.querySelectorAll('path')
+  for (var i = 0; i < iconPaths.length; i++) {
+    iconPaths[i].setAttribute('fill', acColor)
+  }
+  container.appendChild(icon)
+  icon.setAttribute('opacity', 0.9)
+
+  render()
+  resize()
+
+  parentEl.appendChild(container)
+
+  window.addEventListener('resize', resize, false)
+  window.addEventListener('touchstart', tap, false)
+  window.addEventListener('mousedown', tap, false)
+
+  function tap (e) {
+    window.removeEventListener('touchstart', tap, false)
+    window.removeEventListener('mousedown', tap, false)
+    touchTime = Date.now()
+    done()
+    e && e.preventDefault()
+    return false
+  }
+
+  function render () {
+    var currTime = Date.now()
+    if (touchTime && currTime - touchTime > 800) return cleanup()
+    raf(render)
+
+    var tp = circ(((currTime - start - 350) / 1500) % 1) || 0
+    var tt = expo(Math.max(0, (currTime - touchTime) / 800)) || 0
+    var ts = expo(Math.min(1, (currTime - start) / 500)) || 0
+
+    if (touchTime !== null) {
+      var tt1 = Math.min(1, tt * 2)
+      var tt2 = Math.max(0, tt * 2 - 1)
+
+      circle.setAttribute('r', 50 * (1 - tt))
+      icon.setAttribute('opacity', 1 - tt1)
+      container.style.opacity = 1 - tt2
+    } else {
+      tt = 0
+      circle.setAttribute('r', 50 * ts)
+      icon.setAttribute('opacity', ts)
+    }
+
+    pulser.setAttribute('opacity', ts * (1 - tp) * 0.5 * (1 - tt))
+    pulser.setAttribute('r', 50 + tp * 70)
+  }
+
+  function cleanup () {
+    window.removeEventListener('resize', resize, false)
+    document.body.removeChild(container)
+  }
+
+  function resize () {
+    circle.setAttribute('cx', window.innerWidth / 2)
+    circle.setAttribute('cy', window.innerHeight / 2)
+    pulser.setAttribute('cx', window.innerWidth / 2)
+    pulser.setAttribute('cy', window.innerHeight / 2)
+
+    var ix = window.innerWidth / 2 - 37
+    var iy = window.innerHeight / 2 - 36
+    icon.setAttribute('transform', 'translate(' + ix + ',' + iy + ') scale(0.7)')
+  }
+}
+
+},{"domify":3,"eases/circ-out":4,"eases/expo-in-out":5,"raf":28,"svg-create-element":33}],36:[function(require,module,exports){
 'use strict'
 
 var parseUnit = require('parse-unit')
@@ -11437,7 +11994,7 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":19}],28:[function(require,module,exports){
+},{"parse-unit":22}],37:[function(require,module,exports){
 module.exports = normalize
 
 function normalize(vec) {
@@ -11459,7 +12016,7 @@ function normalize(vec) {
   return vec
 }
 
-},{}],29:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 var AudioContext = window.AudioContext || window.webkitAudioContext
 
 module.exports = WebAudioAnalyser
@@ -11539,7 +12096,7 @@ WebAudioAnalyser.prototype.frequencies = function(output, channel) {
   return output
 }
 
-},{}],30:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 var window = require("global/window")
 var once = require("once")
 
@@ -11645,7 +12202,7 @@ function createXHR(options, callback) {
 
 function noop() {}
 
-},{"global/window":8,"once":31}],31:[function(require,module,exports){
+},{"global/window":11,"once":40}],40:[function(require,module,exports){
 module.exports = once
 
 once.proto = once(function () {
@@ -11666,7 +12223,7 @@ function once (fn) {
   }
 }
 
-},{}],32:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 const analyse = require('web-audio-analyser');
 
 module.exports = function (cb) {
@@ -11690,7 +12247,7 @@ module.exports = function (cb) {
   });
 }
 
-},{"soundcloud-badge":25,"web-audio-analyser":29}],33:[function(require,module,exports){
+},{"soundcloud-badge":31,"web-audio-analyser":38}],42:[function(require,module,exports){
 const glslify = require('glslify');
 
 module.exports = function (regl) {
@@ -11718,14 +12275,14 @@ module.exports = function (regl) {
   });
 };
 
-},{"glslify":9}],34:[function(require,module,exports){
+},{"glslify":12}],43:[function(require,module,exports){
 const glslify = require('glslify');
 
 module.exports = function (regl) {
   const ico = require('icosphere')(5);
 
   return regl({
-    vert: glslify(["\n      precision mediump float;\n#define GLSLIFY 1\n\n      //\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0; }\n\nfloat mod289(float x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0; }\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nfloat permute(float x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat taylorInvSqrt(float r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nvec4 grad4(float j, vec4 ip)\n  {\n  const vec4 ones = vec4(1.0, 1.0, 1.0, -1.0);\n  vec4 p,s;\n\n  p.xyz = floor( fract (vec3(j) * ip.xyz) * 7.0) * ip.z - 1.0;\n  p.w = 1.5 - dot(abs(p.xyz), ones.xyz);\n  s = vec4(lessThan(p, vec4(0.0)));\n  p.xyz = p.xyz + (s.xyz*2.0 - 1.0) * s.www;\n\n  return p;\n  }\n\n// (sqrt(5) - 1)/4 = F4, used once below\n#define F4 0.309016994374947451\n\nfloat snoise(vec4 v)\n  {\n  const vec4  C = vec4( 0.138196601125011,  // (5 - sqrt(5))/20  G4\n                        0.276393202250021,  // 2 * G4\n                        0.414589803375032,  // 3 * G4\n                       -0.447213595499958); // -1 + 4 * G4\n\n// First corner\n  vec4 i  = floor(v + dot(v, vec4(F4)) );\n  vec4 x0 = v -   i + dot(i, C.xxxx);\n\n// Other corners\n\n// Rank sorting originally contributed by Bill Licea-Kane, AMD (formerly ATI)\n  vec4 i0;\n  vec3 isX = step( x0.yzw, x0.xxx );\n  vec3 isYZ = step( x0.zww, x0.yyz );\n//  i0.x = dot( isX, vec3( 1.0 ) );\n  i0.x = isX.x + isX.y + isX.z;\n  i0.yzw = 1.0 - isX;\n//  i0.y += dot( isYZ.xy, vec2( 1.0 ) );\n  i0.y += isYZ.x + isYZ.y;\n  i0.zw += 1.0 - isYZ.xy;\n  i0.z += isYZ.z;\n  i0.w += 1.0 - isYZ.z;\n\n  // i0 now contains the unique values 0,1,2,3 in each channel\n  vec4 i3 = clamp( i0, 0.0, 1.0 );\n  vec4 i2 = clamp( i0-1.0, 0.0, 1.0 );\n  vec4 i1 = clamp( i0-2.0, 0.0, 1.0 );\n\n  //  x0 = x0 - 0.0 + 0.0 * C.xxxx\n  //  x1 = x0 - i1  + 1.0 * C.xxxx\n  //  x2 = x0 - i2  + 2.0 * C.xxxx\n  //  x3 = x0 - i3  + 3.0 * C.xxxx\n  //  x4 = x0 - 1.0 + 4.0 * C.xxxx\n  vec4 x1 = x0 - i1 + C.xxxx;\n  vec4 x2 = x0 - i2 + C.yyyy;\n  vec4 x3 = x0 - i3 + C.zzzz;\n  vec4 x4 = x0 + C.wwww;\n\n// Permutations\n  i = mod289(i);\n  float j0 = permute( permute( permute( permute(i.w) + i.z) + i.y) + i.x);\n  vec4 j1 = permute( permute( permute( permute (\n             i.w + vec4(i1.w, i2.w, i3.w, 1.0 ))\n           + i.z + vec4(i1.z, i2.z, i3.z, 1.0 ))\n           + i.y + vec4(i1.y, i2.y, i3.y, 1.0 ))\n           + i.x + vec4(i1.x, i2.x, i3.x, 1.0 ));\n\n// Gradients: 7x7x6 points over a cube, mapped onto a 4-cross polytope\n// 7*7*6 = 294, which is close to the ring size 17*17 = 289.\n  vec4 ip = vec4(1.0/294.0, 1.0/49.0, 1.0/7.0, 0.0) ;\n\n  vec4 p0 = grad4(j0,   ip);\n  vec4 p1 = grad4(j1.x, ip);\n  vec4 p2 = grad4(j1.y, ip);\n  vec4 p3 = grad4(j1.z, ip);\n  vec4 p4 = grad4(j1.w, ip);\n\n// Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n  p4 *= taylorInvSqrt(dot(p4,p4));\n\n// Mix contributions from the five corners\n  vec3 m0 = max(0.6 - vec3(dot(x0,x0), dot(x1,x1), dot(x2,x2)), 0.0);\n  vec2 m1 = max(0.6 - vec2(dot(x3,x3), dot(x4,x4)            ), 0.0);\n  m0 = m0 * m0;\n  m1 = m1 * m1;\n  return 49.0 * ( dot(m0*m0, vec3( dot( p0, x0 ), dot( p1, x1 ), dot( p2, x2 )))\n               + dot(m1*m1, vec2( dot( p3, x3 ), dot( p4, x4 ) ) ) ) ;\n\n  }\n\n      uniform float st, scale, t;\n      uniform mat4 projection, view;\n      varying vec3 n, p;\n      attribute vec3 xyz, normal;\n\n      float noise (vec4 p, float t) {\n        return pow(snoise(p), 2.0) + 0.2 * sin(3.0 * p.y + 1.0 * t * 3.14159) * p.y;\n      }\n\n      void main () {\n        n = normal;\n        p = xyz * (0.8 + 1.0 * scale);\n\n        float freq = 2.0;\n        float n0 = noise(vec4(p * freq, st), t);\n\n        float h = 0.01;\n        vec3 np = p * freq;\n        vec3 grad = (vec3(\n          noise(vec4(np + vec3(h, 0, 0), st), t),\n          noise(vec4(np + vec3(0, h, 0), st), t),\n          noise(vec4(np + vec3(0, 0, h), st), t)\n        ) - n0) / h;\n\n        p *= 1.0 + scale * n0;\n        n -= grad * scale * 0.5;\n        n = normalize(n);\n\n        gl_Position = projection * view * vec4(p, 1);\n      }\n    "]),
+    vert: glslify(["\n      precision mediump float;\n#define GLSLIFY 1\n\n      //\n// Description : Array and textureless GLSL 2D/3D/4D simplex\n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : ijm\n//     Lastmod : 20110822 (ijm)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0; }\n\nfloat mod289(float x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0; }\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nfloat permute(float x) {\n     return mod289(((x*34.0)+1.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat taylorInvSqrt(float r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nvec4 grad4(float j, vec4 ip)\n  {\n  const vec4 ones = vec4(1.0, 1.0, 1.0, -1.0);\n  vec4 p,s;\n\n  p.xyz = floor( fract (vec3(j) * ip.xyz) * 7.0) * ip.z - 1.0;\n  p.w = 1.5 - dot(abs(p.xyz), ones.xyz);\n  s = vec4(lessThan(p, vec4(0.0)));\n  p.xyz = p.xyz + (s.xyz*2.0 - 1.0) * s.www;\n\n  return p;\n  }\n\n// (sqrt(5) - 1)/4 = F4, used once below\n#define F4 0.309016994374947451\n\nfloat snoise(vec4 v)\n  {\n  const vec4  C = vec4( 0.138196601125011,  // (5 - sqrt(5))/20  G4\n                        0.276393202250021,  // 2 * G4\n                        0.414589803375032,  // 3 * G4\n                       -0.447213595499958); // -1 + 4 * G4\n\n// First corner\n  vec4 i  = floor(v + dot(v, vec4(F4)) );\n  vec4 x0 = v -   i + dot(i, C.xxxx);\n\n// Other corners\n\n// Rank sorting originally contributed by Bill Licea-Kane, AMD (formerly ATI)\n  vec4 i0;\n  vec3 isX = step( x0.yzw, x0.xxx );\n  vec3 isYZ = step( x0.zww, x0.yyz );\n//  i0.x = dot( isX, vec3( 1.0 ) );\n  i0.x = isX.x + isX.y + isX.z;\n  i0.yzw = 1.0 - isX;\n//  i0.y += dot( isYZ.xy, vec2( 1.0 ) );\n  i0.y += isYZ.x + isYZ.y;\n  i0.zw += 1.0 - isYZ.xy;\n  i0.z += isYZ.z;\n  i0.w += 1.0 - isYZ.z;\n\n  // i0 now contains the unique values 0,1,2,3 in each channel\n  vec4 i3 = clamp( i0, 0.0, 1.0 );\n  vec4 i2 = clamp( i0-1.0, 0.0, 1.0 );\n  vec4 i1 = clamp( i0-2.0, 0.0, 1.0 );\n\n  //  x0 = x0 - 0.0 + 0.0 * C.xxxx\n  //  x1 = x0 - i1  + 1.0 * C.xxxx\n  //  x2 = x0 - i2  + 2.0 * C.xxxx\n  //  x3 = x0 - i3  + 3.0 * C.xxxx\n  //  x4 = x0 - 1.0 + 4.0 * C.xxxx\n  vec4 x1 = x0 - i1 + C.xxxx;\n  vec4 x2 = x0 - i2 + C.yyyy;\n  vec4 x3 = x0 - i3 + C.zzzz;\n  vec4 x4 = x0 + C.wwww;\n\n// Permutations\n  i = mod289(i);\n  float j0 = permute( permute( permute( permute(i.w) + i.z) + i.y) + i.x);\n  vec4 j1 = permute( permute( permute( permute (\n             i.w + vec4(i1.w, i2.w, i3.w, 1.0 ))\n           + i.z + vec4(i1.z, i2.z, i3.z, 1.0 ))\n           + i.y + vec4(i1.y, i2.y, i3.y, 1.0 ))\n           + i.x + vec4(i1.x, i2.x, i3.x, 1.0 ));\n\n// Gradients: 7x7x6 points over a cube, mapped onto a 4-cross polytope\n// 7*7*6 = 294, which is close to the ring size 17*17 = 289.\n  vec4 ip = vec4(1.0/294.0, 1.0/49.0, 1.0/7.0, 0.0) ;\n\n  vec4 p0 = grad4(j0,   ip);\n  vec4 p1 = grad4(j1.x, ip);\n  vec4 p2 = grad4(j1.y, ip);\n  vec4 p3 = grad4(j1.z, ip);\n  vec4 p4 = grad4(j1.w, ip);\n\n// Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n  p4 *= taylorInvSqrt(dot(p4,p4));\n\n// Mix contributions from the five corners\n  vec3 m0 = max(0.6 - vec3(dot(x0,x0), dot(x1,x1), dot(x2,x2)), 0.0);\n  vec2 m1 = max(0.6 - vec2(dot(x3,x3), dot(x4,x4)            ), 0.0);\n  m0 = m0 * m0;\n  m1 = m1 * m1;\n  return 49.0 * ( dot(m0*m0, vec3( dot( p0, x0 ), dot( p1, x1 ), dot( p2, x2 )))\n               + dot(m1*m1, vec2( dot( p3, x3 ), dot( p4, x4 ) ) ) ) ;\n\n  }\n\n      uniform float st, scale, t;\n      uniform mat4 projection, view;\n      varying vec3 n, p;\n      attribute vec3 xyz, normal;\n\n      float noise (vec4 p, float t) {\n        return pow(abs(snoise(p)), 2.0) + 0.2 * sin(3.0 * p.y + 1.0 * t * 3.14159) * p.y;\n      }\n\n      void main () {\n        n = normal;\n        p = xyz * (0.8 + 1.0 * scale);\n\n        float freq = 2.0;\n        float n0 = noise(vec4(p * freq, st), t);\n\n        float h = 0.01;\n        vec3 np = p * freq;\n        vec3 grad = (vec3(\n          noise(vec4(np + vec3(h, 0, 0), st), t),\n          noise(vec4(np + vec3(0, h, 0), st), t),\n          noise(vec4(np + vec3(0, 0, h), st), t)\n        ) - n0) / h;\n\n        p *= 1.0 + scale * n0;\n        n -= grad * scale * 0.5;\n        n = normalize(n);\n\n        gl_Position = projection * view * vec4(p, 1);\n      }\n    "]),
     frag: glslify(["\n      precision mediump float;\n#define GLSLIFY 1\n\n      float blinnPhongSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float shininess) {\n\n  //Calculate Blinn-Phong power\n  vec3 H = normalize(viewDirection + lightDirection);\n  return pow(max(0.0, dot(surfaceNormal, H)), shininess);\n}\n\n      varying vec3 n, p;\n      uniform vec3 eye;\n      uniform float light0power, light1power, light2power;\n      uniform vec4 lightambient, light0color, light1color, light2color;\n      uniform vec3 light0position, light1position, light2position;\n      void main () {\n        vec3 eyedir = normalize(eye - p);\n        vec3 normal = normalize(n);\n\n        vec3 light = lightambient.xyz * lightambient.w;\n        light += blinnPhongSpecular(light0position - p, eyedir, normal, light0power) * light0color.xyz * light0color.w;\n        light += blinnPhongSpecular(light1position - p, eyedir, normal, light1power) * light1color.xyz * light1color.w;\n        light += blinnPhongSpecular(light2position - p, eyedir, normal, light2power) * light2color.xyz * light2color.w;\n        gl_FragColor = vec4(light, 1);\n      }\n    "]),
     attributes: {
       xyz: ico.positions,
@@ -11741,7 +12298,7 @@ module.exports = function (regl) {
   });
 };
 
-},{"angle-normals":1,"glslify":9,"icosphere":13}],35:[function(require,module,exports){
+},{"angle-normals":1,"glslify":12,"icosphere":16}],44:[function(require,module,exports){
 var mouseChange = require('mouse-change')
 var mouseWheel = require('mouse-wheel')
 var identity = require('gl-mat4/identity')
@@ -11902,29 +12459,25 @@ function createCamera (regl, props_) {
   return setupCamera
 }
 
-},{"gl-mat4/identity":4,"gl-mat4/invert":5,"gl-mat4/lookAt":6,"gl-mat4/perspective":7,"mouse-change":16,"mouse-wheel":18}],36:[function(require,module,exports){
+},{"gl-mat4/identity":7,"gl-mat4/invert":8,"gl-mat4/lookAt":9,"gl-mat4/perspective":10,"mouse-change":19,"mouse-wheel":21}],45:[function(require,module,exports){
 'use strict';
 
 const glslify = require('glslify');
 const simplex = new (require('simplex-noise'))();
 const hsv = require('hsv-rgb');
+const tap = require('tap-to-start');
 
 require('regl')({
   pixelRatio: 1,
   onDone: (err, regl) => {
     if (err) return require('fail-nicely')(err);
-    run(regl);
+    tap({
+      foreground: '#fff',
+      background: '#2a3235',
+      accent: '#2a3235'
+    }, () => run(regl));
   }
 });
-
-let analyser;
-let scaleContribution = 1;
-if (false) {
-  var audio = require('./audio')((err, src, json, audio, a) => {
-    analyser = a;
-    scaleContribution = 0;
-  });
-}
 
 function randomColor (a, b) {
   let h = ((simplex.noise2D(a, b) + 1) % 1) * 360;
@@ -11933,6 +12486,15 @@ function randomColor (a, b) {
 }
 
 function run(regl) {
+  let analyser;
+  let scaleContribution = 1;
+  if (false) {
+    var audio = require('./audio')((err, src, json, audio, a) => {
+      analyser = a;
+      scaleContribution = 0;
+    });
+  }
+
   const camera = require('./camera')(regl, {
     distance: 5,
   });
@@ -11999,7 +12561,7 @@ function run(regl) {
   });
 }
 
-},{"./audio":32,"./bg":33,"./blob":34,"./camera":35,"./lighting":37,"fail-nicely":3,"glslify":9,"hsv-rgb":12,"regl":23,"simplex-noise":24}],37:[function(require,module,exports){
+},{"./audio":41,"./bg":42,"./blob":43,"./camera":44,"./lighting":46,"fail-nicely":6,"glslify":12,"hsv-rgb":15,"regl":29,"simplex-noise":30,"tap-to-start":35}],46:[function(require,module,exports){
 module.exports = function (regl, opts) {
   opts = opts || {};
   var lights = opts.lights || [];
@@ -12030,6 +12592,6 @@ module.exports = function (regl, opts) {
   return ret;
 };
 
-},{}]},{},[36]);
+},{}]},{},[45]);
 </script>
 </html>
