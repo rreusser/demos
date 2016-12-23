@@ -5,12 +5,12 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 ## [plotly.js](https://github.com/plotly/plotly.js)
 
 - [⭐️⭐️⭐️⭐️⭐️ schrodinger-1d](http://rickyreusser.com/demos/schrodinger-1d/) The Schrödinger Equation with a potential barrier in 1D, using the FFT for spatial differencing, RK-4 for temporal integration, and Perfectly Matched Layers (PML) for non-reflecting boundary conditions.
-- [traveling waves](http://rickyreusser.com/demos/traveling-waves/) (broken at the moment) Visualizing the wavenumber representation of travling waves
+- [⭐️⭐️⭐️⭐️ tsucs2](http://rickyreusser.com/demos/plots/tsucs2.html) Precomputing a strange attractor (TSUCS2) and then animating it as a point cloud
 - [⭐️⭐️⭐️ sierpinski-shapes](http://codepen.io/rsreusser/pen/GjZwYb) Testing GPU limits using plotly.js point clouds
 - [⭐️⭐️⭐️ gaussian-mixture-em](http://rickyreusser.com/gaussian-mixture-estimator/) Fitting n-dimensional Gaussian mixture models to scatter data
 - [⭐️⭐️ k-means++](http://rickyreusser.com/kmpp/) K-means clustering based on the [kmpp module](https://github.com/cmtt/kmpp) of [cmtt](https://github.com/cmtt)
 - [⭐️⭐️ tinkerbell-map](http://rickyreusser.com/demos/plots/tinkerbell.html) The tinkerbell map using plotly's point cloud feature
-- [⭐️⭐️⭐️⭐️ tsucs2](http://rickyreusser.com/demos/plots/tsucs2.html) Precomputing a strange attractor (TSUCS2) and then animating it as a point cloud
+- [traveling waves](http://rickyreusser.com/demos/traveling-waves/) (broken at the moment) Visualizing the wavenumber representation of travling waves
 
 ## [regl](https://github.com/regl-project/regl)
 
@@ -36,9 +36,9 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 ## [d3.js](https://d3js.org/)
 
 - [⭐️⭐️⭐️ fresnel](http://rickyreusser.com/demos/fresnel) Visualizing the boundary conditions that define Fresnel reflection and refraction
-- [⭐️ jukowski](https://t.d3fc.io/status/742340688562552833) A Jukowski Airfoil in 106 characters
 - [⭐️⭐️⭐️ principle-of-least-action](http://rickyreusser.com/demos/principle-of-least-action/) Visualizing the Principle of Least Action for a ball thrown in the air. Drag the points to minimize the action!
 - [⭐️⭐️⭐️ brachistochrone](http://rickyreusser.com/demos/brachistochrone/) Visualizing the Brachistochrone (fastest time) problem
+- [⭐️ jukowski](https://t.d3fc.io/status/742340688562552833) A Jukowski Airfoil in 106 characters
 
 ## canvas
 
