@@ -15751,7 +15751,7 @@ module.exports = function (regl) {
   window.regl = regl;
   return regl({
     vert: glslify(["\n      precision mediump float;\n#define GLSLIFY 1\n\n      attribute vec2 xy;\n      uniform sampler2D y;\n      uniform sampler2D v;\n      uniform mat4 view, projection;\n      varying vec3 vel;\n      void main () {\n        vec3 pos = texture2D(y, xy).xyz;\n        vel = texture2D(v, xy).xyz;\n        gl_Position = projection * view * vec4(pos.xyz, 1);\n        gl_PointSize = 2.0;\n      }\n    "]),
-    frag: glslify(["\n      precision mediump float;\n#define GLSLIFY 1\n\n      vec3 hsv2rgb(vec3 c) {\n  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);\n  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);\n  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);\n}\n\n      uniform float alpha;\n      varying vec3 vel;\n      void main () {\n        float vmag = (vel.x * vel.x + vel.y * vel.y + vel.z * vel.z);\n        vec3 col = hsv2rgb(vec3(vmag * 1.0, 0.7, 1.0));\n        gl_FragColor = vec4(col, alpha);\n      }\n    "]),
+    frag: glslify(["\n      precision mediump float;\n#define GLSLIFY 1\n\n      vec3 hsv2rgb(vec3 c) {\n  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);\n  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);\n  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);\n}\n\n      uniform float alpha;\n      varying vec3 vel;\n      void main () {\n        float vmag = sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z);\n        vec3 col = hsv2rgb(vec3(vmag * 0.7, 0.7, 1.0));\n        gl_FragColor = vec4(col, alpha);\n      }\n    "]),
     attributes: { xy: regl.prop('texCoords') },
     uniforms: {
       y: regl.prop('y[0]'),

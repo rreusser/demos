@@ -24,8 +24,8 @@ module.exports = function (regl) {
       uniform float alpha;
       varying vec3 vel;
       void main () {
-        float vmag = (vel.x * vel.x + vel.y * vel.y + vel.z * vel.z);
-        vec3 col = hsv2rgb(vec3(vmag * 1.0, 0.7, 1.0));
+        float vmag = sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z);
+        vec3 col = hsv2rgb(vec3(vmag * 0.7, 0.7, 1.0));
         gl_FragColor = vec4(col, alpha);
       }
     `),
