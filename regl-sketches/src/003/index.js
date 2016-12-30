@@ -40,7 +40,7 @@ function run(regl) {
   });
 
   var params = {
-    maxLife: 1000000,
+    maxLife: 10000,
     rs: 1.0,
     dt: 1.0,
     alpha: 0.3,
@@ -49,7 +49,7 @@ function run(regl) {
     spread: 1.0,
     v0: 1.0,
     r0: 10.0,
-    shape: [256, 256, 4],
+    shape: [64, 64, 4],
     gridAlpha: 0.15,
     gridRadius: 500,
     gridSpacing: 2.0,
@@ -75,15 +75,27 @@ function run(regl) {
     {type: 'range', label: 'alpha', min: 0.0, max: 1.0, initial: params.alpha},
     {type: 'range', label: 'gridAlpha', min: 0.0, max: 1.0, initial: params.gridAlpha},
     {type: 'range', label: 'gridSpacing', min: 1.0, max: 50.0, initial: params.gridSpacing, steps: 49},
+    {type: 'range', label: 'maxLife', min: 100, max: 100000, initial: params.maxLife, scale: 'log', steps: 300},
     {type: 'range', label: 'r0', min: 1.5, max: 50.0, initial: params.r0},
     {type: 'range', label: 'v0', min: 0.5, max: 1.5, initial: params.v0},
-    {type: 'range', label: 'dt', min: 0.1, max: 100, initial: params.dt, scale: 'log', steps: 401},
     {type: 'range', label: 'spread', min: 0.01, max: 10.0, initial: params.spread},
+    {type: 'range', label: 'dt', min: 0.1, max: 100, initial: params.dt, scale: 'log', steps: 401},
     {type: 'button', label: 'restart', action: reinitialize},
     {type: 'checkbox', label: 'dilation', initial: params.dilation},
     {type: 'checkbox', label: 'axes', initial: params.axes},
     {type: 'checkbox', label: 'paraboloid', initial: params.paraboloid},
-  ], {root: control, theme: 'light'}).on('input', data => params = extend(params, data));
+  ], {
+    root: control,
+    theme: 'light',
+    width: 400
+  }).on('input', data => {
+    let needsRe = data.r0 !== params.r0 || data.v0 !== params.v0 || data.spread !== params.spread;
+    params = extend(params, data)
+    if(needsRe) {
+      reinitialize();
+      //reinitialize({initialOnly: true});
+    }
+  });
 
 
   const {y0, v0, y, v, texCoords} = allocate(params);

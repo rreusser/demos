@@ -38,6 +38,7 @@ module.exports = function (regl) {
   });
 
   return function (y0, v0, y, v, opts) {
+    opts = opts || {};
     const n = opts.shape[0] * opts.shape[1] * opts.shape[2];
     const ndy0 = ndarray(new Float32Array(n), opts.shape);
     const ndv0 = ndarray(new Float32Array(n), opts.shape);
@@ -45,8 +46,11 @@ module.exports = function (regl) {
     initialize(ndy0, ndv0, opts.rs, randn, opts.spread, opts.v0, opts.r0);
 
     y0.texture({data: ndy0});
-    y[0].texture({data: ndy0});
     v0.texture({data: ndv0});
-    v[0].texture({data: ndv0});
+
+    if (!opts.initialOnly) {
+      y[0].texture({data: ndy0});
+      v[0].texture({data: ndv0});
+    }
   };
 }

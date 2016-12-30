@@ -1,9 +1,7 @@
 'use strict';
 
-var pixelRatio = 1.0;
-
 require('regl')({
-  pixelRatio: pixelRatio,
+  pixelRatio: 1.0,
   extensions: ['oes_texture_float', 'oes_standard_derivatives'],
   onDone: (err, regl) => {
     if (err) return require('fail-nicely')(err);
@@ -12,9 +10,13 @@ require('regl')({
 });
 
 function run(regl) {
-  const camera = require('./camera')(regl, {phi: Math.PI * 0.2, distance: 10});
+  const params = {
+    shape: [256, 256, 4],
+    dt: 0.1,
+    t: 0.0
+  };
 
-  const params = {shape: [256, 256, 4], dt: 0.1, t: 0.0};
+  const camera = require('./camera')(regl, {phi: Math.PI * 0.2, distance: 10});
   const gpu = require('./regl-cwise')(regl);
   const copy = require('./copy')(gpu);
   const allocate = require('./allocate')(gpu);
@@ -39,5 +41,4 @@ function run(regl) {
 
     copy([null, screenbuffer]);
   });
-
 }
