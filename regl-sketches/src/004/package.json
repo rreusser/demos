@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "control-panel": "git@github.com:rreusser/control-panel.git#input-events",
+    "cwise": "^1.0.9",
+    "gl-vec3": "^1.0.3",
+    "glsl-hsv2rgb": "^1.0.0",
+    "glsl-noise": "^0.0.0",
+    "h": "^0.1.0",
+    "insert-css": "^2.0.0",
+    "ndarray": "^1.0.18",
+    "ndarray-vector-fill": "^1.0.0",
+    "random-normal": "^1.0.0",
+    "xtend": "^4.0.1"
+  }
+}
