@@ -52,7 +52,7 @@ function run(regl) {
     shape: [256, 256, 4],
     gridAlpha: 0.15,
     gridRadius: 500,
-    gridSpacing: 1.0,
+    gridSpacing: 2.0,
     gridBg: [0.12, 0.12, 0.12, 1],
     gridFg: [1, 1, 1, 1],
     paraboloid: true
