@@ -24,7 +24,8 @@ module.exports = function (regl) {
         xyz.z *= (1.0 - paraboloid);
         float offset = flamm(rs, 20.0);
         xyz.z += paraboloid * (flamm(rs, r) - offset);
-        xyz.z += ((eye.z + offset) > flamm(rs, length(eye.xy)) ? 0.1 : -0.1) * paraboloid;
+        float distance = length(eye) * 0.005;
+        xyz.z += ((eye.z + offset) > flamm(rs, length(eye.xy)) ? distance : -distance) * paraboloid;
         gl_Position = projection * view * vec4(xyz, 1);
         gl_PointSize = 2.0;
       }

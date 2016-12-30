@@ -55,6 +55,7 @@ module.exports = function (regl, opts) {
       varying vec2 xy;
       varying float rad;
       uniform vec4 gridBg, gridFg;
+      uniform float rs;
       uniform float radius, alpha, rmax;
 
       float grid (vec3 uv) {
@@ -64,9 +65,11 @@ module.exports = function (regl, opts) {
       }
 
       void main () {
+        float gam = 1.0 - rs / rad;
         float ef = grid(vec3(xy / spacing, 0));
         float falloff = 1.0 / (1.0 + rad * rad / rmax / rmax * 64.0);
         vec4 col = (ef * gridBg + (1.0 - ef) * (falloff * alpha * gridFg + (1.0 - falloff * alpha) * gridBg));
+        col *= (0.4 + 0.6 * gam);
         gl_FragColor = vec4(col.xyz, 1);
       }
     `,
