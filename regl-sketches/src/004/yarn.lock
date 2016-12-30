@@ -206,6 +206,10 @@ glsl-hsv2rgb:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/glsl-hsv2rgb/-/glsl-hsv2rgb-1.0.0.tgz#a3fed6f3354906a043f417954429da6fc7725b73"
 
+glsl-luma:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/glsl-luma/-/glsl-luma-1.0.1.tgz#b5ec2ade6bae1ba68903870d8ca4483911c7b5f5"
+
 glsl-noise:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/glsl-noise/-/glsl-noise-0.0.0.tgz#367745f3a33382c0eeec4cb54b7e99cfc1d7670b"

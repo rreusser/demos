@@ -4,6 +4,7 @@
     "cwise": "^1.0.9",
     "gl-vec3": "^1.0.3",
     "glsl-hsv2rgb": "^1.0.0",
+    "glsl-luma": "^1.0.1",
     "glsl-noise": "^0.0.0",
     "h": "^0.1.0",
     "insert-css": "^2.0.0",
