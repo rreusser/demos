@@ -33,7 +33,7 @@ function run(regl) {
     integrate(state, params);
 
     screenbuffer.use(() => {
-      regl.clear({color: [0.03, 0.03, 0.03, 1], depth: 1});
+      regl.clear({color: [0.04, 0.04, 0.04, 1], depth: 1});
       camera(() => {
         drawParticles(state);
       });
