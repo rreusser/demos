@@ -77,10 +77,6 @@ function gpuArray (regl, data, shape, opts) {
 
   var origDestroy = fbo.destroy.bind(fbo);
 
-  fbo.update = function (data) {
-    tex({data: data});
-  };
-
   fbo.read = function (opts) {
     var a;
     fbo.use(function () {
