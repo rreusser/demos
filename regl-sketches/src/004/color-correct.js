@@ -7,7 +7,7 @@ module.exports = function (gpu) {
       #pragma glslify: luma = require(glsl-luma)
 
       #define LUMA_MIN log(0.002)
-      #define LUMA_MAX log(50.0)
+      #define LUMA_MAX log(10.0)
       #define GAMMA 0.6
 
       vec4 compute (vec4 src) {

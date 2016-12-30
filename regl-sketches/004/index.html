@@ -10442,7 +10442,7 @@ var glslify = require('glslify');
 module.exports = function (gpu) {
   return gpu.map({
     args: ['array'],
-    body: glslify(["#define GLSLIFY 1\n\n      float luma(vec3 color) {\n  return dot(color, vec3(0.299, 0.587, 0.114));\n}\n\nfloat luma(vec4 color) {\n  return dot(color.rgb, vec3(0.299, 0.587, 0.114));\n}\n\n      #define LUMA_MIN log(0.002)\n      #define LUMA_MAX log(50.0)\n      #define GAMMA 0.6\n\n      vec4 compute (vec4 src) {\n        float srcLuma = luma(src.xyz);\n\n        float targetLuma = pow((log(srcLuma) - LUMA_MIN) / (LUMA_MAX - LUMA_MIN), 1.0 / GAMMA);\n        return vec4(src.xyz * targetLuma / srcLuma, 1.0);\n      }\n    "])
+    body: glslify(["#define GLSLIFY 1\n\n      float luma(vec3 color) {\n  return dot(color, vec3(0.299, 0.587, 0.114));\n}\n\nfloat luma(vec4 color) {\n  return dot(color.rgb, vec3(0.299, 0.587, 0.114));\n}\n\n      #define LUMA_MIN log(0.002)\n      #define LUMA_MAX log(10.0)\n      #define GAMMA 0.6\n\n      vec4 compute (vec4 src) {\n        float srcLuma = luma(src.xyz);\n\n        float targetLuma = pow((log(srcLuma) - LUMA_MIN) / (LUMA_MAX - LUMA_MIN), 1.0 / GAMMA);\n        return vec4(src.xyz * targetLuma / srcLuma, 1.0);\n      }\n    "])
   });
 };
 },{"glslify":6}],17:[function(require,module,exports){
