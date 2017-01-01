@@ -3,15 +3,23 @@ const ndarray = require('ndarray');
 const cwise = require('cwise');
 
 module.exports = function (gpu) {
-  return function (opts) {
-    const y0 = gpu.array(null, opts.shape);
-    const v0 = gpu.array(null, opts.shape);
+  return function (state, params) {
+    params.side = Math.round(Math.sqrt(params.n));
+    const shape = [params.side, params.side, 4];
 
-    const y = new Array(5).fill().map(() => gpu.array(null, opts.shape));
-    const v = new Array(5).fill().map(() => gpu.array(null, opts.shape));
+    if (state.y0) state.y0.destroy();
+    if (state.y) state.y.forEach(y => y.destroy());
+    if (state.v0) state.v0.destroy();
+    if (state.v) state.v.forEach(v => v.destroy());
+    if (state.texCoords) state.texCoords.destroy();
 
-    const texCoords = y[0].samplerCoords();
 
-    return {y0, v0, y, v, texCoords};
+    state.y0 = gpu.array(null, shape);
+    state.v0 = gpu.array(null, shape);
+
+    state.y = new Array(5).fill().map(() => gpu.array(null, shape));
+    state.v = new Array(5).fill().map(() => gpu.array(null, shape));
+
+    state.texCoords = state.y[0].samplerCoords();
   }
 };

@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "control-panel": "^1.2.0",
+    "glsl-diffuse-lambert": "^1.0.0",
+    "glsl-noise": "^0.0.0",
+    "glsl-random": "^0.0.5"
+  }
+}

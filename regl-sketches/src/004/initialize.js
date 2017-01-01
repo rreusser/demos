@@ -19,9 +19,9 @@ module.exports = function (regl) {
   });
 
   return function (state, opts) {
-    const n = opts.shape[0] * opts.shape[1] * opts.shape[2];
-    const ndy0 = ndarray(new Float32Array(n), opts.shape);
-    const ndv0 = ndarray(new Float32Array(n), opts.shape);
+    const shape = [opts.side, opts.side, 4];
+    const ndy0 = ndarray(new Float32Array(opts.n), shape);
+    const ndv0 = ndarray(new Float32Array(opts.n), shape);
 
     initialize(ndy0, ndv0, randn);
 
