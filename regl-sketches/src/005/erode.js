@@ -120,7 +120,6 @@ module.exports = function (regl) {
     attributes: {xy: [[-4, -4], [0, 4], [4, -4]]},
     uniforms: {
       r0: regl.prop('r0'),
-      rvInitial: regl.prop('rvInitial'),
       rv0: regl.prop('rv0'),
       y: regl.prop('y'),
       hx: (context, props) => 1.0 / props.y.width,
@@ -331,7 +330,6 @@ module.exports = function (regl) {
 
       updateRainVars({
         r0: rainState.r0,
-        rvInitial: rainState.rvInitial,
         rv0: rainState.rv0,
         rv1: rainState.rv1,
         y: gridState.y0,

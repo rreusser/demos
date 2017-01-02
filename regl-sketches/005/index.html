@@ -31791,7 +31791,6 @@ module.exports = function (regl) {
     attributes: { xy: [[-4, -4], [0, 4], [4, -4]] },
     uniforms: {
       r0: regl.prop('r0'),
-      rvInitial: regl.prop('rvInitial'),
       rv0: regl.prop('rv0'),
       y: regl.prop('y'),
       hx: function (context, props) {
@@ -31907,7 +31906,6 @@ module.exports = function (regl) {
 
       updateRainVars({
         r0: rainState.r0,
-        rvInitial: rainState.rvInitial,
         rv0: rainState.rv0,
         rv1: rainState.rv1,
         y: gridState.y0
@@ -37520,17 +37518,11 @@ module.exports = function (gpu, n) {
 
   function makeState(n) {
     var s = {
-      rInitial: gpu.array(function () {
-        return [Math.random(), Math.random(), 0, 0];
-      }, [n, n, 4]),
       r0: gpu.array(function () {
         return [Math.random(), Math.random(), 0, 0];
       }, [n, n, 4]),
       r1: gpu.array(function () {
         return [0, 0, 0, 0];
-      }, [n, n, 4]),
-      rvInitial: gpu.array(function () {
-        return [0, 0, 1, 0];
       }, [n, n, 4]),
       rv0: gpu.array(function () {
         return [0, 0, minLife + (1.0 - minLife) * Math.random(), 0];
@@ -37548,10 +37540,8 @@ module.exports = function (gpu, n) {
   var state = makeState(n);
 
   state.resize = function (n) {
-    state.rInitial.destroy();
     state.r0.destroy();
     state.r1.destroy();
-    state.rvInitial.destroy();
     state.rv0.destroy();
     state.rv1.destroy();
     state.coords.destroy();
