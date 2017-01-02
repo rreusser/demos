@@ -26,15 +26,24 @@ module.exports = function (regl, n) {
       }
     `,
     frag: glslify (`
+      #extension GL_OES_standard_derivatives : enable
+
       precision mediump float;
 
       #pragma glslify: lambert = require('glsl-diffuse-lambert');
+
+      float grid (vec3 uv) {
+        vec3 d = fwidth(uv);
+        vec3 a3 = smoothstep(vec3(0.0), 1.5 * d, 0.5 - abs(mod(uv, 1.0) - 0.5));
+        return a3.x;
+      }
 
       struct Light {
         vec3 color;
         vec3 position;
       };
 
+      uniform float topo, topoSpacing;
       varying vec3 n, p;
       uniform vec3 ambient;
       uniform Light lambertLights[2];
@@ -43,6 +52,9 @@ module.exports = function (regl, n) {
         vec3 color = ambient +
           lambert(normalize(lambertLights[0].position - p), n) * lambertLights[0].color +
           lambert(normalize(lambertLights[1].position - p), n) * lambertLights[1].color;
+        if (topo > 0.0) {
+          color *= 1.0 - topo + topo * grid(vec3(p.z / topoSpacing, 0.5, 0.5));
+        }
         gl_FragColor = vec4(color, 1);
       }
     `),
@@ -54,6 +66,8 @@ module.exports = function (regl, n) {
         1 / props.hf.width,
         1 / props.hf.height
       ],
+      topo: regl.prop('topo'),
+      topoSpacing: regl.prop('topoSpacing'),
       ambient: regl.prop('ambient'),
       'lambertLights[0].color': regl.prop('lambertLights[0].color'),
       'lambertLights[0].position': regl.prop('lambertLights[0].position'),

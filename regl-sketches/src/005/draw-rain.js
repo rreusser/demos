@@ -15,7 +15,7 @@ module.exports = function (regl) {
         vec3 p = texture2D(y, rp.xy).xyz * scale;
         vec3 srp = (rp * 2.0 - 1.0) * scale;
         gl_Position = projection * view * vec4(srp.x, srp.y, p.z + 0.01, 1);
-        gl_PointSize = 4.0;
+        gl_PointSize = 2.0;
       }
     `,
     frag: `
@@ -40,7 +40,7 @@ module.exports = function (regl) {
       y: regl.prop('y'),
       r: regl.prop('r'),
       rv: regl.prop('rv'),
-      alpha: (context, props) => Math.sqrt(128 * 128 / props.r.width / props.r.height) * 0.5
+      alpha: (context, props) => Math.sqrt(128 * 128 / props.r.width / props.r.height) * 2.0 * props.alpha
     },
     depth: {
       enable: true,

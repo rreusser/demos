@@ -106,7 +106,7 @@ module.exports = function (regl) {
           life = 0.0;
         }
 
-        float deposition = newFlow * smoothstep(restartThreshold * 1.5, restartThreshold, life);
+        float deposition = newFlow * smoothstep(restartThreshold + 0.4, restartThreshold, life);
         carve -= deposition;
         newFlow -= deposition;
 
@@ -136,6 +136,7 @@ module.exports = function (regl) {
       precision mediump float;
       attribute vec2 xy;
       uniform sampler2D r0, rv0;
+      uniform float brushSize;
       varying vec4 r;
       varying vec4 rv;
       void main () {
@@ -143,14 +144,14 @@ module.exports = function (regl) {
         rv = texture2D(rv0, xy);
         vec2 uv = (r.xy - 0.5) * 2.0;
         gl_Position = vec4(uv, 0, 1);
-        gl_PointSize = 4.0;
+        gl_PointSize = brushSize;
       }
     `,
     frag: `
       precision mediump float;
       varying vec4 r, rv;
       void main () {
-        float intens = 1.0 - length(gl_PointCoord.xy - 0.5) / 0.5;
+        float intens = max(0.0, 1.0 - length(gl_PointCoord.xy - 0.5) / 0.5);
         gl_FragColor = vec4(-rv.y * intens, 0.0, 0.0, 1.0);
       }
     `,
@@ -311,6 +312,7 @@ module.exports = function (regl) {
       smoothing: regl.prop('smoothing'),
       carryingCapacity: regl.prop('carryingCapacity'),
       evaporationTime: regl.prop('evaporationTime'),
+      brushSize: regl.prop('brushSize'),
     }
   });
 
