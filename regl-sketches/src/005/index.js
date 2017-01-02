@@ -23,11 +23,11 @@ function run(regl) {
 
   const params = {
     n: 512,
-    iterations: 5,
+    iterations: 1,
     nRain: 512,
     seed: 0,
-    smoothing: 0.5,
-    rain: 0.15,
+    smoothing: 1.0,
+    rain: 0.25,
     terrain: true,
     erosion: true,
     topo: 0.0,
@@ -39,7 +39,7 @@ function run(regl) {
     gravity: 0.1,
     maxVelocity: 0.1,
     friction: 2.0,
-    carveRate: 0.5,
+    carveRate: 1.0,
     carryingCapacity: 0.15,
     captureSize: '540 x 540',
   };
@@ -137,6 +137,7 @@ function run(regl) {
       capturer = new CCapture({
         verbose: true,
         format: 'jpg',
+        motionBlurFrames: 5,
         framerate: 60
       });
 
