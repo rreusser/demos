@@ -26,6 +26,7 @@ function run(regl) {
     iterations: 1,
     nRain: 512,
     seed: 0,
+    prominence: 1.0,
     smoothing: 1.0,
     rain: 0.25,
     terrain: true,
@@ -48,6 +49,7 @@ function run(regl) {
     {type: 'range', label: 'n', min: 16, max: 1024, step: 1, initial: params.n},
     {type: 'range', label: 'nRain', min: 16, max: 1024, step: 1, initial: params.nRain},
     {type: 'range', label: 'seed', min: 0, max: 100, step: 0.01, initial: params.seed},
+    {type: 'range', label: 'prominence', min: 0.1, max: 2.0, step: 0.01, initial: params.prominence},
     {type: 'range', label: 'iterations', min: 1, max: 20, step: 1, initial: params.iterations},
     {type: 'range', label: 'smoothing', min: 0.0, max: 2.0, steps: 100, initial: params.smoothing},
     {type: 'range', label: 'dt', min: 0.001, max: 0.04, step: 0.001, initial: params.dt},
@@ -79,10 +81,10 @@ function run(regl) {
       gridGeometry.resize(props.n);
     }
 
-    let needsReinit = needsGridRealloc || props.seed !== prevProps.seed;
+    let needsReinit = needsGridRealloc || props.seed !== prevProps.seed || props.prominence !== prevProps.prominence;
 
     if (needsReinit) {
-      initialize([gridState.y0, gridState.y1, params.seed]);
+      initialize([gridState.y0, gridState.y1, params.seed, params.prominence]);
     }
   });
 
@@ -106,7 +108,7 @@ function run(regl) {
   const initialize = require('./initialize')(gpu);
   const erode = require('./erode')(regl);
 
-  initialize([gridState.y0, gridState.y1, params.seed]);
+  initialize([gridState.y0, gridState.y1, params.seed, params.prominence]);
 
   const setScale = regl({uniforms: {scale: [10, 10, 5]}});
 
