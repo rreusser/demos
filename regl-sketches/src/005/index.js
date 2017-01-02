@@ -27,7 +27,7 @@ function run(regl) {
     nRain: 512,
     seed: 0,
     prominence: 1.0,
-    smoothing: 1.0,
+    smoothing: 0.5,
     wind: 0.0,
     rain: 0.25,
     terrain: true,
@@ -35,14 +35,14 @@ function run(regl) {
     topo: 0.0,
     topoSpacing: 0.4,
     dt: 0.01,
-    evaporationTime: 10.0,
+    evaporationTime: 8.0,
     restartThreshold: 0.3,
-    brushSize: 4.0,
+    brushSize: 2.0,
     gravity: 0.1,
     maxVelocity: 0.1,
     friction: 2.0,
-    carveRate: 1.0,
-    carryingCapacity: 0.15,
+    carveRate: 0.5,
+    carryingCapacity: 0.1,
     captureSize: '540 x 540',
   };
 
@@ -96,8 +96,8 @@ function run(regl) {
     right: [-1, 0, 0],
     front: [0, 1, 0],
     phi: Math.PI * 0.2,
-    theta: Math.PI * 1.1,
-    distance: 18,
+    theta: Math.PI * 1.0,
+    distance: 25,
   });
 
   const gridGeometry = require('./create-draw-geometry')(regl, params.n);
@@ -107,6 +107,7 @@ function run(regl) {
   const makeDrawGrid = require('./draw-grid');
   let drawGrid = makeDrawGrid(regl, params.n);
   const drawRain = require('./draw-rain')(regl);
+  const drawBg = require('./draw-bg')(regl);
   const initialize = require('./initialize')(gpu);
   const erode = require('./erode')(regl);
 
@@ -159,9 +160,11 @@ function run(regl) {
       }
     }
 
+    drawBg();
+
     setScale(() => {
       camera(() => {
-        regl.clear({color: [0, 0, 0, 1], depth: 1});
+        //regl.clear({color: [0, 0, 0, 1], depth: 1});
 
         if (params.terrain) {
           drawGrid({

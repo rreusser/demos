@@ -23,8 +23,8 @@ module.exports = function (fields, state, cb) {
 
   require('control-panel')(fields, {
     root: control,
-    theme: 'light',
-    width: 300
+    theme: 'dark',
+    width: 325
   }).on('input', data => {
     pstate = extend({}, state);
     mutate(state, data);

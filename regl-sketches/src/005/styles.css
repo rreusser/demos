@@ -16,6 +16,7 @@
 .control-header {
   font-family: monospace;
   padding: 5px 10px;
-  background-color: #ccc;
+  background-color: #333;
+  color: white;
   cursor: pointer;
 }

@@ -15,7 +15,7 @@ module.exports = function (regl) {
         vec3 p = texture2D(y, rp.xy).xyz * scale;
         vec3 srp = (rp * 2.0 - 1.0) * scale;
         gl_Position = projection * view * vec4(srp.x, srp.y, p.z + 0.01, 1);
-        gl_PointSize = 2.0;
+        gl_PointSize = 4.0;
       }
     `,
     frag: `
@@ -24,8 +24,10 @@ module.exports = function (regl) {
       uniform sampler2D rv;
       uniform float alpha;
       void main () {
-        float life = texture2D(rv, uv).z;
-        gl_FragColor = vec4(0.5, 0.7, 1.0, alpha * life);
+        vec4 rvs = texture2D(rv, uv);
+        float life = rvs.z;
+        //float vavg = rvs.w;
+        gl_FragColor = vec4(0.2, 0.5, 1.0, alpha * life);
       }
     `,
     blend: {

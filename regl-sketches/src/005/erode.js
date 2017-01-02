@@ -87,12 +87,16 @@ module.exports = function (regl) {
         //float gradMag = length(grad);
 
         float prevFlow = rv.x;
-        float dFlow = length(r.zw) * carveRate;
+        float v = length(r.zw);
+        float dFlow = v * carveRate;
         //dFlow += laplacian * 0.0001;
         //float steepness = smoothstep(0.5, 0.0, gradMag);
         //dFlow += steepness * steepness * 0.05;
 
-        float evaporation = exp(-dt / evaporationTime);
+        float vavg = rv.w * 0.99 + 0.01 * v;
+        float stallFactor = 1.0 / (1.0 + 10.0 * vavg * vavg);
+
+        float evaporation = exp(-dt / (evaporationTime * (1.0 - stallFactor)));
 
         float newFlow = prevFlow + dFlow * dt;
         newFlow = max(0.0, min(carryingCapacity, newFlow * evaporation));
@@ -115,7 +119,7 @@ module.exports = function (regl) {
           life = 0.0;
         }
 
-        gl_FragColor = restart ? vec4(0.0, 0.0, 1.0, 0.0) : vec4(newFlow, carve, life, 0.0);
+        gl_FragColor = restart ? vec4(0.0, 0.0, 1.0, 0.0) : vec4(newFlow, carve, life, vavg);
       }
     `,
     attributes: {xy: [[-4, -4], [0, 4], [4, -4]]},
@@ -284,7 +288,7 @@ module.exports = function (regl) {
         vec4 rv = texture2D(rv0, uv);
 
         if (rv.z == 0.0 || r.x < 0.0 || r.x > 1.0 || r.y < 0.0 || r.y > 1.0) {
-          gl_FragColor = vec4(0.0, 0.0, 1.0, 0.0);
+          gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
         } else {
           gl_FragColor = rv;
         }
