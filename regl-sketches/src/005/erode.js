@@ -93,10 +93,11 @@ module.exports = function (regl) {
         //float steepness = smoothstep(0.5, 0.0, gradMag);
         //dFlow += steepness * steepness * 0.05;
 
-        float vavg = rv.w * 0.99 + 0.01 * v;
+        float decay = exp(-dt / evaporationTime * 5.0);
+        float vavg = rv.w * decay + (1.0 - decay) * v;
         float stallFactor = 1.0 / (1.0 + 10.0 * vavg * vavg);
 
-        float evaporation = exp(-dt / (evaporationTime * (1.0 - stallFactor)));
+        float evaporation = exp(-dt / (evaporationTime * (1.0 - 0.5 * stallFactor)));
 
         float newFlow = prevFlow + dFlow * dt;
         newFlow = max(0.0, min(carryingCapacity, newFlow * evaporation));
