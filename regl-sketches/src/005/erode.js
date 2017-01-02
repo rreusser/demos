@@ -17,7 +17,7 @@ module.exports = function (regl) {
       precision mediump float;
       uniform sampler2D r0;
       uniform sampler2D y;
-      uniform float dt, hx, hy, gravity, maxVelocity, friction;
+      uniform float dt, hx, hy, gravity, wind, maxVelocity, friction;
       varying vec2 uv;
       void main () {
         vec4 r = texture2D(r0, uv);
@@ -34,8 +34,9 @@ module.exports = function (regl) {
 
         vec2 fGrav = -grad * gravity;
         vec2 fFric = -rvel * friction;
+        vec2 fWind = wind * z0 * vec2(1.0, 0.0);
 
-        vec2 vNew = rvel + (fGrav + fFric) * dt;
+        vec2 vNew = rvel + (fGrav + fFric + fWind) * dt;
         float vMag = length(vNew);
         vNew = normalize(vNew) * min(vMag, maxVelocity);
 
@@ -305,6 +306,7 @@ module.exports = function (regl) {
       dt: regl.prop('dt'),
       restartThreshold: regl.prop('restartThreshold'),
       gravity: regl.prop('gravity'),
+      wind: regl.prop('wind'),
       maxVelocity: regl.prop('maxVelocity'),
       friction: regl.prop('friction'),
       carveRate: regl.prop('carveRate'),
