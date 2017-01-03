@@ -103,7 +103,7 @@ module.exports = function (regl, n) {
           (0.8 - 0.0003 * laplacian);
 
         vec3 rockColor = vec3(0.7) *
-          (0.8 - max(-0.2, min(0.2, 0.0002 * laplacian))) *
+          (0.8 - max(-0.1, min(0.2, 0.0002 * laplacian))) *
           (0.97 + 0.03 * strat);
 
         return
