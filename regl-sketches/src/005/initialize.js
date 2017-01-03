@@ -8,7 +8,7 @@ module.exports = function (gpu) {
 
       vec4 compute (vec4 p, float seed, float prominence) {
         float z = (
-            0.5 + 0.5 * (
+            0.6 + 0.4 * (
               noise(p.xy + seed * 1.0) + //, vec2(4.0)) +
               0.5 * noise(p.xy * 2.0 - seed * 2.0) + //, vec2(8.0))
               0.05 * noise(p.yx * 4.0 - seed * 4.0) //, vec2(8.0))

@@ -65,14 +65,16 @@ module.exports = function (regl) {
         gl_Position = vec4(xy, 0, 1);
       }
     `,
-    frag: `
+    frag: glslify(`
       precision mediump float;
+      #pragma glslify: snoise = require(glsl-noise/simplex/3d)
       uniform sampler2D r0, rv0, y;
-      uniform float dt, hx, hy, gravity, restartThreshold, carveRate, carryingCapacity, evaporationTime;
+      uniform float dt, hx, hy, gravity, restartThreshold, carveRate, carryingCapacity, evaporationTime, stratification;
       varying vec2 uv;
       void main () {
         vec4 r = texture2D(r0, uv);
         vec4 rv = texture2D(rv0, uv);
+        vec4 pos = texture2D(y, r.xy);
 
         float life = rv.z;
 
@@ -93,7 +95,12 @@ module.exports = function (regl) {
         //float steepness = smoothstep(0.5, 0.0, gradMag);
         //dFlow += steepness * steepness * 0.05;
 
-        float decay = exp(-dt / evaporationTime * 5.0);
+        //float noise = snoise(vec3(pos.x * 4.0, pos.y * 4.0, (pos.z - 0.4 * pos.x - 0.4 * pos.y) * 120.0));
+        float noise = snoise(vec3(pos.x * 1.5, pos.y * 1.5, (pos.z - 0.4 * pos.x - 0.4 * pos.y) * 10.0));
+        float strat = (1.0 - exp(-pos.z / 0.5)) * stratification;
+        dFlow *= (1.0 - strat) + strat * (0.5 + 2.0 * noise);
+
+        float decay = exp(-dt / evaporationTime * 3.0);
         float vavg = rv.w * decay + (1.0 - decay) * v;
         float stallFactor = 1.0 / (1.0 + 10.0 * vavg * vavg);
 
@@ -122,7 +129,7 @@ module.exports = function (regl) {
 
         gl_FragColor = restart ? vec4(0.0, 0.0, 1.0, 0.0) : vec4(newFlow, carve, life, vavg);
       }
-    `,
+    `),
     attributes: {xy: [[-4, -4], [0, 4], [4, -4]]},
     uniforms: {
       r0: regl.prop('r0'),
@@ -315,6 +322,7 @@ module.exports = function (regl) {
       maxVelocity: regl.prop('maxVelocity'),
       friction: regl.prop('friction'),
       carveRate: regl.prop('carveRate'),
+      stratification: regl.prop('stratification'),
       smoothing: regl.prop('smoothing'),
       carryingCapacity: regl.prop('carryingCapacity'),
       evaporationTime: regl.prop('evaporationTime'),

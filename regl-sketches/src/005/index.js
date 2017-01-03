@@ -27,21 +27,25 @@ function run(regl) {
     nRain: 512,
     seed: 0,
     prominence: 1.0,
-    smoothing: 0.5,
+    smoothing: 1.0,
     wind: 0.0,
-    rain: 0.25,
+    rain: 0.25 * 0,
     terrain: true,
     erosion: true,
+    stratification: 0.5,
+    snowLine: 4.0,
+    treeLine: 1.8,
+    rockiness: 4.0,
     topo: 0.0,
     topoSpacing: 0.4,
     dt: 0.01,
     evaporationTime: 8.0,
     restartThreshold: 0.3,
-    brushSize: 2.0,
+    brushSize: 4.0,
     gravity: 0.1,
     maxVelocity: 0.1,
     friction: 2.0,
-    carveRate: 0.5,
+    carveRate: 1,
     carryingCapacity: 0.1,
     captureSize: '540 x 540',
   };
@@ -62,6 +66,10 @@ function run(regl) {
     {type: 'range', label: 'friction', min: 0.0, max: 10.0, step: 0.1, initial: params.friction},
     {type: 'range', label: 'carveRate', min: 0.01, max: 4.0, step: 0.01, initial: params.carveRate},
     {type: 'range', label: 'brushSize', min: 1.0, max: 16.0, step: 0.1, initial: params.brushSize},
+    {type: 'range', label: 'stratification', min: 0.0, max: 2.0, step: 0.01, initial: params.stratification},
+    {type: 'range', label: 'snowLine', min: 0.0, max: 10.0, step: 0.01, initial: params.snowLine},
+    {type: 'range', label: 'treeLine', min: 0.0, max: 10.0, step: 0.01, initial: params.treeLine},
+    {type: 'range', label: 'rockiness', min: 0.0, max: 10.0, step: 0.01, initial: params.rockiness},
     {type: 'range', label: 'carryingCapacity', min: 0.01, max: 1.0, step: 0.01, initial: params.carryingCapacity},
     {type: 'range', label: 'topo', min: 0.0, max: 1.0, initial: params.topo, step: 0.01},
     {type: 'range', label: 'topoSpacing', min: 0.0, max: 1.0, initial: params.topoSpacing, step: 0.01},
@@ -95,6 +103,7 @@ function run(regl) {
     up: [0, 0, 1],
     right: [-1, 0, 0],
     front: [0, 1, 0],
+    center: [0, 0, 2],
     phi: Math.PI * 0.2,
     theta: Math.PI * 1.0,
     distance: 25,
@@ -164,20 +173,22 @@ function run(regl) {
 
     setScale(() => {
       camera(() => {
-        //regl.clear({color: [0, 0, 0, 1], depth: 1});
-
         if (params.terrain) {
           drawGrid({
             positions: gridGeometry.positions,
             elements: gridGeometry.elements,
             nel: gridGeometry.nel,
             hf: gridState.y0,
-            ambient: [0.0, 0.04, 0.08],
+            ambient: [0.0 + 0.08, 0.04 + 0.08, 0.12 + 0.08],
             topo: params.topo,
             topoSpacing: params.topoSpacing,
+            snowLine: params.snowLine,
+            rockiness: params.rockiness,
+            treeLine: params.treeLine,
+            stratification: params.stratification,
             lambertLights: [
               {color: [0.9, 0.75, 0.7], position: [80, 80, 100]},
-              {color: [0.1, 0.23, 0.3], position: [-80, -80, 100]},
+              {color: [0.1, 0.21, 0.22], position: [-80, -80, 100]},
             ]
           });
         }

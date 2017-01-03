@@ -5,7 +5,7 @@ module.exports = function (regl) {
       varying vec2 uv;
       void main () {
         float r2 = uv.x * uv.x + uv.y * uv.y;
-        gl_FragColor = vec4(vec3(0.7 - 1.0 * r2) * vec3(0.95, 0.97, 1.0), 1.0);
+        gl_FragColor = vec4(vec3(1.0 - 1.0 * r2) * vec3(0.90, 0.97, 1.0), 1.0);
       }
     `,
     vert: `
