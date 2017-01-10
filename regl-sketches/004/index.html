@@ -31732,8 +31732,8 @@ var glslify = require('glslify');
 
 module.exports = function (gpu) {
   return gpu.map({
-    args: ['array'],
-    body: glslify(["#define GLSLIFY 1\n\n      float luma(vec3 color) {\n  return dot(color, vec3(0.299, 0.587, 0.114));\n}\n\nfloat luma(vec4 color) {\n  return dot(color.rgb, vec3(0.299, 0.587, 0.114));\n}\n\n      #define LUMA_MIN log(0.007)\n      #define LUMA_MAX log(10.0)\n      #define GAMMA 0.6\n\n      vec4 compute (vec4 src) {\n        float srcLuma = luma(src.xyz);\n\n        float targetLuma = pow((log(srcLuma) - LUMA_MIN) / (LUMA_MAX - LUMA_MIN), 1.0 / GAMMA);\n        return vec4(src.xyz * targetLuma / srcLuma, 1.0);\n      }\n    "])
+    args: ['array', 'scalar', 'scalar', 'scalar'],
+    body: glslify(["#define GLSLIFY 1\n\n      float luma(vec3 color) {\n  return dot(color, vec3(0.299, 0.587, 0.114));\n}\n\nfloat luma(vec4 color) {\n  return dot(color.rgb, vec3(0.299, 0.587, 0.114));\n}\n\n      vec4 compute (vec4 src, float gamma, float logLumaMin, float logLumaMax) {\n        float srcLuma = luma(src.xyz);\n        float targetLuma = pow((log(srcLuma) - logLumaMin) / (logLumaMax - logLumaMin), 1.0 / gamma);\n        return vec4(src.xyz * targetLuma / srcLuma, 1.0);\n      }\n    "])
   });
 };
 },{"glslify":89}],153:[function(require,module,exports){
@@ -31766,10 +31766,8 @@ module.exports = function (fields, state, cb) {
   require('control-panel')(fields, {
     root: control,
     theme: 'light',
-    width: 400
+    width: 375
   }).on('input', function (data) {
-    data.n = Math.pow(Math.floor(Math.sqrt(data.n)), 2);
-
     pstate = extend({}, state);
     mutate(state, data);
     cb && cb(pstate, state);
@@ -31789,15 +31787,21 @@ require('regl')({
   }
 });
 
+var toSide = function (n) {
+  return Math.pow(Math.round(Math.sqrt(n)), 2);
+};
+
 function run(regl) {
   var params = {
-    n: 5000,
+    n: 384 * 384,
     dt: 0.1,
-    t: 0.0
+    t: 0.0,
+    lumaMin: 0.007,
+    lumaMax: 10,
+    gamma: 0.6
   };
 
   var state = {};
-
   var camera = require('./camera')(regl, { phi: Math.PI * 0.2, distance: 10 });
   var gpu = require('./regl-cwise')(regl);
   var allocate = require('./allocate')(gpu);
@@ -31809,11 +31813,8 @@ function run(regl) {
   allocate(state, params);
   initialize(state, params);
 
-  require('./controls')([{ type: 'range', label: 'dt', min: 0.01, max: 1, initial: params.dt, step: 0.01 }, { type: 'range', label: 'n', min: 10000, max: 1e6, initial: params.n, step: 10000 }], params, function (nextProps, props) {
-    props.n = Math.round(props.n);
-    nextProps.n = Math.round(nextProps.n);
-
-    if (nextProps.n !== props.n) {
+  require('./controls')([{ type: 'range', label: 'dt', min: 0.01, max: 0.5, initial: params.dt, step: 0.01 }, { type: 'range', label: 'n', min: 10000, max: 1e6, initial: params.n, step: 10000 }, { type: 'range', label: 'gamma', min: 0.1, max: 2, initial: params.gamma, steps: 190 }, { type: 'range', label: 'lumaMin', min: 0.001, max: 0.1, initial: params.lumaMin, steps: 1000 }, { type: 'range', label: 'lumaMax', min: 1, max: 20, initial: params.lumaMax, steps: 190 }], params, function (nextProps, props) {
+    if ((nextProps.n = toSide(nextProps.n)) !== toSide(props.n)) {
       allocate(state, params);
       initialize(state, params);
     }
@@ -31833,7 +31834,7 @@ function run(regl) {
       });
     });
 
-    colorCorrect([null, screenbuffer]);
+    colorCorrect([null, screenbuffer, params.gamma, Math.log(params.lumaMin), Math.log(params.lumaMax)]);
   });
 }
 },{"./allocate":150,"./camera":151,"./color-correct":152,"./controls":153,"./initialize":155,"./integrator":156,"./particles":225,"./regl-cwise":227,"extend":83,"fail-nicely":84,"regl":135}],155:[function(require,module,exports){
@@ -42446,7 +42447,6 @@ var glslify = require('glslify');
 var length = require('gl-vec3/length');
 
 module.exports = function (regl) {
-  window.regl = regl;
   return regl({
     vert: glslify(["\n      precision mediump float;\n#define GLSLIFY 1\n\n      attribute vec2 xy;\n      uniform sampler2D y;\n      uniform sampler2D v;\n      uniform mat4 view, projection;\n      varying vec3 vel;\n      void main () {\n        vec3 pos = texture2D(y, xy).xyz;\n        vel = texture2D(v, xy).xyz;\n        gl_Position = projection * view * vec4(pos.xyz, 1);\n        gl_PointSize = 2.0;\n      }\n    "]),
     frag: glslify(["\n      precision mediump float;\n#define GLSLIFY 1\n\n      vec3 hsv2rgb(vec3 c) {\n  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);\n  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);\n  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);\n}\n\n      uniform float alpha;\n      varying vec3 vel;\n      void main () {\n        float vmag = sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z);\n        vec3 col = hsv2rgb(vec3(vmag * 0.7, 0.7, 1.0));\n        gl_FragColor = vec4(col, alpha);\n      }\n    "]),
