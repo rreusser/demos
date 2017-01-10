@@ -7,6 +7,8 @@ const scale = require('gl-vec3/scale');
 const length = require('gl-vec3/length');
 const invert = require('gl-mat4/invert');
 const normalize = require('gl-vec3/normalize');
+const colorString = require('color-string');
+window.colorString = colorString;
 
 const regl = require('regl')({
   extensions: ['oes_texture_float'],
@@ -26,7 +28,7 @@ function run (regl) {
     positions: regl.buffer(dragon.positions),
     cells: regl.elements(dragon.cells),
     count: dragon.cells.length * 3,
-    normals: regl.buffer(dragon.normals)
+    normals: regl.buffer(dragon.normals),
   };
 
   const h = 26.3;
@@ -48,10 +50,10 @@ function run (regl) {
   };
 
   const camera = require('./camera')(regl, {
-    distance: 200,
+    distance: 150,
     center: [0, 60, 0],
-    phi: 0.5,
-    theta: 1.5,
+    phi: 0.4,
+    theta: 2.2,
     far: 1000,
     near: 0.1
   });
@@ -59,6 +61,8 @@ function run (regl) {
   var params = {
     radius: 15.0,
     blur: 1.0,
+    modelDiffuse: 'rgb(245, 250, 255)',
+    planeDiffuse: 'rgb(230, 220, 210)',
   };
 
   const setParams = regl({
@@ -70,7 +74,9 @@ function run (regl) {
 
   require('./controls')([
     {type: 'range', label: 'radius', min: 0.0, max: 50.0, initial: params.radius, step: 0.1},
-    {type: 'range', label: 'blur', min: 0.0, max: 8.0, initial: params.blur, step: 0.1}
+    {type: 'range', label: 'blur', min: 0.0, max: 8.0, initial: params.blur, step: 0.1},
+    {type: 'color', label: 'modelDiffuse', initial: params.modelDiffuse},
+    {type: 'color', label: 'planeDiffuse', initial: params.planeDiffuse},
   ], params);
 
   var bounds = bound(dragon.positions);
@@ -195,14 +201,16 @@ function run (regl) {
     frag: `
       precision mediump float;
       varying vec3 n;
+      uniform vec3 diffuse;
       void main () {
-        gl_FragColor = vec4(1);
+        gl_FragColor = vec4(diffuse, 1);
       }
     `,
     attributes: {
       position: regl.prop('positions'),
       normal: regl.prop('normals')
     },
+    uniforms: {diffuse: (ctx, props) => colorString.get.rgb(props.diffuse).slice(0, 3).map(i => i / 255)},
     elements: regl.prop('cells'),
     count: (ctx, props) => props.count
   });
@@ -354,8 +362,8 @@ function run (regl) {
 
           diffuseBuffer.use(() => {
             regl.clear({color: [0, 0, 0, 0], depth: 1});
-            drawDiffuse(model);
-            drawDiffuse(plane);
+            drawDiffuse(extend(model, {diffuse: params.modelDiffuse}));
+            drawDiffuse(extend(plane, {diffuse: params.planeDiffuse}));
           });
 
           ssaoBuffer.use(() => {
@@ -366,13 +374,15 @@ function run (regl) {
             });
           });
 
-          ssaoBlurBuffer.use(() => {
-            blurSSAO({ssao: ssaoBuffer});
-          });
+          if (params.blur > 0.001) {
+            ssaoBlurBuffer.use(() => {
+              blurSSAO({ssao: ssaoBuffer});
+            });
+          }
 
           deferredRender({
             diffuse: diffuseBuffer,
-            ssao: ssaoBlurBuffer
+            ssao: params.blur > 0.001? ssaoBlurBuffer : ssaoBuffer
           });
         });
       });
