@@ -61,6 +61,7 @@ function run (regl) {
   var params = {
     radius: 15.0,
     blur: 1.0,
+    power: 1.0,
     modelDiffuse: 'rgb(245, 250, 255)',
     planeDiffuse: 'rgb(230, 220, 210)',
   };
@@ -68,13 +69,15 @@ function run (regl) {
   const setParams = regl({
     uniforms: {
       radius: regl.prop('radius'),
-      blur: regl.prop('blur')
+      blur: regl.prop('blur'),
+      power: regl.prop('power'),
     }
   });
 
   require('./controls')([
     {type: 'range', label: 'radius', min: 0.0, max: 50.0, initial: params.radius, step: 0.1},
     {type: 'range', label: 'blur', min: 0.0, max: 8.0, initial: params.blur, step: 0.1},
+    {type: 'range', label: 'power', min: 0.0, max: 8.0, initial: params.power, step: 0.1},
     {type: 'color', label: 'modelDiffuse', initial: params.modelDiffuse},
     {type: 'color', label: 'planeDiffuse', initial: params.planeDiffuse},
   ], params);
@@ -334,10 +337,11 @@ function run (regl) {
     frag: `
       precision mediump float;
       uniform sampler2D diffuseBuf, ssaoBuf;
+      uniform float power;
       varying vec2 uv;
       void main () {
         vec3 diffuse = texture2D(diffuseBuf, uv).xyz;
-        float ssao = texture2D(ssaoBuf, uv).x;
+        float ssao = pow(texture2D(ssaoBuf, uv).x, power);
         gl_FragColor = vec4(diffuse * ssao, 1);
       }
     `,

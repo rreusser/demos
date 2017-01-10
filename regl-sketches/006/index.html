@@ -37650,6 +37650,7 @@ function run(regl) {
   var params = {
     radius: 15.0,
     blur: 1.0,
+    power: 1.0,
     modelDiffuse: 'rgb(245, 250, 255)',
     planeDiffuse: 'rgb(230, 220, 210)'
   };
@@ -37657,11 +37658,12 @@ function run(regl) {
   var setParams = regl({
     uniforms: {
       radius: regl.prop('radius'),
-      blur: regl.prop('blur')
+      blur: regl.prop('blur'),
+      power: regl.prop('power')
     }
   });
 
-  require('./controls')([{ type: 'range', label: 'radius', min: 0.0, max: 50.0, initial: params.radius, step: 0.1 }, { type: 'range', label: 'blur', min: 0.0, max: 8.0, initial: params.blur, step: 0.1 }, { type: 'color', label: 'modelDiffuse', initial: params.modelDiffuse }, { type: 'color', label: 'planeDiffuse', initial: params.planeDiffuse }], params);
+  require('./controls')([{ type: 'range', label: 'radius', min: 0.0, max: 50.0, initial: params.radius, step: 0.1 }, { type: 'range', label: 'blur', min: 0.0, max: 8.0, initial: params.blur, step: 0.1 }, { type: 'range', label: 'power', min: 0.0, max: 8.0, initial: params.power, step: 0.1 }, { type: 'color', label: 'modelDiffuse', initial: params.modelDiffuse }, { type: 'color', label: 'planeDiffuse', initial: params.planeDiffuse }], params);
 
   var bounds = bound(dragon.positions);
   var nearfar = extents(bound(dragon.positions), camera.eye);
@@ -37810,7 +37812,7 @@ function run(regl) {
 
   var deferredRender = regl({
     vert: '\n      precision mediump float;\n      attribute vec2 xy;\n      varying vec2 uv;\n      void main () {\n        uv = 0.5 * (1.0 + xy);\n        gl_Position = vec4(xy, 0, 1);\n      }\n    ',
-    frag: '\n      precision mediump float;\n      uniform sampler2D diffuseBuf, ssaoBuf;\n      varying vec2 uv;\n      void main () {\n        vec3 diffuse = texture2D(diffuseBuf, uv).xyz;\n        float ssao = texture2D(ssaoBuf, uv).x;\n        gl_FragColor = vec4(diffuse * ssao, 1);\n      }\n    ',
+    frag: '\n      precision mediump float;\n      uniform sampler2D diffuseBuf, ssaoBuf;\n      uniform float power;\n      varying vec2 uv;\n      void main () {\n        vec3 diffuse = texture2D(diffuseBuf, uv).xyz;\n        float ssao = pow(texture2D(ssaoBuf, uv).x, power);\n        gl_FragColor = vec4(diffuse * ssao, 1);\n      }\n    ',
     attributes: { xy: [[-4, -4], [0, 4], [4, -4]] },
     uniforms: {
       diffuseBuf: regl.prop('diffuse'),
