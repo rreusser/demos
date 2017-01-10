@@ -168,7 +168,7 @@ var scatter2 = {
 
 initialize();
 
-Plotly.plot(gd, [trace, scatter, scatter2], {
+Plotly.plot(gd, [trace], {//, scatter, scatter2], {
   xaxis: {
     showgrid: false,
     showline: false,

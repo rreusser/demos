@@ -2,7 +2,6 @@ const glslify = require('glslify');
 const length = require('gl-vec3/length');
 
 module.exports = function (regl) {
-  window.regl = regl;
   return regl({
     vert: glslify(`
       precision mediump float;
