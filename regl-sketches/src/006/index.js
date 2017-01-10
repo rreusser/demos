@@ -22,6 +22,31 @@ function run (regl) {
   const dragon = require('stanford-dragon/3');//require('icosphere')(3);
   dragon.normals = normals.vertexNormals(dragon.cells, dragon.positions);
 
+  var model = {
+    positions: regl.buffer(dragon.positions),
+    cells: regl.elements(dragon.cells),
+    count: dragon.cells.length * 3,
+    normals: regl.buffer(dragon.normals)
+  };
+
+  const h = 26.3;
+  const plane = {
+    positions: regl.buffer([
+      [-100, h, -100],
+      [100, h, -100],
+      [-100, h, 100],
+      [100, h, 100],
+    ]),
+    normals: regl.buffer([
+      [0, 1, 0],
+      [0, 1, 0],
+      [0, 1, 0],
+      [0, 1, 0],
+    ]),
+    count: 6,
+    cells: regl.elements([[0, 1, 2], [1, 3, 2]])
+  };
+
   const camera = require('./camera')(regl, {
     distance: 200,
     center: [0, 60, 0],
@@ -50,13 +75,6 @@ function run (regl) {
 
   var bounds = bound(dragon.positions);
   var nearfar = extents(bound(dragon.positions), camera.eye);
-
-  var model = {
-    positions: regl.buffer(dragon.positions),
-    cells: regl.elements(dragon.cells),
-    count: dragon.cells.length * 3,
-    normals: regl.buffer(dragon.normals)
-  };
 
   function createKernel (n) {
     var pts = [];
@@ -224,13 +242,16 @@ function run (regl) {
         mat3 tbn = mat3(tangent, cross(normal, tangent), normal);
         float sampleDepth, rangeCheck;
         float occlusion = 0.0;
+        float ddist, ddist2;
         for (int i = 0; i < 64; i++) {
           sample = origin.xyz + radius * tbn * kernel[i];
           offset = projection * vec4(sample, 1.0);
           offset.xy /= offset.w;
           offset.xy = offset.xy * 0.5 + 0.5;
           sampleDepth = valueToDepth(texture2D(depthNormalBuf, offset.xy).x);
-          rangeCheck = abs(origin.z - sampleDepth) < radius ? 1.0 : 0.0;
+          ddist = abs(origin.z - sampleDepth) * 0.5 / radius;
+          ddist2 = ddist * ddist;
+          rangeCheck = 1.0 / (1.0 + ddist * ddist);
           occlusion += (sampleDepth >= sample.z ? 1.0 : 0.0) * rangeCheck;
         }
         occlusion = 1.0 - (occlusion / 64.0);
@@ -328,11 +349,13 @@ function run (regl) {
           depthNormalBuffer.use(() => {
             regl.clear({color: [0, 0, 0, 0], depth: 1});
             drawModelDepthAndNormal(model);
+            drawModelDepthAndNormal(plane);
           });
 
           diffuseBuffer.use(() => {
             regl.clear({color: [0, 0, 0, 0], depth: 1});
             drawDiffuse(model);
+            drawDiffuse(plane);
           });
 
           ssaoBuffer.use(() => {
