@@ -77,7 +77,7 @@ function run (regl) {
   require('./controls')([
     {type: 'range', label: 'radius', min: 0.0, max: 50.0, initial: params.radius, step: 0.1},
     {type: 'range', label: 'blur', min: 0.0, max: 8.0, initial: params.blur, step: 0.1},
-    {type: 'range', label: 'power', min: 0.0, max: 8.0, initial: params.power, step: 0.1},
+    {type: 'range', label: 'power', min: 0.0, max: 2.0, initial: params.power, step: 0.1},
     {type: 'color', label: 'modelDiffuse', initial: params.modelDiffuse},
     {type: 'color', label: 'planeDiffuse', initial: params.planeDiffuse},
   ], params);
