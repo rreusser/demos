@@ -133,7 +133,7 @@ function run (regl) {
     diffuse: 0.9,
     specular: 4,
     modelColor: 'rgb(44, 45, 56)',
-    planeColor: 'rgb(230, 220, 210)',
+    planeColor: 'rgb(255, 255, 255)',
   };
 
   const setParams = regl({
@@ -190,7 +190,7 @@ function run (regl) {
     return ret;
   }
 
-  const ssaoDownsample = 1;
+  const ssaoDownsample = 2;
   const sampleCnt = 32;
   const rotationSize = 4;
 
