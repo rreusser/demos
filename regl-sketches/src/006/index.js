@@ -101,13 +101,13 @@ function run (regl) {
 
   const lights = [{
     position: [-1000, 1000, 1000],
-    color: [1, 0.95, 0.9]
+    color: [1, 0.9, 0.8]
   }, {
     position: [1000, 1000, 1000],
-    color: [0.9, 1, 0.95]
+    color: [0.8, 1, 0.9]
   }, {
     position: [-500, 1000, -1000],
-    color: [0.95, 0.9, 1]
+    color: [0.9, 0.8, 1]
   }];
 
   const ambient = [0.05, 0.05, 0.05];
@@ -130,7 +130,7 @@ function run (regl) {
     exposure: 0.65,
     roughness: 0.5,
     fresnel: 2.0,
-    diffuse: 0.8,
+    diffuse: 0.9,
     specular: 4,
     modelColor: 'rgb(44, 45, 56)',
     planeColor: 'rgb(230, 220, 210)',
