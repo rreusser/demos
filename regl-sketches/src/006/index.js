@@ -29,33 +29,36 @@ function run (regl) {
     cells: regl.elements(dragon.cells),
     count: dragon.cells.length * 3,
     normals: regl.buffer(dragon.normals),
+    specular: 1.0
   };
 
   const h = 27.3;
   const rad = 120;
+  const planePositions = [
+      [-rad, h, -rad],
+      [rad, h, -rad],
+      [-rad, h, rad],
+      [rad, h, rad],
+      [-rad, h, -rad],
+      [rad, h, -rad],
+      [-rad, h + rad * 2, -rad],
+      [rad, h + rad * 2, -rad],
+      [-rad, h, -rad],
+      [-rad, h, rad],
+      [-rad, h + rad * 2, -rad],
+      [-rad, h + rad * 2, rad],
+      [-rad, h, rad],
+      [rad, h, rad],
+      [-rad, h + rad * 2, rad],
+      [rad, h + rad * 2, rad],
+      [rad, h, -rad],
+      [rad, h, rad],
+      [rad, h + rad * 2, -rad],
+      [rad, h + rad * 2, rad],
+  ];
+
   const plane = {
-    positions: regl.buffer([
-      [-rad, h, -rad],
-      [rad, h, -rad],
-      [-rad, h, rad],
-      [rad, h, rad],
-      [-rad, h, -rad],
-      [rad, h, -rad],
-      [-rad, h + rad * 2, -rad],
-      [rad, h + rad * 2, -rad],
-      [-rad, h, -rad],
-      [-rad, h, rad],
-      [-rad, h + rad * 2, -rad],
-      [-rad, h + rad * 2, rad],
-      [-rad, h, rad],
-      [rad, h, rad],
-      [-rad, h + rad * 2, rad],
-      [rad, h + rad * 2, rad],
-      [rad, h, -rad],
-      [rad, h, rad],
-      [rad, h + rad * 2, -rad],
-      [rad, h + rad * 2, rad],
-    ]),
+    positions: regl.buffer(planePositions),
     normals: regl.buffer([
       [0, 1, 0],
       [0, 1, 0],
@@ -78,7 +81,6 @@ function run (regl) {
       [-1, 0, 0],
       [-1, 0, 0],
     ]),
-    count: 30,
     cells: regl.elements([
       [0, 2, 1],
       [1, 2, 3],
@@ -90,12 +92,27 @@ function run (regl) {
       [13, 14, 15],
       [16, 17, 18],
       [17, 19, 18],
-    ])
+    ]),
+    count: 30,
+    specular: 0.0
   };
 
 
-  //var bounds = bound(dragon.positions);
-  //var nearfar = extents(bound(dragon.positions), camera.eye);
+
+  const lights = [{
+    position: [-1000, 1000, 1000],
+    color: [1, 0.95, 0.9]
+  }, {
+    position: [1000, 1000, 1000],
+    color: [0.9, 1, 0.95]
+  }, {
+    position: [-500, 1000, -1000],
+    color: [0.95, 0.9, 1]
+  }];
+
+  const ambient = [0.05, 0.05, 0.05];
+
+  //var nearfar = extents(bound(model.positions), camera.eye);
 
   const camera = require('./camera')(regl, {
     distance: 200,
@@ -111,11 +128,11 @@ function run (regl) {
     blur: 1.0,
     ssao: 1.0,
     exposure: 0.65,
-    roughness: 0.1,
-    fresnel: 1.0,
+    roughness: 0.5,
+    fresnel: 2.0,
     diffuse: 0.8,
-    specular: 0.4,
-    modelColor: 'rgb(148, 207, 167)',
+    specular: 4,
+    modelColor: 'rgb(44, 45, 56)',
     planeColor: 'rgb(230, 220, 210)',
   };
 
@@ -138,7 +155,7 @@ function run (regl) {
     {type: 'range', label: 'ssao', min: 0.0, max: 2.0, initial: params.ssao, step: 0.1},
     {type: 'range', label: 'exposure', min: 0.0, max: 2.0, initial: params.exposure, step: 0.01},
     {type: 'range', label: 'diffuse', min: 0.0, max: 2.0, initial: params.diffuse, step: 0.01},
-    {type: 'range', label: 'specular', min: 0.0, max: 2.0, initial: params.specular, step: 0.01},
+    {type: 'range', label: 'specular', min: 0.0, max: 10.0, initial: params.specular, step: 0.01},
     {type: 'range', label: 'roughness', min: 0.0, max: 2.0, initial: params.roughness, step: 0.01},
     {type: 'range', label: 'fresnel', min: 0.0, max: 2.0, initial: params.fresnel, step: 0.01},
     {type: 'color', label: 'modelColor', initial: params.modelColor},
@@ -308,18 +325,22 @@ function run (regl) {
     `,
     frag: `
       precision mediump float;
+      uniform float modelSpecular;
       varying vec3 n;
       uniform vec3 diffuse;
       void main () {
-        gl_FragColor = vec4(diffuse, 1);
+        gl_FragColor = vec4(diffuse, modelSpecular);
       }
     `,
     attributes: {
       position: regl.prop('positions'),
-      normal: regl.prop('normals')
+      normal: regl.prop('normals'),
     },
     cull: {enable: true},
-    uniforms: {diffuse: (ctx, props) => colorString.get.rgb(props.diffuse).slice(0, 3).map(i => i / 255)},
+    uniforms: {
+      diffuse: (ctx, props) => colorString.get.rgb(props.diffuse).slice(0, 3).map(i => i / 255),
+      modelSpecular: regl.prop('specular'),
+    },
     elements: regl.prop('cells'),
     count: (ctx, props) => props.count
   });
@@ -444,19 +465,6 @@ function run (regl) {
     count: 3
   });
 
-  const lights = [{
-    position: [-1000, 1000, 1000],
-    color: [1, 0.9, 0.8]
-  }, {
-    position: [1000, 1000, 1000],
-    color: [0.8, 1, 0.9]
-  }, {
-    position: [-500, 1000, -1000],
-    color: [0.9, 0.8, 1]
-  }];
-
-  const ambient = [0.05, 0.06, 0.07];
-
   const deferredRender = regl({
     vert: `
       precision mediump float;
@@ -486,34 +494,31 @@ function run (regl) {
       uniform float ssaoPower, exposure, roughness, fresnel, diffuse, specular;
       varying vec2 uv;
       void main () {
-        vec3 materialColor = texture2D(diffuseBuf, uv).xyz;
+        vec4 materialColor = texture2D(diffuseBuf, uv);
         vec3 position = texture2D(positionBuf, uv).xyz;
         vec3 normal = texture2D(depthNormalBuf, uv).yzw;
 
         vec3 viewDir = normalize(eye - position);
 
         float ssao = pow(texture2D(ssaoBuf, uv).x, ssaoPower);
+        float spec = specular * materialColor.w;
 
         vec3 light0Dir = normalize(lights[0].position - position);
         vec3 light1Dir = normalize(lights[1].position - position);
         vec3 light2Dir = normalize(lights[2].position - position);
 
 
-        vec3 lighting = ambient +
-          lights[0].color * (
-            specular * cookTorranceSpec(light0Dir, viewDir, normal, roughness, fresnel) +
-            diffuse * lambert(light0Dir, normal)
-          ) +
-          lights[1].color * (
-            specular * cookTorranceSpec(light1Dir, viewDir, normal, roughness, fresnel) +
-            diffuse * lambert(light1Dir, normal)
-          ) +
-          lights[2].color * (
-            specular * cookTorranceSpec(light2Dir, viewDir, normal, roughness, fresnel) +
-            diffuse * lambert(light2Dir, normal)
-          );
+        vec3 diff =
+          lights[0].color * (diffuse * lambert(light0Dir, normal)) +
+          lights[1].color * (diffuse * lambert(light1Dir, normal)) +
+          lights[2].color * (diffuse * lambert(light2Dir, normal));
 
-        vec3 color = (ssao * exposure) * materialColor * (ambient + vec3(lighting));
+        vec3 specColor =
+          lights[0].color * (spec * cookTorranceSpec(light0Dir, viewDir, normal, roughness, fresnel)) +
+          lights[1].color * (spec * cookTorranceSpec(light1Dir, viewDir, normal, roughness, fresnel)) +
+          lights[2].color * (spec * cookTorranceSpec(light2Dir, viewDir, normal, roughness, fresnel));
+
+        vec3 color = (ssao * exposure) * (ambient + materialColor.xyz * diff + specColor);
 
         gl_FragColor = vec4(color, 1);
       }
