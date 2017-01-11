@@ -31,7 +31,7 @@ function run (regl) {
     normals: regl.buffer(dragon.normals),
   };
 
-  const h = 26.3;
+  const h = 27.3;
   const rad = 120;
   const plane = {
     positions: regl.buffer([
@@ -102,13 +102,13 @@ function run (regl) {
     center: [0, 60, 0],
     phi: 0.4,
     theta: 2.2,
-    far: 1000,
-    near: 0.1
+    far: 700,
+    near: 10
   });
 
   var params = {
     radius: 20.0,
-    blur: 0.9,
+    blur: 1.0,
     ssao: 1.0,
     exposure: 0.65,
     roughness: 0.1,
@@ -150,7 +150,7 @@ function run (regl) {
     for (var i = 0; i < n; i++) {
       var r = 2;
       while (r > 1.0) {
-        var pt = [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random()];
+        var pt = [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() + 0.02];
         r = length(pt);
       }
       pt = scale([], normalize([], pt), 0.1 + 0.9 * Math.pow(i / (n - 1), 2));
@@ -371,7 +371,6 @@ function run (regl) {
           offset.xy = offset.xy * 0.5 + 0.5;
           sampleDepth = valueToDepth(texture2D(depthNormalBuf, offset.xy).x);
           ddist = abs(origin.z - sampleDepth) * 0.5 / radius;
-          ddist2 = ddist * ddist;
           occlusion += (sampleDepth >= sample.z ? 1.0 : 0.0) / (1.0 + ddist * ddist);
         }
         rotation = vec3(rotSample.zw, 0.0);
@@ -424,8 +423,8 @@ function run (regl) {
         float use;
         float result = 0.0;
         float cnt = 0.0;
-        for (float i = -1.0; i <= 1.1; i += 0.5) {
-          for (float j = -1.0; j <= 1.1; j += 0.5) {
+        for (float i = -1.0; i <= 1.1; i += 1.0) {
+          for (float j = -1.0; j <= 1.1; j += 1.0) {
             vec4 value = texture2D(ssaoBuf, uv + vec2(h.x * i, h.y * j) * blur);
             use = value.w == 0.0 ? 0.0 : 1.0;
             result += value.x * use;
