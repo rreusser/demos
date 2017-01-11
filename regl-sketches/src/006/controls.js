@@ -16,7 +16,6 @@ module.exports = function (fields, state, cb) {
     e.stopPropagation();
     control.classList.toggle('expanded')
   });
-  control.classList.toggle('expanded')
 
   css(fs.readFileSync(__dirname + '/styles.css', 'utf8'));
 

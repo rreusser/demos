@@ -12,7 +12,7 @@ const colorString = require('color-string');
 
 const regl = require('regl')({
   extensions: ['oes_texture_float', 'oes_element_index_uint'],
-  //pixelRatio: 0.5,
+  pixelRatio: 1,
   onDone: (err, regl) => {
     if (err) return require('fail-nicely')(err);
     document.querySelector('canvas').addEventListener('mousewheel', e => e.preventDefault());
@@ -108,7 +108,7 @@ function run (regl) {
 
   var params = {
     radius: 20.0,
-    blur: 0.5,
+    blur: 0.9,
     ssao: 1.0,
     exposure: 0.65,
     roughness: 0.1,
@@ -174,7 +174,7 @@ function run (regl) {
   }
 
   const ssaoDownsample = 1;
-  const sampleCnt = 128;
+  const sampleCnt = 32;
   const rotationSize = 4;
 
   const sampleUniforms = {};
@@ -424,8 +424,8 @@ function run (regl) {
         float use;
         float result = 0.0;
         float cnt = 0.0;
-        for (float i = -1.0; i <= 1.1; i += 1.0) {
-          for (float j = -1.0; j <= 1.1; j += 1.0) {
+        for (float i = -1.0; i <= 1.1; i += 0.5) {
+          for (float j = -1.0; j <= 1.1; j += 0.5) {
             vec4 value = texture2D(ssaoBuf, uv + vec2(h.x * i, h.y * j) * blur);
             use = value.w == 0.0 ? 0.0 : 1.0;
             result += value.x * use;
@@ -538,7 +538,7 @@ function run (regl) {
   });
 
   const loop = regl.frame(({tick}) => {
-    if (tick % 60 !== 1) return;
+    //if (tick % 60 !== 1) return;
     try {
       setParams(params, () => {
         camera(() => {
