@@ -22,6 +22,7 @@
     "gl-vec3": "^1.0.3",
     "glsl-diffuse-lambert": "^1.0.0",
     "glsl-noise": "^0.0.0",
+    "glsl-random": "^0.0.5",
     "glsl-specular-blinn-phong": "^1.0.1",
     "glsl-specular-cook-torrance": "^2.0.1",
     "glslify": "^6.0.1",

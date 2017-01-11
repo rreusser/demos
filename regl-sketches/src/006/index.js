@@ -124,8 +124,8 @@ function run (regl) {
   });
 
   var params = {
-    radius: 20.0,
-    blur: 1.0,
+    radius: 15.0,
+    blur: 1.4,
     ssao: 1.0,
     exposure: 0.65,
     roughness: 0.5,
@@ -150,7 +150,7 @@ function run (regl) {
   });
 
   require('./controls')([
-    {type: 'range', label: 'radius', min: 0.0, max: 50.0, initial: params.radius, step: 0.1},
+    {type: 'range', label: 'radius', min: 1.0, max: 50.0, initial: params.radius, step: 0.1},
     {type: 'range', label: 'blur', min: 0.0, max: 8.0, initial: params.blur, step: 0.1},
     {type: 'range', label: 'ssao', min: 0.0, max: 2.0, initial: params.ssao, step: 0.1},
     {type: 'range', label: 'exposure', min: 0.0, max: 2.0, initial: params.exposure, step: 0.01},
@@ -167,7 +167,7 @@ function run (regl) {
     for (var i = 0; i < n; i++) {
       var r = 2;
       while (r > 1.0) {
-        var pt = [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() + 0.02];
+        var pt = [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() + 0.04];
         r = length(pt);
       }
       pt = scale([], normalize([], pt), 0.1 + 0.9 * Math.pow(i / (n - 1), 2));
@@ -190,7 +190,7 @@ function run (regl) {
     return ret;
   }
 
-  const ssaoDownsample = 2;
+  const ssaoDownsample = 1;
   const sampleCnt = 32;
   const rotationSize = 4;
 
@@ -355,12 +355,13 @@ function run (regl) {
         gl_Position = vec4(xy, 0, 1);
       }
     `,
-    frag: `
+    frag: glsl(`
       precision mediump float;
+      #pragma glslify: random = require(glsl-random)
 
-      const int samples = ${sampleCnt};
+      const int samples = 32;
 
-      uniform sampler2D depthNormalBuf, diffuseBuf, rotationsBuf;
+      uniform sampler2D depthNormalBuf, diffuseBuf;//, rotationsBuf;
       uniform mat4 projection, view, iProj;
       uniform vec2 hRotBuf;
       uniform vec3 kernel[samples];
@@ -378,26 +379,18 @@ function run (regl) {
         vec3 normal = (view * vec4(depthNormal.yzw, 0)).xyz;
         vec4 origin = iProj * vec4(2.0 * uv - 1.0, -1.0 + 2.0 * depthNormal.x, 1.0);
         origin /= origin.w;
-        vec4 rotSample = texture2D(rotationsBuf, uv * hRotBuf);
+        //vec4 rotSample = texture2D(rotationsBuf, uv * hRotBuf);
+        vec2 rotSample = normalize(vec2(
+          random(gl_FragCoord.xy * hRotBuf) * 2.0 - 1.0,
+          random((gl_FragCoord.xy + vec2(0.5)) * hRotBuf) * 2.0 - 1.0
+        ));
         vec3 rotation = vec3(rotSample.xy, 0.0);
         vec3 tangent = normalize(rotation - normal * dot(rotation, normal));
         mat3 tbn = mat3(tangent, cross(normal, tangent), normal);
         float sampleDepth, rangeCheck;
         float occlusion = 0.0;
         float ddist, ddist2;
-        for (int i = 0; i < samples / 2; i++) {
-          sample = origin.xyz + radius * tbn * kernel[i];
-          offset = projection * vec4(sample, 1.0);
-          offset.xy /= offset.w;
-          offset.xy = offset.xy * 0.5 + 0.5;
-          sampleDepth = valueToDepth(texture2D(depthNormalBuf, offset.xy).x);
-          ddist = abs(origin.z - sampleDepth) * 0.5 / radius;
-          occlusion += (sampleDepth >= sample.z ? 1.0 : 0.0) / (1.0 + ddist * ddist);
-        }
-        rotation = vec3(rotSample.zw, 0.0);
-        tangent = normalize(rotation - normal * dot(rotation, normal));
-        tbn = mat3(tangent, cross(normal, tangent), normal);
-        for (int i = samples / 2; i < samples; i++) {
+        for (int i = 0; i < samples; i++) {
           sample = origin.xyz + radius * tbn * kernel[i];
           offset = projection * vec4(sample, 1.0);
           offset.xy /= offset.w;
@@ -409,15 +402,15 @@ function run (regl) {
         occlusion = 1.0 - (occlusion / float(samples));
         gl_FragColor = vec4(vec3(occlusion), depthNormal.x);
       }
-    `,
+    `),
     attributes: {xy: [[-4, -4], [0, 4], [4, -4]]},
     uniforms: Object.assign({
       depthNormalBuf: regl.prop('depthNormal'),
-      rotationsBuf: regl.prop('rotations'),
+      //rotationsBuf: regl.prop('rotations'),
       iProj: ctx => invert([], ctx.projection),
       hRotBuf: (ctx, props) => [
-        ctx.framebufferWidth / props.rotations.width,
-        ctx.framebufferHeight / props.rotations.height
+        1.0 / ctx.framebufferWidth,
+        1.0 / ctx.framebufferHeight
       ]
     }, sampleUniforms),
     depth: {enable: false},
@@ -444,8 +437,8 @@ function run (regl) {
         float use;
         float result = 0.0;
         float cnt = 0.0;
-        for (float i = -1.0; i <= 1.1; i += 1.0) {
-          for (float j = -1.0; j <= 1.1; j += 1.0) {
+        for (float i = -1.0; i <= 1.1; i += 0.5) {
+          for (float j = -1.0; j <= 1.1; j += 0.5) {
             vec4 value = texture2D(ssaoBuf, uv + vec2(h.x * i, h.y * j) * blur);
             use = value.w == 0.0 ? 0.0 : 1.0;
             result += value.x * use;
