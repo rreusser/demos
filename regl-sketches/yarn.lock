@@ -1572,6 +1572,10 @@ gl-mat4@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/gl-mat4/-/gl-mat4-1.1.4.tgz#1e895b55892e56a896867abd837d38f37a178086"
 
+gl-vec2:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/gl-vec2/-/gl-vec2-1.0.0.tgz#77fce6ae9612856d6c8b621cd261cd8281b9c637"
+
 gl-vec3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/gl-vec3/-/gl-vec3-1.0.3.tgz#110fd897d0729f6398307381567d0944941bf22b"
@@ -1628,6 +1632,10 @@ globals@^9.0.0:
   version "9.14.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-9.14.0.tgz#8859936af0038741263053b39d0e76ca241e4034"
 
+glsl-diffuse-lambert:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/glsl-diffuse-lambert/-/glsl-diffuse-lambert-1.0.0.tgz#a58a738d86eeed83ca9abd924b24df25435916b0"
+
 glsl-inject-defines@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/glsl-inject-defines/-/glsl-inject-defines-1.0.3.tgz#dd1aacc2c17fcb2bd3fc32411c6633d0d7b60fd4"
@@ -1647,9 +1655,19 @@ glsl-resolve@0.0.1:
     resolve "^0.6.1"
     xtend "^2.1.2"
 
+glsl-specular-beckmann@^1.1.1:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/glsl-specular-beckmann/-/glsl-specular-beckmann-1.1.2.tgz#fce9056933ecdf2456278376a54d082893e775f1"
+
 glsl-specular-blinn-phong:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/glsl-specular-blinn-phong/-/glsl-specular-blinn-phong-1.0.1.tgz#ce1831b072ae0f3316a00b8ba458cc272dca80ea"
+
+glsl-specular-cook-torrance:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/glsl-specular-cook-torrance/-/glsl-specular-cook-torrance-2.0.1.tgz#a891cc06c8c7b4f4728702b4824fdacbb967d78f"
+  dependencies:
+    glsl-specular-beckmann "^1.1.1"
 
 glsl-token-assignments@^2.0.0:
   version "2.0.2"

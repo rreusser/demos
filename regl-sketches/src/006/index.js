@@ -7,12 +7,12 @@ const scale = require('gl-vec3/scale');
 const length = require('gl-vec3/length');
 const invert = require('gl-mat4/invert');
 const normalize = require('gl-vec3/normalize');
+const normalize2 = require('gl-vec2/normalize');
 const colorString = require('color-string');
-window.colorString = colorString;
 
 const regl = require('regl')({
-  extensions: ['oes_texture_float'],
-  pixelRatio: 1,
+  extensions: ['oes_texture_float', 'oes_element_index_uint'],
+  //pixelRatio: 0.5,
   onDone: (err, regl) => {
     if (err) return require('fail-nicely')(err);
     document.querySelector('canvas').addEventListener('mousewheel', e => e.preventDefault());
@@ -21,7 +21,7 @@ const regl = require('regl')({
 });
 
 function run (regl) {
-  const dragon = require('stanford-dragon/3');//require('icosphere')(3);
+  const dragon = require('stanford-dragon/2');//require('icosphere')(3);
   dragon.normals = normals.vertexNormals(dragon.cells, dragon.positions);
 
   var model = {
@@ -32,25 +32,73 @@ function run (regl) {
   };
 
   const h = 26.3;
+  const rad = 120;
   const plane = {
     positions: regl.buffer([
-      [-100, h, -100],
-      [100, h, -100],
-      [-100, h, 100],
-      [100, h, 100],
+      [-rad, h, -rad],
+      [rad, h, -rad],
+      [-rad, h, rad],
+      [rad, h, rad],
+      [-rad, h, -rad],
+      [rad, h, -rad],
+      [-rad, h + rad * 2, -rad],
+      [rad, h + rad * 2, -rad],
+      [-rad, h, -rad],
+      [-rad, h, rad],
+      [-rad, h + rad * 2, -rad],
+      [-rad, h + rad * 2, rad],
+      [-rad, h, rad],
+      [rad, h, rad],
+      [-rad, h + rad * 2, rad],
+      [rad, h + rad * 2, rad],
+      [rad, h, -rad],
+      [rad, h, rad],
+      [rad, h + rad * 2, -rad],
+      [rad, h + rad * 2, rad],
     ]),
     normals: regl.buffer([
       [0, 1, 0],
       [0, 1, 0],
       [0, 1, 0],
       [0, 1, 0],
+      [0, 0, 1],
+      [0, 0, 1],
+      [0, 0, 1],
+      [0, 0, 1],
+      [1, 0, 0],
+      [1, 0, 0],
+      [1, 0, 0],
+      [1, 0, 0],
+      [0, 0, -1],
+      [0, 0, -1],
+      [0, 0, -1],
+      [0, 0, -1],
+      [-1, 0, 0],
+      [-1, 0, 0],
+      [-1, 0, 0],
+      [-1, 0, 0],
     ]),
-    count: 6,
-    cells: regl.elements([[0, 1, 2], [1, 3, 2]])
+    count: 30,
+    cells: regl.elements([
+      [0, 2, 1],
+      [1, 2, 3],
+      [4, 5, 6],
+      [5, 7, 6],
+      [8, 10, 9],
+      [9, 10, 11],
+      [12, 14, 13],
+      [13, 14, 15],
+      [16, 17, 18],
+      [17, 19, 18],
+    ])
   };
 
+
+  //var bounds = bound(dragon.positions);
+  //var nearfar = extents(bound(dragon.positions), camera.eye);
+
   const camera = require('./camera')(regl, {
-    distance: 150,
+    distance: 200,
     center: [0, 60, 0],
     phi: 0.4,
     theta: 2.2,
@@ -59,31 +107,43 @@ function run (regl) {
   });
 
   var params = {
-    radius: 15.0,
-    blur: 1.0,
-    power: 1.0,
-    modelDiffuse: 'rgb(245, 250, 255)',
-    planeDiffuse: 'rgb(230, 220, 210)',
+    radius: 20.0,
+    blur: 0.5,
+    ssao: 1.0,
+    exposure: 0.65,
+    roughness: 0.1,
+    fresnel: 1.0,
+    diffuse: 0.8,
+    specular: 0.4,
+    modelColor: 'rgb(148, 207, 167)',
+    planeColor: 'rgb(230, 220, 210)',
   };
 
   const setParams = regl({
     uniforms: {
       radius: regl.prop('radius'),
       blur: regl.prop('blur'),
-      power: regl.prop('power'),
+      ssaoPower: regl.prop('ssao'),
+      exposure: regl.prop('exposure'),
+      roughness: regl.prop('roughness'),
+      fresnel: regl.prop('fresnel'),
+      diffuse: regl.prop('diffuse'),
+      specular: regl.prop('specular'),
     }
   });
 
   require('./controls')([
     {type: 'range', label: 'radius', min: 0.0, max: 50.0, initial: params.radius, step: 0.1},
     {type: 'range', label: 'blur', min: 0.0, max: 8.0, initial: params.blur, step: 0.1},
-    {type: 'range', label: 'power', min: 0.0, max: 2.0, initial: params.power, step: 0.1},
-    {type: 'color', label: 'modelDiffuse', initial: params.modelDiffuse},
-    {type: 'color', label: 'planeDiffuse', initial: params.planeDiffuse},
+    {type: 'range', label: 'ssao', min: 0.0, max: 2.0, initial: params.ssao, step: 0.1},
+    {type: 'range', label: 'exposure', min: 0.0, max: 2.0, initial: params.exposure, step: 0.01},
+    {type: 'range', label: 'diffuse', min: 0.0, max: 2.0, initial: params.diffuse, step: 0.01},
+    {type: 'range', label: 'specular', min: 0.0, max: 2.0, initial: params.specular, step: 0.01},
+    {type: 'range', label: 'roughness', min: 0.0, max: 2.0, initial: params.roughness, step: 0.01},
+    {type: 'range', label: 'fresnel', min: 0.0, max: 2.0, initial: params.fresnel, step: 0.01},
+    {type: 'color', label: 'modelColor', initial: params.modelColor},
+    {type: 'color', label: 'planeColor', initial: params.planeColor},
   ], params);
-
-  var bounds = bound(dragon.positions);
-  var nearfar = extents(bound(dragon.positions), camera.eye);
 
   function createKernel (n) {
     var pts = [];
@@ -104,20 +164,25 @@ function run (regl) {
     for (i = 0; i < n; i++) {
       var pts = [];
       for (j = 0; j < n; j++) {
-        pts.push(normalize([], [Math.random(), Math.random(), 0]).concat([0]));
+        var vec1 = normalize2([], [Math.random() - 0.5, Math.random() - 0.5]);
+        var vec2 = normalize2([], [Math.random() - 0.5, Math.random() - 0.5]);
+        pts.push(vec1.concat(vec2));
       }
       ret.push(pts);
     }
     return ret;
   }
 
+  const ssaoDownsample = 1;
+  const sampleCnt = 128;
+  const rotationSize = 4;
+
   const sampleUniforms = {};
-  const sampleKernel = createKernel(64);
+  const sampleKernel = createKernel(sampleCnt);
   for (let i = 0; i < sampleKernel.length; i++) {
     sampleUniforms['kernel[' + i + ']'] = sampleKernel[i];
   }
 
-  const rotationSize = 4;
   const rotationsBuffer = regl.texture({
     format: 'rgba',
     data: createRotations(rotationSize),
@@ -144,12 +209,20 @@ function run (regl) {
     colorType: 'uint8',
   });
 
-  const ssaoBuffer = regl.framebuffer({
+  const positionBuffer = regl.framebuffer({
     width: regl._gl.canvas.width,
     height: regl._gl.canvas.height,
-    texture: regl.texture({
+    depth: true,
+    colorFormat: 'rgba',
+    colorType: 'float',
+  });
+
+  const ssaoBuffer = regl.framebuffer({
+    color: regl.texture({
       min: 'linear',
-      mag: 'linear'
+      mag: 'linear',
+      width: Math.round(regl._gl.canvas.width / ssaoDownsample),
+      height: Math.round(regl._gl.canvas.height / ssaoDownsample),
     }),
     depth: false,
     colorFormat: 'rgba',
@@ -157,8 +230,12 @@ function run (regl) {
   });
 
   const ssaoBlurBuffer = regl.framebuffer({
-    width: regl._gl.canvas.width,
-    height: regl._gl.canvas.height,
+    color: regl.texture({
+      min: 'linear',
+      mag: 'linear',
+      width: Math.round(regl._gl.canvas.width / ssaoDownsample),
+      height: Math.round(regl._gl.canvas.height / ssaoDownsample),
+    }),
     depth: false,
     colorFormat: 'rgba',
     colorType: 'uint8',
@@ -186,8 +263,36 @@ function run (regl) {
       position: regl.prop('positions'),
       normal: regl.prop('normals'),
     },
+    cull: {enable: true},
     elements: regl.prop('cells'),
     count: (context, props) => props.count
+  });
+
+  const drawPosition = regl({
+    vert: `
+      precision mediump float;
+      attribute vec3 position;
+      uniform mat4 projection, view;
+      varying vec3 p;
+      void main () {
+        p = position;
+        gl_Position = projection * view * vec4(position, 1);
+      }
+    `,
+    frag: `
+      precision mediump float;
+      varying vec3 p;
+      void main () {
+        gl_FragColor = vec4(p, 1);
+      }
+    `,
+    attributes: {
+      position: regl.prop('positions'),
+      normal: regl.prop('normals'),
+    },
+    cull: {enable: true},
+    elements: regl.prop('cells'),
+    count: (ctx, props) => props.count
   });
 
   const drawDiffuse = regl({
@@ -213,6 +318,7 @@ function run (regl) {
       position: regl.prop('positions'),
       normal: regl.prop('normals')
     },
+    cull: {enable: true},
     uniforms: {diffuse: (ctx, props) => colorString.get.rgb(props.diffuse).slice(0, 3).map(i => i / 255)},
     elements: regl.prop('cells'),
     count: (ctx, props) => props.count
@@ -230,10 +336,13 @@ function run (regl) {
     `,
     frag: `
       precision mediump float;
+
+      const int samples = ${sampleCnt};
+
       uniform sampler2D depthNormalBuf, diffuseBuf, rotationsBuf;
       uniform mat4 projection, view, iProj;
       uniform vec2 hRotBuf;
-      uniform vec3 kernel[64];
+      uniform vec3 kernel[samples];
       uniform float radius, near, far;
       varying vec2 uv;
 
@@ -248,13 +357,14 @@ function run (regl) {
         vec3 normal = (view * vec4(depthNormal.yzw, 0)).xyz;
         vec4 origin = iProj * vec4(2.0 * uv - 1.0, -1.0 + 2.0 * depthNormal.x, 1.0);
         origin /= origin.w;
-        vec3 rotation = vec3(normalize(texture2D(rotationsBuf, uv * hRotBuf).xy), 0.0);
+        vec4 rotSample = texture2D(rotationsBuf, uv * hRotBuf);
+        vec3 rotation = vec3(rotSample.xy, 0.0);
         vec3 tangent = normalize(rotation - normal * dot(rotation, normal));
         mat3 tbn = mat3(tangent, cross(normal, tangent), normal);
         float sampleDepth, rangeCheck;
         float occlusion = 0.0;
         float ddist, ddist2;
-        for (int i = 0; i < 64; i++) {
+        for (int i = 0; i < samples / 2; i++) {
           sample = origin.xyz + radius * tbn * kernel[i];
           offset = projection * vec4(sample, 1.0);
           offset.xy /= offset.w;
@@ -262,10 +372,21 @@ function run (regl) {
           sampleDepth = valueToDepth(texture2D(depthNormalBuf, offset.xy).x);
           ddist = abs(origin.z - sampleDepth) * 0.5 / radius;
           ddist2 = ddist * ddist;
-          rangeCheck = 1.0 / (1.0 + ddist * ddist);
-          occlusion += (sampleDepth >= sample.z ? 1.0 : 0.0) * rangeCheck;
+          occlusion += (sampleDepth >= sample.z ? 1.0 : 0.0) / (1.0 + ddist * ddist);
         }
-        occlusion = 1.0 - (occlusion / 64.0);
+        rotation = vec3(rotSample.zw, 0.0);
+        tangent = normalize(rotation - normal * dot(rotation, normal));
+        tbn = mat3(tangent, cross(normal, tangent), normal);
+        for (int i = samples / 2; i < samples; i++) {
+          sample = origin.xyz + radius * tbn * kernel[i];
+          offset = projection * vec4(sample, 1.0);
+          offset.xy /= offset.w;
+          offset.xy = offset.xy * 0.5 + 0.5;
+          sampleDepth = valueToDepth(texture2D(depthNormalBuf, offset.xy).x);
+          ddist = abs(origin.z - sampleDepth) * 0.5 / radius;
+          occlusion += (sampleDepth >= sample.z ? 1.0 : 0.0) / (1.0 + ddist * ddist);
+        }
+        occlusion = 1.0 - (occlusion / float(samples));
         gl_FragColor = vec4(vec3(occlusion), depthNormal.x);
       }
     `,
@@ -303,8 +424,8 @@ function run (regl) {
         float use;
         float result = 0.0;
         float cnt = 0.0;
-        for (float i = -1.0; i <= 1.1; i += 0.5) {
-          for (float j = -1.0; j <= 1.1; j += 0.5) {
+        for (float i = -1.0; i <= 1.1; i += 1.0) {
+          for (float j = -1.0; j <= 1.1; j += 1.0) {
             vec4 value = texture2D(ssaoBuf, uv + vec2(h.x * i, h.y * j) * blur);
             use = value.w == 0.0 ? 0.0 : 1.0;
             result += value.x * use;
@@ -324,6 +445,19 @@ function run (regl) {
     count: 3
   });
 
+  const lights = [{
+    position: [-1000, 1000, 1000],
+    color: [1, 0.9, 0.8]
+  }, {
+    position: [1000, 1000, 1000],
+    color: [0.8, 1, 0.9]
+  }, {
+    position: [-500, 1000, -1000],
+    color: [0.9, 0.8, 1]
+  }];
+
+  const ambient = [0.05, 0.06, 0.07];
+
   const deferredRender = regl({
     vert: `
       precision mediump float;
@@ -334,27 +468,77 @@ function run (regl) {
         gl_Position = vec4(xy, 0, 1);
       }
     `,
-    frag: `
+    frag: glsl(`
       precision mediump float;
-      uniform sampler2D diffuseBuf, ssaoBuf;
-      uniform float power;
+
+      #pragma glslify: lambert = require(glsl-diffuse-lambert)
+      #pragma glslify: cookTorranceSpec = require(glsl-specular-cook-torrance)
+      #pragma glslify: blinnPhongSpec = require(glsl-specular-blinn-phong)
+
+      struct Light {
+        vec3 color;
+        vec3 position;
+      };
+
+      uniform sampler2D diffuseBuf, ssaoBuf, depthNormalBuf, positionBuf;
+      uniform vec3 eye;
+      uniform vec3 ambient;
+      uniform Light lights[3];
+      uniform float ssaoPower, exposure, roughness, fresnel, diffuse, specular;
       varying vec2 uv;
       void main () {
-        vec3 diffuse = texture2D(diffuseBuf, uv).xyz;
-        float ssao = pow(texture2D(ssaoBuf, uv).x, power);
-        gl_FragColor = vec4(diffuse * ssao, 1);
+        vec3 materialColor = texture2D(diffuseBuf, uv).xyz;
+        vec3 position = texture2D(positionBuf, uv).xyz;
+        vec3 normal = texture2D(depthNormalBuf, uv).yzw;
+
+        vec3 viewDir = normalize(eye - position);
+
+        float ssao = pow(texture2D(ssaoBuf, uv).x, ssaoPower);
+
+        vec3 light0Dir = normalize(lights[0].position - position);
+        vec3 light1Dir = normalize(lights[1].position - position);
+        vec3 light2Dir = normalize(lights[2].position - position);
+
+
+        vec3 lighting = ambient +
+          lights[0].color * (
+            specular * cookTorranceSpec(light0Dir, viewDir, normal, roughness, fresnel) +
+            diffuse * lambert(light0Dir, normal)
+          ) +
+          lights[1].color * (
+            specular * cookTorranceSpec(light1Dir, viewDir, normal, roughness, fresnel) +
+            diffuse * lambert(light1Dir, normal)
+          ) +
+          lights[2].color * (
+            specular * cookTorranceSpec(light2Dir, viewDir, normal, roughness, fresnel) +
+            diffuse * lambert(light2Dir, normal)
+          );
+
+        vec3 color = (ssao * exposure) * materialColor * (ambient + vec3(lighting));
+
+        gl_FragColor = vec4(color, 1);
       }
-    `,
+    `),
     attributes: {xy: [[-4, -4], [0, 4], [4, -4]]},
     uniforms: {
       diffuseBuf: regl.prop('diffuse'),
-      ssaoBuf: regl.prop('ssao')
+      positionBuf: regl.prop('position'),
+      depthNormalBuf: regl.prop('depthNormal'),
+      ssaoBuf: regl.prop('ssao'),
+      ambient: regl.prop('ambient'),
+      'lights[0].position': regl.prop('lights[0].position'),
+      'lights[0].color': regl.prop('lights[0].color'),
+      'lights[1].position': regl.prop('lights[1].position'),
+      'lights[1].color': regl.prop('lights[1].color'),
+      'lights[2].position': regl.prop('lights[2].position'),
+      'lights[2].color': regl.prop('lights[2].color'),
     },
     depth: {enable: false},
     count: 3
   });
 
   const loop = regl.frame(({tick}) => {
+    if (tick % 60 !== 1) return;
     try {
       setParams(params, () => {
         camera(() => {
@@ -366,8 +550,14 @@ function run (regl) {
 
           diffuseBuffer.use(() => {
             regl.clear({color: [0, 0, 0, 0], depth: 1});
-            drawDiffuse(extend(model, {diffuse: params.modelDiffuse}));
-            drawDiffuse(extend(plane, {diffuse: params.planeDiffuse}));
+            drawDiffuse(extend(model, {diffuse: params.modelColor}));
+            drawDiffuse(extend(plane, {diffuse: params.planeColor}));
+          });
+
+          positionBuffer.use(() => {
+            regl.clear({color: [0, 0, 0, 0], depth: 1});
+            drawPosition(model);
+            drawPosition(plane);
           });
 
           ssaoBuffer.use(() => {
@@ -386,7 +576,11 @@ function run (regl) {
 
           deferredRender({
             diffuse: diffuseBuffer,
-            ssao: params.blur > 0.001? ssaoBlurBuffer : ssaoBuffer
+            position: positionBuffer,
+            depthNormal: depthNormalBuffer,
+            ssao: params.blur > 0.001? ssaoBlurBuffer : ssaoBuffer,
+            lights: lights,
+            ambient: ambient,
           });
         });
       });
