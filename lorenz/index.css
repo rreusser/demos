@@ -30,6 +30,10 @@ canvas {
   margin-right: auto;
 }
 
+.controls-hidden .hidable {
+  display: none;
+}
+
 #equation {
   position: absolute;
   top: 0;

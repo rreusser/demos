@@ -58,7 +58,7 @@ function run (regl) {
   const dxdt = h('div.equation', {class: 'fg-color equation'});
   const dydt = h('div.equation', {class: 'fg-color equation'});
   const dzdt = h('div.equation', {class: 'fg-color equation'});
-  const eqn = h('div.equations', [dxdt, dydt, dzdt]);
+  const eqn = h('div.equations.hidable', [dxdt, dydt, dzdt]);
   document.body.appendChild(eqn);
 
   function makeEqn(letter, value) {
@@ -518,7 +518,7 @@ function run (regl) {
   );
 
   // Append the buttons
-  document.body.appendChild(h('div.selector', btns));
+  document.body.appendChild(h('div.selector.hidable', btns));
 
   // Attach an event listener to switch the attractor on click
   btns.forEach(btn =>
@@ -661,8 +661,27 @@ function run (regl) {
   setExposure();
 
 
+  var gammaOutput = h('span');
+  var gammaRange = h('input', {type: 'range', min: 0, max: 100, value: 50});
+  var gammaField = h('div.field.fg-color', [gammaRange, gammaOutput]);
+  gammaRange.addEventListener('input', setGamma);
+  gammaRange.addEventListener('mousemove', e => e.stopPropagation());
+
+  function setGamma () {
+    let min = parseInt(gammaRange.getAttribute('min'));
+    let max = parseInt(gammaRange.getAttribute('max'));
+    let interp = (parseInt(gammaRange.value) - min) / (max - min);
+    gamma = 0.01 + 3.99 * interp;
+    gammaOutput.textContent = 'Gamma: ' + gamma.toFixed(2);
+    randomizeColors();
+  }
+
+  setGamma();
+
+
+
   var bgOutput = h('span');
-  var bgRange = h('input', {type: 'range', min: 0, max: 100, value: 7});
+  var bgRange = h('input', {type: 'range', min: 0, max: 100, value: 1});
   var bgField = h('div.field.fg-color', [bgRange, bgOutput]);
   bgRange.addEventListener('input', setBackground);
   bgRange.addEventListener('mousemove', e => e.stopPropagation());
@@ -671,7 +690,7 @@ function run (regl) {
     let min = parseInt(bgRange.getAttribute('min'));
     let max = parseInt(bgRange.getAttribute('max'));
     let interp = (parseInt(bgRange.value) - min) / (max - min);
-    bgIntensity = interp;
+    bgIntensity = 0.01 + 0.99 * interp;
     bgOutput.textContent = 'Background: ' + bgIntensity.toFixed(2);
     randomizeColors();
   }
@@ -680,7 +699,7 @@ function run (regl) {
 
   var rotation = 0;
   var rotationOutput = h('span');
-  var rotationRange = h('input', {type: 'range', min: 0, max: 100, value: 50});
+  var rotationRange = h('input', {type: 'range', min: 0, max: 1000, value: 500});
   var rotationField = h('div.field.fg-color', [rotationRange, rotationOutput]);
   rotationRange.addEventListener('input', setRotation);
   rotationRange.addEventListener('mousemove', e => e.stopPropagation());
@@ -689,7 +708,7 @@ function run (regl) {
     let min = parseInt(rotationRange.getAttribute('min'));
     let max = parseInt(rotationRange.getAttribute('max'));
     let interp = (parseInt(rotationRange.value) - min) / (max - min);
-    rotation = interp * 2 - 1;
+    rotation = 4.0 * (interp * 2 - 1);
     rotationOutput.textContent = 'Rotation: ' + rotation.toFixed(2);
     randomizeColors();
   }
@@ -713,21 +732,41 @@ function run (regl) {
     randomizeColors();
   });
 
+  const showHideBtn = h('button', 'Hide', {class: 'fg-color btn bg-color'});
+  const showHideField = h('div.field.fg-color', [showHideBtn]);
+  let controlsVisible = true;
+  showHideBtn.addEventListener('click', () => {
+    controlsVisible = !controlsVisible;
+
+    if (controlsVisible) {
+      document.body.classList.remove('controls-hidden');
+      showHideBtn.textContent = 'Hide';
+    } else {
+      document.body.classList.add('controls-hidden');
+      showHideBtn.textContent = 'Show';
+    }
+  });
+
+
   const captureDims = h('input', {type: 'text', value: '540x540', class: 'bg-color fg-color'});
 
   var captureField = h('div.field', [captureBtn, captureDims]);
 
   var fields = h('div.fields', [
-    numberField,
-    dtField,
-    hueField,
-    satField,
-    exposureField,
-    bgField,
-    rotationField,
-    invertField,
-    //pickerField,
-    captureField
+    showHideField,
+    h('div.hidable', [
+      numberField,
+      dtField,
+      hueField,
+      satField,
+      exposureField,
+      gammaField,
+      bgField,
+      rotationField,
+      invertField,
+      //pickerField,
+      captureField
+    ])
   ]);
   document.body.appendChild(fields);
   fields.addEventListener('mousedown', e => e.stopPropagation());
@@ -786,6 +825,7 @@ function run (regl) {
       #pragma glslify: camera = require('glsl-camera-ray')
       #pragma glslify: noise = require('glsl-noise/simplex/3d')
       uniform vec3 color;
+      uniform float gamma;
       varying vec3 dir;
       #define OO2PI 0.15915494309189535
       #define PI 3.141592653589793238
@@ -797,7 +837,11 @@ function run (regl) {
         float y = dir.y / length(ndir);
         float mag = 1.0 - NOISEINTENSITY + NOISEINTENSITY * noise(ndir  / length(ndir) * 2.0);
         float vertFade = (1.0 - VFADE) + VFADE * y;
-        gl_FragColor = vec4(color * vertFade * mag, 1.0);
+
+        vec3 c = color * vertFade * mag;
+        float l = length(c);
+
+        gl_FragColor = vec4(c / l * pow(l, gamma), 1.0);
       }
     `),
     vert: `
@@ -815,7 +859,8 @@ function run (regl) {
     uniforms: {
       color: regl.prop('color'),
       invView: context => invert(invView, context.view),
-      aspect: context => context.viewportWidth / context.viewportHeight
+      aspect: context => context.viewportWidth / context.viewportHeight,
+      gamma: regl.prop('gamma')
     },
     framebuffer: regl.prop('dest'),
     depth: {enable: false},
@@ -870,14 +915,15 @@ function run (regl) {
   });
 
   const transfer = gpgpu.map({
-    args: ['array'],
-    body: `vec4 compute (vec4 c) {
-      //c.xyz = sqrt(c.xyz);
-      return c;
+    args: ['array', 'scalar'],
+    body: `vec4 compute (vec4 c, float gamma) {
+      float l = length(c.xyz);
+      return vec4(c.xyz / l * pow(l, gamma), 1.0);
     }`
   });
 
   let exposure = 0.2;
+  let gamma = 1.0;
   let tick = 0;
   let dt0 = 0.01;
   function render () {
@@ -897,7 +943,7 @@ function run (regl) {
     }
 
     camera(changes, (context) => {
-      drawBg({color: bg, dest: screenbufferProxy});
+      drawBg({color: bg, dest: screenbufferProxy, gamma: gamma});
 
       fg[3] = 1;
       let opac = Math.max(0, Math.min(1, Math.atan(1 / length(context.eye)) * context.viewportHeight * 0.02 * exposure)) * (360000 / n) * 2.0;
@@ -912,7 +958,7 @@ function run (regl) {
         dest: screenbufferProxy
       });
 
-      transfer([null, screenbufferProxy]);
+      transfer([null, screenbufferProxy, 1.0 / gamma]);
     });
 
     if (doCapture) {

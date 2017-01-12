@@ -417,6 +417,10 @@ binary-extensions@^1.0.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-1.8.0.tgz#48ec8d16df4377eae5fa5884682480af4d95c774"
 
+bit-twiddle@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/bit-twiddle/-/bit-twiddle-1.0.2.tgz#0c6c1fabe2b23d17173d9a61b7b7093eb9e1769e"
+
 bl@^1.0.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/bl/-/bl-1.1.2.tgz#fdca871a99713aa00d19e3bbba41c44787a65398"
@@ -687,6 +691,10 @@ builtin-modules@^1.0.0:
 builtin-status-codes@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-2.0.0.tgz#6f22003baacf003ccd287afe6872151fddc58579"
+
+bunny:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/bunny/-/bunny-1.0.1.tgz#86383da45ab7a99571a5a572b7be0e3564815f9e"
 
 bytes@2.2.0:
   version "2.2.0"
@@ -3363,6 +3371,13 @@ simplex-noise:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/simplex-noise/-/simplex-noise-2.2.0.tgz#302db27dbc8380d3b16cce0a5f75e56040da74fa"
 
+simplicial-complex@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/simplicial-complex/-/simplicial-complex-1.0.0.tgz#6c33a4ed69fcd4d91b7bcadd3b30b63683eae241"
+  dependencies:
+    bit-twiddle "^1.0.0"
+    union-find "^1.0.0"
+
 slash@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-1.0.0.tgz#c41f2f6c39fc16d1cd17ad4b5d896114ae470d55"
@@ -3474,6 +3489,13 @@ stanford-dragon:
     glob "^3.2.9"
     map-limit "0.0.0"
     parse-ply "^0.1.0"
+
+stars:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/stars/-/stars-1.0.0.tgz#0d2d492271573f26fccfd59fdde9e3c9c9ee4311"
+  dependencies:
+    simplicial-complex "^1.0.0"
+    uniq "^1.0.0"
 
 static-eval@^1.1.1:
   version "1.1.1"
@@ -3892,6 +3914,14 @@ uid-number@~0.0.6:
 umd@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/umd/-/umd-3.0.1.tgz#8ae556e11011f63c2596708a8837259f01b3d60e"
+
+union-find@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/union-find/-/union-find-1.0.2.tgz#292bac415e6ad3a89535d237010db4a536284e58"
+
+uniq@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/uniq/-/uniq-1.0.1.tgz#b31c5ae8254844a3a8281541ce2b04b865a734ff"
 
 unpipe@1.0.0:
   version "1.0.0"

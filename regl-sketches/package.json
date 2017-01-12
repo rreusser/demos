@@ -13,6 +13,7 @@
   "dependencies": {
     "angle-normals": "^1.0.0",
     "bound-points": "^1.0.0",
+    "bunny": "^1.0.1",
     "ccapture.js": "^1.0.6",
     "color-string": "^1.4.0",
     "control-panel": "^1.2.0",
@@ -35,6 +36,7 @@
     "regl-camera": "^1.1.0",
     "simplex-noise": "^2.2.0",
     "stanford-dragon": "^1.1.1",
+    "stars": "^1.0.0",
     "tap-to-start": "^1.2.0",
     "web-audio-analyser": "^2.0.1",
     "xtend": "^4.0.1"
