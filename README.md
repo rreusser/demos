@@ -1,6 +1,6 @@
 # demos
 
-This is hopefully one repo to manage all the demos I've been accumulating or at least a place to dump the new ones. I've assigned them totally subjective, meaningless stars. Mainly just to help you avoid wasting your time. It's like Netflix. [Anything less than 3.5 stars...](https://xkcd.com/1098/)
+This is hopefully one repo to manage all the demos I've been accumulating or at least a place to dump the new ones. The goal here is just to learn new things and test limits.
 
 ## [plotly.js](https://github.com/plotly/plotly.js)
 <a href="http://rickyreusser.com/demos/schrodinger-1d/"><img src="./thumbs/schrodingers-equation.jpg" alt="The Schrödinger Equation with a potential barrier in 1D, using the FFT for spatial differencing, RK-4 for temporal integration, and Perfectly Matched Layers (PML) for non-reflecting boundary conditions." width="250"></a>
