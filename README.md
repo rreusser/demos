@@ -3,46 +3,45 @@
 This is hopefully one repo to manage all the demos I've been accumulating or at least a place to dump the new ones. I've assigned them totally subjective, meaningless stars. Mainly just to help you avoid wasting your time. It's like Netflix. [Anything less than 3.5 stars...](https://xkcd.com/1098/)
 
 ## [plotly.js](https://github.com/plotly/plotly.js)
-
-- [⭐️⭐️⭐️⭐️⭐️ schrodinger-1d](http://rickyreusser.com/demos/schrodinger-1d/) The Schrödinger Equation with a potential barrier in 1D, using the FFT for spatial differencing, RK-4 for temporal integration, and Perfectly Matched Layers (PML) for non-reflecting boundary conditions.
-- [⭐️⭐️⭐️⭐️ tsucs2](http://rickyreusser.com/demos/plots/tsucs2.html) Precomputing a strange attractor (TSUCS2) and then animating it as a point cloud
-- [⭐️⭐️⭐️ sierpinski-shapes](http://codepen.io/rsreusser/pen/GjZwYb) Testing GPU limits using plotly.js point clouds
-- [⭐️⭐️⭐️ gaussian-mixture-em](http://rickyreusser.com/gaussian-mixture-estimator/) Fitting n-dimensional Gaussian mixture models to scatter data
-- [⭐️⭐️ k-means++](http://rickyreusser.com/kmpp/) K-means clustering based on the [kmpp module](https://github.com/cmtt/kmpp) of [cmtt](https://github.com/cmtt)
-- [⭐️⭐️ tinkerbell-map](http://rickyreusser.com/demos/plots/tinkerbell.html) The tinkerbell map using plotly's point cloud feature
-- [traveling waves](http://rickyreusser.com/demos/traveling-waves/) (broken at the moment) Visualizing the wavenumber representation of travling waves
+<a href="http://rickyreusser.com/demos/schrodinger-1d/"><img src="./thumbs/schrodingers-equation.jpg" alt="The Schrödinger Equation with a potential barrier in 1D, using the FFT for spatial differencing, RK-4 for temporal integration, and Perfectly Matched Layers (PML) for non-reflecting boundary conditions." width="250"></a>
+<a href="http://rickyreusser.com/demos/plots/tsucs2.html"><img src="./thumbs/tsucs2.jpg" alt="Precomputing a strange attractor (TSUCS2) and then animating it as a point cloud" width="250"></a>
+<a href="http://codepen.io/rsreusser/pen/GjZwYb"><img src="./thumbs/sierpinski-pentagon.jpg" alt="Testing GPU limits using plotly.js point clouds" width="250"></a>
+<a href="http://rickyreusser.com/gaussian-mixture-estimator/"><img src="./thumbs/gaussian-mixture-estimator.jpg" alt="Fitting n-dimensional Gaussian mixture models to scatter data" width="250"></a>
+<a href="http://rickyreusser.com/demos/plots/tinkerbell.html"><img src="./thumbs/tinkerbell.jpg" alt="The tinkerbell map using plotly's point cloud feature" width="250"></a>
+<a href="http://rickyreusser.com/kmpp/"><img src="./thumbs/k-means.jpg" alt="K-means clustering" width="250"></a>
 
 ## [regl](https://github.com/regl-project/regl)
-
-- [⭐️⭐️⭐️⭐️⭐️ lorenz](http://rickyreusser.com/demos/lorenz/): A 500000 particle Lorenz Attractor, computed and displayed in WebGL
-- [⭐️⭐️⭐️⭐️ waves](http://rickyreusser.com/demos/waves/): A 2D wave equation on the GPU
-- [⭐️⭐️⭐️⭐️ elastodynamics](http://rickyreusser.com/demos/elastodynamics/) Rayleigh waves on the GPU!
-- [⭐️⭐️⭐️⭐️ lamb-wave-dispersion](http://rickyreusser.com/complex-zeros-delves-lyness/lamb.html) Plotting the dispersion equation for [Lamb waves](https://en.wikipedia.org/wiki/Lamb_waves) in the complex domain. (Root-finding didn't work so well, but at least it was real trippy.)
-- [⭐️⭐️⭐️ gravity](http://rickyreusser.com/demos/gravity/): [WIP] 2D not-particularly-physical gravity as a semi-lagrangian continuum. 
-- [⭐️⭐️⭐️ schrodinger](http://rickyreusser.com/demos/schrodinger/): A response to [this tweet](https://mobile.twitter.com/mathteacher1729/status/789489981966409728)
-- [⭐️⭐️⭐️ regl-scan](http://rickyreusser.com/demos/regl-scan/): The [scan (prefix-sum)](https://en.wikipedia.org/wiki/Prefix_sum) operation on the GPU
-- [⭐️⭐️⭐️ regl-cwise](http://rickyreusser.com/demos/regl-cwise/): A subset of [cwise](https://github.com/scijs/cwise) on the GPU
-- [⭐️⭐️⭐️ carpet](http://rickyreusser.com/demos/carpet/): Carpet plots with regl
-- [⭐️⭐️⭐️ smooth-life](http://rickyreusser.com/demos/smooth-life/) SmoothLife on the GPU 
-- [⭐️⭐️⭐️ domain coloring](http://rickyreusser.com/glsl-domain-coloring/eqn.html) Domain coloring for complex analytic functions (see: [repo](https://github.com/rreusser/glsl-domain-coloring))
-- [⭐️⭐️ complex-zeros-delves-lyness](http://rickyreusser.com/complex-zeros-delves-lyness/zeros.html) Uses contour integrals to try to find all the zeros of a complex analytic function within the current view.
-- [⭐️⭐️ ndarray-transfinite-interpolation](http://demos.rickyreusser.com/ndarray-transfinite-interpolation/volume.html) A module for transfinite interpolation. [See repo here](https://github.com/rreusser/ndarray-transfinite-interpolation#ndarray-transfinite-interpolation)
-- [⭐️ catmull-rom](http://rickyreusser.com/demos/catmull-rom/): Testing out Catmull-Rom splines
-
-## [three.js](https://threejs.org/)
-
-- [⭐️⭐️⭐️⭐️⭐️ grid-generation-experiments](http://rickyreusser.com/2016/02/07/hyperbolic-grid-generation/) An exploration of hyperbolic grid generation
+<a href="http://rickyreusser.com/demos/regl-sketches/007"><img src="./thumbs/sprites.jpg" alt="" width="250"></a>
+<a href="http://rickyreusser.com/demos/regl-sketches/006"><img src="./thumbs/ambient-occlusion.jpg" alt="Ambient Occlusion" width="250"></a>
+<a href="http://rickyreusser.com/demos/regl-sketches/005"><img src="./thumbs/erosion.jpg" alt="" width="250"></a>
+<a href="http://rickyreusser.com/demos/regl-sketches/004"><img src="./thumbs/particles.jpg" alt="" width="250"></a>
+<a href="http://rickyreusser.com/demos/regl-sketches/003"><img src="./thumbs/schwarzschild.jpg" alt="" width="250"></a>
+<a href="http://rickyreusser.com/demos/regl-sketches/002"><img src="./thumbs/flamms-paraboloid.jpg" alt="" width="250"></a>
+<a href="http://rickyreusser.com/demos/regl-sketches/001"><img src="./thumbs/blob.jpg" alt="" width="250"></a>
+<a href="http://rickyreusser.com/demos/lorenz/"><img src="./thumbs/attractors.jpg" alt="Strange attractors computed and displayed on the GPU" width="250"></a>
+<a href="http://rickyreusser.com/demos/gravity/"><img src="./thumbs/gravity.jpg" alt="2D not-particularly-physical gravity as a semi-lagrangian continuum" width="250"></a>
+<a href="http://rickyreusser.com/demos/waves/"><img src="./thumbs/waves.jpg" alt="" width="250"></a>
+<a href="http://rickyreusser.com/complex-zeros-delves-lyness/lamb.html"><img src="./thumbs/lamb-dispersion.jpg" alt="" width="250"></a>
+<a href="http://rickyreusser.com/complex-zeros-delves-lyness/zeros.html"><img src="./thumbs/zeros.jpg" alt="" width="250"></a>
+<a href="http://rickyreusser.com/demos/carpet"><img src="./thumbs/carpet.jpg" alt="" width="250"></a>
+<a href="http://rickyreusser.com/demos/schrodinger/"><img src="./thumbs/schrodinger.jpg" alt="Because twitter" width="250"></a>
+<a href="http://rickyreusser.com/demos/regl-scan/"><img src="./thumbs/scan.jpg" alt="A scan operation on the GPU" width="250"></a>
+<a href="http://rickyreusser.com/demos/elastodynamics/"><img src="./thumbs/rayleigh-waves.jpg" alt="" width="250"></a>
+<a href="http://rickyreusser.com/demos/catmull-rom"><img src="./thumbs/catmull-rom.jpg" alt="" width="250"></a>
+<a href="http://rickyreusser.com/demos/smooth-life/"><img src="./thumbs/smooth-life.jpg" alt="" width="250"></a>
+<a href="http://demos.rickyreusser.com/ndarray-transfinite-interpolation/volume.html"><img src="./thumbs/transfinite-interpolation.jpg" alt="" width="250"></a>
 
 ## [d3.js](https://d3js.org/)
-
-- [⭐️⭐️⭐️ fresnel](http://rickyreusser.com/demos/fresnel) Visualizing the boundary conditions that define Fresnel reflection and refraction
-- [⭐️⭐️⭐️ principle-of-least-action](http://rickyreusser.com/demos/principle-of-least-action/) Visualizing the Principle of Least Action for a ball thrown in the air. Drag the points to minimize the action!
-- [⭐️⭐️⭐️ brachistochrone](http://rickyreusser.com/demos/brachistochrone/) Visualizing the Brachistochrone (fastest time) problem
-- [⭐️ jukowski](https://t.d3fc.io/status/742340688562552833) A Jukowski Airfoil in 106 characters
+<a href="http://rickyreusser.com/demos/brachistochrone/"><img src="./thumbs/brachistochrone.jpg" alt="" width="250"></a>
+<a href="http://rickyreusser.com/demos/fresnel"><img src="./thumbs/fresnel.jpg" alt="" width="250"></a>
+<a href="http://rickyreusser.com/demos/principle-of-least-action/"><img src="./thumbs/least-action.jpg" alt="" width="250"></a>
+<a href="https://t.d3fc.io/status/742340688562552833"><img src="./thumbs/jukowski.jpg" alt="" width="250"></a>
 
 ## canvas
+<a href="http://rickyreusser.com/demos/double-pendulum/"><img src="./thumbs/pendulum.jpg" alt="" width="250"></a>
+<a href="https://github.com/rreusser/demos/tree/master/first-order-wave-equation#first-order-wave-equation"><img src="./thumbs/first-order-wave-equation.jpg" alt="" width="250"></a>
 
-- [⭐️⭐️⭐️⭐️ double-pendulum](http://rickyreusser.com/demos/double-pendulum/) Patterns (or chaos) made by plotting the endpoint of a double pendulum.
-- [⭐️⭐️ first-order-wave-equation](https://github.com/rreusser/demos/tree/master/first-order-wave-equation#first-order-wave-equation) Simulating the first order wave equation
+## [three.js](https://threejs.org/)
+<a href="http://rickyreusser.com/2016/02/07/hyperbolic-grid-generation/"><img src="./thumbs/grid-generation.jpg" alt="" width="250"></a>
 
 &copy; 2016 Ricky Reusser. MIT License.
