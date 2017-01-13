@@ -21,8 +21,8 @@ const ellipsoidSA = (a, b) => {
   ) / 3, 1 / 1.6), 0.1);
 }
 
-var arange = [0.2, 7.2];
-var brange = [0.2, 3.2];
+var arange = [0.2, 1.5];
+var brange = [0.2, 0.8, 2, 3.2];
 
 function initialize() {
   trace.a = linspace(ndarray([], [trace.exampleNumA]), arange[0], arange[1]);
@@ -41,15 +41,15 @@ function initialize() {
   ops.addseq(trace.b, brange[0])
 
   trace.y = fill(ndarray([], [trace.exampleNumA, trace.exampleNumB]), (i, j) => ellipsoidSA(trace.a.get(i), trace.b.get(j)));
-  trace.a = unpack(trace.a);
-  trace.b = unpack(trace.b);
+  trace.a = unpack(trace.a).map(val => val * 1e6);
+  trace.b = unpack(trace.b).map(val => val * 1e-4);
   trace.y = unpack(trace.y);
 }
 
 var trace = {
   // These are just for convenience with the control panel
   exampleNumA: 2,
-  exampleNumB: 2,
+  exampleNumB: 4,
   exampleApower: 1,
   exampleBpower: 1,
 
@@ -64,7 +64,7 @@ var trace = {
     dtick: 1.0,
     arraytick0: 0,
     arraydtick: 1,
-    smoothing: false,
+    smoothing: true,
     cheatertype: 'index',
     showlabels: 'both',
     showlabelprefix: 'first',
@@ -97,7 +97,7 @@ var trace = {
     dtick: 1.0,
     arraytick0: 0,
     arraydtick: 1,
-    smoothing: false,
+    smoothing: true,
     cheatertype: 'index',
     showlabels: 'both',
     showlabelprefix: 'all',

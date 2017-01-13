@@ -26,23 +26,15 @@ var brange = [0.2, 3.2];
 
 function initialize() {
   trace.a = [
-    12, 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
-    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
-    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
+    0, 0, 10, 10
   ];
 
   trace.b = [
-    'Morning', 'Afternoon', 'Evening',
-    'Morning', 'Afternoon', 'Evening',
-    'Morning', 'Afternoon', 'Evening',
-    'Morning', 'Afternoon', 'Evening',
-    'Morning', 'Afternoon', 'Evening',
+    0, 10, 0, 10
   ];
 
   trace.y = [
-    1, 20, 30, 50, 1,
-    20, 1, 60, 80, 30,
-    30, 60, 1, -10, 20
+    0, 5, 5, 10
   ];
 }
 
@@ -65,7 +57,7 @@ var trace = {
     arraytick0: 0,
     arraydtick: 1,
     smoothing: false,
-    cheatertype: 'index',
+    cheatertype: 'value',
     showlabels: 'both',
     showlabelprefix: 'first',
     showlabelsuffix: 'all',
@@ -98,7 +90,7 @@ var trace = {
     arraytick0: 0,
     arraydtick: 1,
     smoothing: false,
-    cheatertype: 'index',
+    cheatertype: 'value',
     showlabels: 'both',
     showlabelprefix: 'all',
     showlabelsuffix: 'all',
