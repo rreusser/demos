@@ -30,8 +30,8 @@ const regl = require('regl')({
 
 function run (regl) {
   var params = {
-    alpha: 0.85,
-    gamma: 1.5,
+    alpha: 0.5,
+    gamma: 2.5,
     grid: 0.1,
     realRange: 4,
     imagRange: 4,
@@ -91,6 +91,48 @@ function run (regl) {
     bone: glslify(`
       precision mediump float;
       #pragma glslify: colormap = require(glsl-colormap/bone)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    chlorophyll: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/chlorophyll)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    par: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/par)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    cdom: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/cdom)
       uniform sampler2D src;
       uniform float alf, alpha, gamma;
       varying vec2 uv;
@@ -181,7 +223,7 @@ function run (regl) {
   var setParams = regl({
     uniforms: {
         ar: ctx => [ctx.framebufferHeight / ctx.framebufferWidth, 1.0],
-        alpha: (ctx, props) => props.alpha * Math.pow(Math.exp(props.zoom), 2),
+        alpha: (ctx, props) => props.alpha * Math.pow(Math.exp(props.zoom), 1.5),
         gamma: (ctx, props) => 1.0 / props.gamma,
         x0: regl.prop('x0'),
         y0: regl.prop('y0'),
@@ -207,7 +249,7 @@ function run (regl) {
           coeffs[1][i] = params.imagRange ? (Math.floor(Math.random() * (params.imagRange * 2 + 1)) - params.imagRange) : 0;
         }
       }
-      var zeros = roots(coeffs[0], coeffs[1]);
+      var zeros = roots(coeffs[0], coeffs[1], 100 * params.n * params.n);
       for (var i = 0; i < params.n; i++) {
         buf[j * params.n * 2 + 2 * i] = zeros[0][i];
         buf[j * params.n * 2 + 2 * i + 1] = zeros[1][i];
