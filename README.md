@@ -9,6 +9,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 <a href="http://rickyreusser.com/gaussian-mixture-estimator/"><img src="./thumbs/gaussian-mixture-estimator.jpg" alt="Fitting n-dimensional Gaussian mixture models to scatter data" width="290"></a>
 <a href="http://rickyreusser.com/demos/plots/tinkerbell.html"><img src="./thumbs/tinkerbell.jpg" alt="The tinkerbell map using plotly's point cloud feature" width="290"></a>
 <a href="http://rickyreusser.com/kmpp/"><img src="./thumbs/k-means.jpg" alt="K-means clustering" width="290"></a>
+<a href="https://plot.ly/~rreusser/55.embed"><img src="./thumbs/thesis.jpg" alt="Guided Wave Transmission in a Ridge-Stiffened Plate" width="290"></a>
 
 ## [regl](https://github.com/regl-project/regl)
 <a href="http://rickyreusser.com/demos/regl-sketches/007"><img src="./thumbs/sprites.jpg" alt="" width="290"></a>
