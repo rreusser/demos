@@ -1,10 +1,26 @@
-const linspace = require('ndarray-linspace');
-const ndarray = require('ndarray');
+const hsl2rgb = require('float-hsl2rgb');
 const glslify = require('glslify');
+const roots = require('durand-kerner');
+const randn = require('random-normal');
+const h = require('h');
+
+var explanation = h('div.explanation', [
+  h('h1', [
+    'Roots of a degree n polynomial with',
+    h('br'),
+    'random coefficients on the integer complex grid',
+    h('br'),
+    h('small', [
+      'Based on John Baez\'s ',
+      h('a', 'The Beauty of Roots', {href: 'http://www.math.ucr.edu/home/baez/roots/'})
+    ])
+  ])
+]);
+
+document.body.appendChild(explanation);
 
 const regl = require('regl')({
-  extensions: ['oes_texture_float', 'oes_element_index_uint'],
-  pixelRatio: 1,
+  extensions: ['OES_texture_float', 'oes_standard_derivatives'],
   onDone: (err, regl) => {
     if (err) return require('fail-nicely')(err);
     document.querySelector('canvas').addEventListener('mousewheel', e => e.preventDefault());
@@ -12,89 +28,300 @@ const regl = require('regl')({
   }
 });
 
-function run(regl) {
-  const camera = require('./camera')(regl, {
-    distance: 20,
-    center: [0, 5, 0]
+function run (regl) {
+  var params = {
+    alpha: 0.85,
+    gamma: 1.5,
+    grid: 0.1,
+    realRange: 4,
+    imagRange: 4,
+    batchSize: 8000,
+    gaussianRandom: false,
+    colormap: 'viridis',
+    x0: 0,
+    y0: 0,
+    zoom: 0,
+    degree: 4
+  };
+  params.n = params.degree + 1;
+
+  var byColormap = {
+    viridis: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/viridis)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    electric: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/electric)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    density: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/density)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    bone: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/bone)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    inferno: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/inferno)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    cubehelix: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/cubehelix)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+  };
+
+  function clear () {
+    fbo.use(() => {
+      regl.clear({color: [0, 0, 0, 1]});
+    });
+    batchCnt = 0;
+  }
+
+  require('./controls')([
+    {type: 'range', label: 'realRange', min: 0, max: 10, initial: params.realRange, step: 1},
+    {type: 'range', label: 'imagRange', min: 0, max: 10, initial: params.imagRange, step: 1},
+    {type: 'checkbox', label: 'gaussianRandom', initial: params.gaussianRandom},
+    {type: 'range', label: 'degree', min: 2, max: 24, initial: params.degree, step: 1},
+    {type: 'range', label: 'batchSize', min: 1, max: 10000, initial: params.batchSize, step: 1},
+    {type: 'range', label: 'x0', min: -4, max: 4, initial: params.x0, step: 0.01},
+    {type: 'range', label: 'y0', min: -4, max: 4, initial: params.y0, step: 0.01},
+    {type: 'range', label: 'zoom', min: -5, max: 5, initial: params.zoom, step: 0.01},
+    {type: 'range', label: 'alpha', min: 0.0, max: 2.0, initial: params.alpha, step: 0.01},
+    {type: 'range', label: 'gamma', min: 0.0, max: 4.0, initial: params.gamma, step: 0.01},
+    {type: 'range', label: 'grid', min: 0, max: 1, initial: params.grid, step: 0.01},
+    {type: 'select', label: 'colormap', options: Object.keys(byColormap), initial: params.colormap},
+  ], params, (nextProps, props) => {
+    if (nextProps.realRange !== props.realRange || nextProps.imagRange !== props.imagRange) {
+      clear();
+    }
+
+    params.n = params.degree + 1;
+
+    if (nextProps.n !== props.n) {
+      clear();
+      buf = new Float32Array(params.n * 2 * params.batchSize);
+      coeffs = [[], []];
+    }
+
+    if (nextProps.gaussianRandom !== props.gaussianRandom ||
+      nextProps.x0 !== props.x0 ||
+      nextProps.y0 !== props.y0 ||
+      nextProps.zoom !== props.zoom) {
+      clear();
+    }
+
+    if (nextProps.batchSize !== props.batchSize) {
+      buf = new Float32Array(params.n * 2 * params.batchSize);
+      coeffs = [[], []];
+    }
   });
 
-  const nx = 101;
-  const ny = 101;
-  const xy = ndarray(new Float32Array(nx * ny * 2), [nx, ny, 2]);
-  const x = linspace(xy.pick(null, null, 0), -10 + 0.5, 10 + 0.5, {axis: 0});
-  const y = linspace(xy.pick(null, null, 1), -10, 10, {axis: 1});
+  var setParams = regl({
+    uniforms: {
+        ar: ctx => [ctx.framebufferHeight / ctx.framebufferWidth, 1.0],
+        alpha: (ctx, props) => props.alpha * Math.pow(Math.exp(props.zoom), 2),
+        gamma: (ctx, props) => 1.0 / props.gamma,
+        x0: regl.prop('x0'),
+        y0: regl.prop('y0'),
+        gridAlpha: regl.prop('grid'),
+        zoom: (ctx, props) => Math.exp(props.zoom)
+      }
+  });
+
+  var coeffs = [[], []];
+
+  var buf = new Float32Array(params.n * 2 * params.batchSize);
+  var rootPts = regl.buffer(buf);
+  function compute () {
+    for (j = 0; j < params.batchSize; j++) {
+      if (params.gaussianRandom) {
+        for (var i = 0; i < params.n; i++) {
+          coeffs[0][i] = params.realRange ? (Math.floor(randn() * params.realRange)) : 0;
+          coeffs[1][i] = params.imagRange ? (Math.floor(randn() * params.imagRange)) : 0;
+        }
+      } else {
+        for (var i = 0; i < params.n; i++) {
+          coeffs[0][i] = params.realRange ? (Math.floor(Math.random() * (params.realRange * 2 + 1)) - params.realRange) : 0;
+          coeffs[1][i] = params.imagRange ? (Math.floor(Math.random() * (params.imagRange * 2 + 1)) - params.imagRange) : 0;
+        }
+      }
+      var zeros = roots(coeffs[0], coeffs[1]);
+      for (var i = 0; i < params.n; i++) {
+        buf[j * params.n * 2 + 2 * i] = zeros[0][i];
+        buf[j * params.n * 2 + 2 * i + 1] = zeros[1][i];
+      }
+    }
+    rootPts(buf);
+    batchCnt += params.batchSize * params.n;
+  }
+
+  var fbo = regl.framebuffer({
+    width: regl._gl.canvas.width, height: regl._gl.canvas.height,
+    depth: false,
+    colorType: 'float'
+  });
 
   const drawPoints = regl({
     vert: `
       precision mediump float;
-      attribute vec2 z;
-      uniform float t;
-      varying float falloff;
-      uniform vec2 a, b, c, d, ar;
-
-      vec2 cmul (vec2 a, vec2 b) {
-        return vec2(a.x * b.x - a.y * b.y, a.y * b.x + a.x * b.y);
-      }
-
-      vec2 cdiv (vec2 a, vec2 b) {
-        float det = a.x * a.x + b.y * b.y;
-        return vec2(a.x * b.x + a.y * b.y, a.y * b.x - a.x * b.y) / det;
-      }
-
+      attribute vec2 xy;
+      uniform vec2 ar;
+      uniform float x0, y0, zoom;
       void main () {
-        //vec2 zt = z + vec2(t, 0.0);
-        //vec2 p = cdiv(cmul(a, zt) + b, cmul(c, zt) + d);
-        falloff = 1.0;
-        //falloff = smoothstep(100.0, 1.0, dot(zt, zt));
-        float x = z.x + t;
-        float y = z.y;
-
-        float r = (x - 1.0) * (x - 1.0) + y * y;
-        float xx = (1.0 - x * x - y * y) / r;
-        float yy = 2.0 * y / r;
-        float det = (x + 1.0) * (x + 1.0) + y * y;
-        vec2 p = vec2((x * x - 1.0 + y * y) / det, 2.0 * y / det);
-        gl_Position = vec4(p * ar, 0, 1);
-        gl_PointSize = 2.0;
+        gl_Position = vec4((xy - vec2(x0, y0)) * zoom * ar * 0.5, 0, 1);
+        gl_PointSize = 1.0;
       }
     `,
     frag: `
       precision mediump float;
-      varying float falloff;
+      uniform vec3 color;
       void main () {
-        gl_FragColor = vec4(vec3(1), falloff);
+        gl_FragColor = vec4(color, 0.5);
       }
     `,
-    attributes: {z: xy.data},
-    uniforms: {
-      t: ctx => ctx.time % 1,
-      ar: ctx => [ctx.framebufferHeight / ctx.framebufferWidth, 1],
-      a: [1, 0],
-      b: [5, 0],
-      c: [1, 0],
-      d: [-5, 0]
-    },
+    depth: {enable: false},
     blend: {
       enable: true,
       func: {srcRGB: 'src alpha', srcAlpha: 1, dstRGB: 1, dstAlpha: 1},
       equation: {rgb: 'add', alpha: 'add'}
     },
+    attributes: {xy: rootPts},
+    uniforms: {
+      color: regl.prop('color')
+    },
     primitive: 'points',
-    count: nx * ny
+    count: () => params.n * params.batchSize
   });
 
-  const loop = regl.frame(({tick}) => {
-    //if (tick % 10 !== 1) return;
-    try {
-      regl.clear({
-        color: [0, 0, 0, 1],
-        depth: 1
-      });
 
-      drawPoints();
-    } catch (err) {
-      loop.cancel();
-      throw err;
-    }
+  const drawToScreen = regl({
+    vert: `
+      precision mediump float;
+      attribute vec2 xy;
+      varying vec2 uv;
+      void main () {
+        uv = 0.5 * (1.0 + xy);
+        gl_Position = vec4(xy, 0, 1);
+      }
+    `,
+    frag: (ctx, props) => byColormap[params.colormap],
+    attributes: {xy: [[-4, -4], [0, 4], [4, -4]]},
+    uniforms: {
+      src: fbo,
+      alf: (ctx, props) => props.alf / Math.pow(ctx.framebufferWidth * ctx.framebufferHeight, 0.25)
+    },
+    depth: {enable: false},
+    count: 3
+  });
+
+  const drawGrid = regl({
+    vert: `
+      precision mediump float;
+      attribute vec2 xy;
+      varying vec2 uv;
+      void main () {
+        uv = xy;
+        gl_Position = vec4(xy, 0, 1);
+      }
+    `,
+    frag: glslify(`
+      #extension GL_OES_standard_derivatives : enable
+      precision mediump float;
+      #pragma glslify: grid = require(glsl-solid-wireframe/cartesian/scaled)
+      varying vec2 uv;
+      uniform float x0, y0, zoom, gridAlpha;
+      uniform vec2 ar;
+      void main () {
+        vec2 xy = vec2(x0, y0) + uv * 4.0 / zoom / ar * 0.5;
+        gl_FragColor = vec4(vec3(1), gridAlpha * (1.0 - grid(xy, 1.0)));
+      }
+    `),
+    blend: {
+      enable: true,
+      func: {srcRGB: 'src alpha', srcAlpha: 1, dstRGB: 1, dstAlpha: 1},
+      equation: {rgb: 'add', alpha: 'add'}
+    },
+    attributes: {
+      xy: [[-4, -4], [0, 4], [4, -4]]
+    },
+    depth: {enable: false},
+    count: 3
+  });
+
+  var batchCnt = 0;
+  clear();
+  const loop = regl.frame(({time, tick}) => {
+    compute();
+    setParams(params, () => {
+      fbo.use(() => {
+        drawPoints({color: [1, 0.9, 0.8]});
+      });
+      drawToScreen({alf: 1e8 / batchCnt});
+      if (params.grid) {
+        drawGrid();
+      }
+    });
   });
 }
