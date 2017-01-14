@@ -23,12 +23,13 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 <a href="http://rickyreusser.com/demos/waves/"><img src="./thumbs/waves.jpg" alt="" width="290"></a>
 <a href="http://rickyreusser.com/complex-zeros-delves-lyness/lamb.html"><img src="./thumbs/lamb-dispersion.jpg" alt="" width="290"></a>
 <a href="http://rickyreusser.com/complex-zeros-delves-lyness/zeros.html"><img src="./thumbs/zeros.jpg" alt="" width="290"></a>
+<a href="http://rickyreusser.com/demos/smooth-life/"><img src="./thumbs/smooth-life.jpg" alt="" width="290"></a>
 <a href="http://rickyreusser.com/demos/carpet"><img src="./thumbs/carpet.jpg" alt="" width="290"></a>
 <a href="http://rickyreusser.com/demos/schrodinger/"><img src="./thumbs/schrodinger.jpg" alt="Because twitter" width="290"></a>
 <a href="http://rickyreusser.com/demos/regl-scan/"><img src="./thumbs/scan.jpg" alt="A scan operation on the GPU" width="290"></a>
 <a href="http://rickyreusser.com/demos/elastodynamics/"><img src="./thumbs/rayleigh-waves.jpg" alt="" width="290"></a>
 <a href="http://rickyreusser.com/demos/catmull-rom"><img src="./thumbs/catmull-rom.jpg" alt="" width="290"></a>
-<a href="http://rickyreusser.com/demos/smooth-life/"><img src="./thumbs/smooth-life.jpg" alt="" width="290"></a>
+<a href="http://codepen.io/rsreusser/pen/apbrRg"><img src="./thumbs/recursion.jpg" alt="" width="290"></a>
 <a href="http://demos.rickyreusser.com/ndarray-transfinite-interpolation/volume.html"><img src="./thumbs/transfinite-interpolation.jpg" alt="" width="290"></a>
 
 ## [d3.js](https://d3js.org/)
