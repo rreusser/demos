@@ -36731,8 +36731,8 @@ function run(regl) {
     for (j = 0; j < params.batchSize; j++) {
       if (params.gaussianRandom) {
         for (var i = 0; i < params.n; i++) {
-          coeffs[0][i] = params.realRange ? Math.floor(randn() * params.realRange) : 0;
-          coeffs[1][i] = params.imagRange ? Math.floor(randn() * params.imagRange) : 0;
+          coeffs[0][i] = params.realRange ? Math.round(randn() * params.realRange) : 0;
+          coeffs[1][i] = params.imagRange ? Math.round(randn() * params.imagRange) : 0;
         }
       } else {
         for (var i = 0; i < params.n; i++) {
