@@ -12,6 +12,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 <a href="https://plot.ly/~rreusser/55.embed"><img src="./thumbs/thesis.jpg" alt="Guided Wave Transmission in a Ridge-Stiffened Plate" width="290"></a>
 
 ## [regl](https://github.com/regl-project/regl)
+<a href="http://rickyreusser.com/demos/regl-sketches/009"><img src="./thumbs/logistic.jpg" alt="" width="290"></a>
 <a href="http://rickyreusser.com/demos/regl-sketches/008"><img src="./thumbs/roots.jpg" alt="" width="290"></a>
 <a href="http://rickyreusser.com/demos/regl-sketches/007"><img src="./thumbs/sprites.jpg" alt="" width="290"></a>
 <a href="http://rickyreusser.com/demos/regl-sketches/006"><img src="./thumbs/ambient-occlusion.jpg" alt="Ambient Occlusion" width="290"></a>

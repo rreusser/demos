@@ -2682,7 +2682,7 @@ mouse-event@^1.0.0:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/mouse-event/-/mouse-event-1.0.5.tgz#b3789edb7109997d5a932d1d01daa1543a501732"
 
-mouse-wheel@^1.2.0:
+mouse-wheel, mouse-wheel@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/mouse-wheel/-/mouse-wheel-1.2.0.tgz#6d2903b1ea8fb48e61f1b53b9036773f042cdb5c"
   dependencies:

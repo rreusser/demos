@@ -30,7 +30,7 @@ const regl = require('regl')({
 
 function run (regl) {
   var params = {
-    alpha: 0.5,
+    alpha: 1.0,
     gamma: 2.5,
     grid: 0.1,
     realRange: 4,
@@ -249,7 +249,7 @@ function run (regl) {
           coeffs[1][i] = params.imagRange ? (Math.floor(Math.random() * (params.imagRange * 2 + 1)) - params.imagRange) : 0;
         }
       }
-      var zeros = roots(coeffs[0], coeffs[1], 100 * params.n * params.n);
+      var zeros = roots(coeffs[0], coeffs[1]);
       for (var i = 0; i < params.n; i++) {
         buf[j * params.n * 2 + 2 * i] = zeros[0][i];
         buf[j * params.n * 2 + 2 * i + 1] = zeros[1][i];
