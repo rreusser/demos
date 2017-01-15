@@ -41,7 +41,8 @@ function run (regl) {
     x0: 0,
     y0: 0,
     zoom: 0,
-    degree: 4
+    degree: 4,
+    useSymmetry: false
   };
   params.n = params.degree + 1;
 
@@ -193,6 +194,7 @@ function run (regl) {
     {type: 'range', label: 'alpha', min: 0.0, max: 2.0, initial: params.alpha, step: 0.01},
     {type: 'range', label: 'gamma', min: 0.0, max: 4.0, initial: params.gamma, step: 0.01},
     {type: 'range', label: 'grid', min: 0, max: 1, initial: params.grid, step: 0.01},
+    {type: 'checkbox', label: 'useSymmetry', initial: params.useSymmetry},
     {type: 'select', label: 'colormap', options: Object.keys(byColormap), initial: params.colormap},
   ], params, (nextProps, props) => {
     if (nextProps.realRange !== props.realRange || nextProps.imagRange !== props.imagRange) {
@@ -256,7 +258,7 @@ function run (regl) {
       }
     }
     rootPts(buf);
-    batchCnt += params.batchSize * params.n;
+    batchCnt += (params.useSymmetry ? 4 : 1) * (params.batchSize * params.n);
   }
 
   var fbo = regl.framebuffer({
@@ -269,20 +271,20 @@ function run (regl) {
     vert: `
       precision mediump float;
       attribute vec2 xy;
-      uniform vec2 ar;
+      uniform vec2 ar, scale;
       uniform float x0, y0, zoom;
       void main () {
-        gl_Position = vec4((xy - vec2(x0, y0)) * zoom * ar * 0.5, 0, 1);
+        gl_Position = vec4((xy * scale - vec2(x0, y0)) * zoom * ar * 0.5, 0, 1);
         gl_PointSize = 1.0;
       }
     `,
     frag: `
       precision mediump float;
-      uniform vec3 color;
       void main () {
-        gl_FragColor = vec4(color, 0.5);
+        gl_FragColor = vec4(vec3(1), 0.5);
       }
     `,
+    uniforms: {scale: regl.prop('scale')},
     depth: {enable: false},
     blend: {
       enable: true,
@@ -290,9 +292,6 @@ function run (regl) {
       equation: {rgb: 'add', alpha: 'add'}
     },
     attributes: {xy: rootPts},
-    uniforms: {
-      color: regl.prop('color')
-    },
     primitive: 'points',
     count: () => params.n * params.batchSize
   });
@@ -352,13 +351,21 @@ function run (regl) {
     count: 3
   });
 
+  var single = [{scale: [1, 1]}];
+  var reflected = [
+    {scale: [1, 1]},
+    {scale: [-1, 1]},
+    {scale: [1, -1]},
+    {scale: [-1, -1]},
+  ];
+
   var batchCnt = 0;
   clear();
   const loop = regl.frame(({time, tick}) => {
     compute();
     setParams(params, () => {
       fbo.use(() => {
-        drawPoints({color: [1, 0.9, 0.8]});
+        drawPoints(params.useSymmetry ? reflected : single);
       });
       drawToScreen({alf: 1e8 / batchCnt});
       if (params.grid) {

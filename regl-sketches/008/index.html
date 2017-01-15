@@ -36656,7 +36656,8 @@ function run(regl) {
     x0: 0,
     y0: 0,
     zoom: 0,
-    degree: 4
+    degree: 4,
+    useSymmetry: false
   };
   params.n = params.degree + 1;
 
@@ -36679,7 +36680,7 @@ function run(regl) {
     batchCnt = 0;
   }
 
-  require('./controls')([{ type: 'range', label: 'realRange', min: 0, max: 10, initial: params.realRange, step: 1 }, { type: 'range', label: 'imagRange', min: 0, max: 10, initial: params.imagRange, step: 1 }, { type: 'checkbox', label: 'gaussianRandom', initial: params.gaussianRandom }, { type: 'range', label: 'degree', min: 2, max: 24, initial: params.degree, step: 1 }, { type: 'range', label: 'batchSize', min: 1, max: 10000, initial: params.batchSize, step: 1 }, { type: 'range', label: 'x0', min: -4, max: 4, initial: params.x0, step: 0.01 }, { type: 'range', label: 'y0', min: -4, max: 4, initial: params.y0, step: 0.01 }, { type: 'range', label: 'zoom', min: -5, max: 5, initial: params.zoom, step: 0.01 }, { type: 'range', label: 'alpha', min: 0.0, max: 2.0, initial: params.alpha, step: 0.01 }, { type: 'range', label: 'gamma', min: 0.0, max: 4.0, initial: params.gamma, step: 0.01 }, { type: 'range', label: 'grid', min: 0, max: 1, initial: params.grid, step: 0.01 }, { type: 'select', label: 'colormap', options: Object.keys(byColormap), initial: params.colormap }], params, function (nextProps, props) {
+  require('./controls')([{ type: 'range', label: 'realRange', min: 0, max: 10, initial: params.realRange, step: 1 }, { type: 'range', label: 'imagRange', min: 0, max: 10, initial: params.imagRange, step: 1 }, { type: 'checkbox', label: 'gaussianRandom', initial: params.gaussianRandom }, { type: 'range', label: 'degree', min: 2, max: 24, initial: params.degree, step: 1 }, { type: 'range', label: 'batchSize', min: 1, max: 10000, initial: params.batchSize, step: 1 }, { type: 'range', label: 'x0', min: -4, max: 4, initial: params.x0, step: 0.01 }, { type: 'range', label: 'y0', min: -4, max: 4, initial: params.y0, step: 0.01 }, { type: 'range', label: 'zoom', min: -5, max: 5, initial: params.zoom, step: 0.01 }, { type: 'range', label: 'alpha', min: 0.0, max: 2.0, initial: params.alpha, step: 0.01 }, { type: 'range', label: 'gamma', min: 0.0, max: 4.0, initial: params.gamma, step: 0.01 }, { type: 'range', label: 'grid', min: 0, max: 1, initial: params.grid, step: 0.01 }, { type: 'checkbox', label: 'useSymmetry', initial: params.useSymmetry }, { type: 'select', label: 'colormap', options: Object.keys(byColormap), initial: params.colormap }], params, function (nextProps, props) {
     if (nextProps.realRange !== props.realRange || nextProps.imagRange !== props.imagRange) {
       clear();
     }
@@ -36746,7 +36747,7 @@ function run(regl) {
       }
     }
     rootPts(buf);
-    batchCnt += params.batchSize * params.n;
+    batchCnt += (params.useSymmetry ? 4 : 1) * (params.batchSize * params.n);
   }
 
   var fbo = regl.framebuffer({
@@ -36756,8 +36757,9 @@ function run(regl) {
   });
 
   var drawPoints = regl({
-    vert: '\n      precision mediump float;\n      attribute vec2 xy;\n      uniform vec2 ar;\n      uniform float x0, y0, zoom;\n      void main () {\n        gl_Position = vec4((xy - vec2(x0, y0)) * zoom * ar * 0.5, 0, 1);\n        gl_PointSize = 1.0;\n      }\n    ',
-    frag: '\n      precision mediump float;\n      uniform vec3 color;\n      void main () {\n        gl_FragColor = vec4(color, 0.5);\n      }\n    ',
+    vert: '\n      precision mediump float;\n      attribute vec2 xy;\n      uniform vec2 ar, scale;\n      uniform float x0, y0, zoom;\n      void main () {\n        gl_Position = vec4((xy * scale - vec2(x0, y0)) * zoom * ar * 0.5, 0, 1);\n        gl_PointSize = 1.0;\n      }\n    ',
+    frag: '\n      precision mediump float;\n      void main () {\n        gl_FragColor = vec4(vec3(1), 0.5);\n      }\n    ',
+    uniforms: { scale: regl.prop('scale') },
     depth: { enable: false },
     blend: {
       enable: true,
@@ -36765,9 +36767,6 @@ function run(regl) {
       equation: { rgb: 'add', alpha: 'add' }
     },
     attributes: { xy: rootPts },
-    uniforms: {
-      color: regl.prop('color')
-    },
     primitive: 'points',
     count: function () {
       return params.n * params.batchSize;
@@ -36805,6 +36804,9 @@ function run(regl) {
     count: 3
   });
 
+  var single = [{ scale: [1, 1] }];
+  var reflected = [{ scale: [1, 1] }, { scale: [-1, 1] }, { scale: [1, -1] }, { scale: [-1, -1] }];
+
   var batchCnt = 0;
   clear();
   var loop = regl.frame(function (_ref) {
@@ -36814,7 +36816,7 @@ function run(regl) {
     compute();
     setParams(params, function () {
       fbo.use(function () {
-        drawPoints({ color: [1, 0.9, 0.8] });
+        drawPoints(params.useSymmetry ? reflected : single);
       });
       drawToScreen({ alf: 1e8 / batchCnt });
       if (params.grid) {
