@@ -9,8 +9,8 @@ Plotly.plot(gd, {
     carpetid: 'c',
     a: [4, 4, 4, 5, 5, 5, 6, 6, 6],
     b: [1, 2, 3, 1, 2, 3, 1, 2, 3],
-    y: [2, 3, 4, 5, 6, 7, 8, 9, 10],
-    cheaterslope: 2,
+    y: [2, 3, 4, 5.5, 6.8, 7.5, 8, 9, 10],
+    cheaterslope: 1,
     type: 'carpet',
     aaxis: {
       minorgridcount: 10,
