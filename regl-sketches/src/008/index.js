@@ -42,7 +42,7 @@ function run (regl) {
     y0: 0,
     zoom: 0,
     degree: 4,
-    useSymmetry: false
+    useSymmetry: true
   };
   params.n = params.degree + 1;
 
