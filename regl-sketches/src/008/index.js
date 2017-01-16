@@ -11,7 +11,7 @@ var explanation = h('div.explanation', [
     'random coefficients on the integer complex grid',
     h('br'),
     h('small', [
-      'Based on John Baez\'s ',
+      'Inspired by John Baez\'s ',
       h('a', 'The Beauty of Roots', {href: 'http://www.math.ucr.edu/home/baez/roots/'})
     ])
   ])
