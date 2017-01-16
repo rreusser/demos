@@ -225,7 +225,7 @@ function run (regl) {
   var setParams = regl({
     uniforms: {
         ar: ctx => [ctx.framebufferHeight / ctx.framebufferWidth, 1.0],
-        alpha: (ctx, props) => props.alpha * Math.pow(Math.exp(props.zoom), 1.5),
+        alpha: (ctx, props) => props.alpha * Math.pow(Math.exp(props.zoom), 1.5) * ctx.framebufferWidth * ctx.framebufferHeight / 1000 / 1000,
         gamma: (ctx, props) => 1.0 / props.gamma,
         x0: regl.prop('x0'),
         y0: regl.prop('y0'),

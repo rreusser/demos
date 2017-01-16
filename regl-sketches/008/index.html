@@ -36709,7 +36709,7 @@ function run(regl) {
         return [ctx.framebufferHeight / ctx.framebufferWidth, 1.0];
       },
       alpha: function (ctx, props) {
-        return props.alpha * Math.pow(Math.exp(props.zoom), 1.5);
+        return props.alpha * Math.pow(Math.exp(props.zoom), 1.5) * ctx.framebufferWidth * ctx.framebufferHeight / 1000 / 1000;
       },
       gamma: function (ctx, props) {
         return 1.0 / props.gamma;
