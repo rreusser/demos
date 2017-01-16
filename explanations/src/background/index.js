@@ -17,7 +17,7 @@ const draw = regl({
     uniform mat4 projection, view, iproj, iview;
     varying vec2 uv;
     void main () {
-      // Compute the screen-space position. The fourth component here is related
+      // Compute the view-space position. The fourth component here is related
       // to perspective, so we need it:
       // vec4 sx = iproj * vec4(-uv, 0, 1);
 
