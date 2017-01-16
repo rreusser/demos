@@ -31,9 +31,8 @@ const draw = regl({
       // Now we have an unnormalized direction. I'll compute polar coordinates:
       vec2 polar = vec2(atan(x.x, x.z), acos(x.y / length(x)));
 
-      // Sine it and
-      vec2 pattern = 0.5 + 0.5 * cos(polar * 15.0);
-      gl_FragColor = vec4(pattern, 0, 1);
+      // Now make a nice pattern with it so we can see it:
+      gl_FragColor = vec4(0.5 + 0.5 * cos(polar * 15.0), 0, 1);
     }
   `,
   attributes: {xy: [[-4, -4], [0, 4], [4, -4]]},
