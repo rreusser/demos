@@ -187,7 +187,7 @@ function run (regl) {
     {type: 'range', label: 'imagRange', min: 0, max: 10, initial: params.imagRange, step: 1},
     {type: 'checkbox', label: 'gaussianRandom', initial: params.gaussianRandom},
     {type: 'range', label: 'degree', min: 2, max: 24, initial: params.degree, step: 1},
-    {type: 'range', label: 'batchSize', min: 1, max: 10000, initial: params.batchSize, step: 1},
+    {type: 'range', label: 'batchSize', min: 1, max: 30000, initial: params.batchSize, step: 1},
     {type: 'range', label: 'x0', min: -4, max: 4, initial: params.x0, step: 0.01},
     {type: 'range', label: 'y0', min: -4, max: 4, initial: params.y0, step: 0.01},
     {type: 'range', label: 'zoom', min: -5, max: 5, initial: params.zoom, step: 0.01},
