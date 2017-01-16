@@ -36645,14 +36645,14 @@ var regl = require('regl')({
 
 function run(regl) {
   var params = {
-    alpha: 1.0,
-    gamma: 2.5,
+    alpha: 0.5,
+    gamma: 1.0,
     grid: 0.1,
     realRange: 4,
-    imagRange: 4,
+    imagRange: 1,
     batchSize: 8000,
     gaussianRandom: false,
-    colormap: 'viridis',
+    colormap: 'cdom',
     x0: 0,
     y0: 0,
     zoom: 0,
