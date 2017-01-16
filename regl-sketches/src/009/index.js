@@ -213,7 +213,7 @@ function run (regl) {
   refresh();
 
   regl.frame(({tick}) => {
-    if (tick % 20 === 1 || needsAccel) {
+    if (tick % 5 === 1 || needsAccel) {
       setUniforms({src: values[0]}, () => {
         iterate()
         buffer.use(() => drawPoints([{select: 0}, {select: 1}]));

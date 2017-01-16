@@ -10219,7 +10219,7 @@ function run(regl) {
   regl.frame(function (_ref) {
     var tick = _ref.tick;
 
-    if (tick % 20 === 1 || needsAccel) {
+    if (tick % 5 === 1 || needsAccel) {
       setUniforms({ src: values[0] }, function () {
         iterate();
         buffer.use(function () {
