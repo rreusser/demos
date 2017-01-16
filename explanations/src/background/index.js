@@ -19,14 +19,13 @@ const draw = regl({
     void main () {
       // Compute the screen-space position. The fourth component here is related
       // to perspective, so we need it:
-      vec4 sx = iproj * vec4(-uv, 0, 1);
-
-      // Now zero out the homogeneous coordinate. We're interested in direction,
-      // not position:
-      sx.w = 0.0;
+      // vec4 sx = iproj * vec4(-uv, 0, 1);
 
       // Invert the *direction* of the view transform:
-      vec4 x = iview * sx;
+      // vec3 x = mat3(iview) * sx.xyz;
+
+      // Here it is in short form:
+      vec3 x = mat3(iview) * (iproj * vec4(-uv, 0, 1)).xyz;
 
       // Now we have an unnormalized direction. I'll compute polar coordinates:
       vec2 polar = vec2(atan(x.x, x.z), acos(x.y / length(x)));
