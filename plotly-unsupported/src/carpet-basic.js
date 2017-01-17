@@ -1,4 +1,10 @@
 var h = require('h');
+require('insert-css')(`
+html, body {
+  padding: 0;
+  margin: 0;
+}
+`);
 var Plotly = require('plotly.js');
 
 var gd = window.gd = h('div');
@@ -13,14 +19,42 @@ Plotly.plot(gd, {
     cheaterslope: 1,
     type: 'carpet',
     aaxis: {
-      minorgridcount: 10,
+      tickprefix: 'a = ',
+      ticksuffix: 'm',
+      minorgridcount: 9,
       cheatertype: 'value',
       tickmode: 'array',
     },
     baxis: {
-      minorgridcount: 10,
+      tickprefix: 'b = ',
+      ticksuffix: 'Pa',
+      minorgridcount: 9,
       cheatertype: 'value',
       tickmode: 'array',
     },
-  }]
+    xaxis: 'x',
+    yaxis: 'y',
+  },
+  /*{
+    x: [-1, 0, 1],
+    y: [2, 8, 3],
+    xaxis: 'x',
+    yaxis: 'y2',
+  }*/
+  ],
+  layout: {
+    margin: {t: 10, r: 10, b: 20, l: 20},
+    height: window.innerHeight,
+    width: window.innerWidth,
+    /*yaxis: {
+      domain: [0, 0.5]
+    },
+    yaxis2: {
+      domain: [0.5, 1]
+    },*/
+    dragmode: 'pan'
+  },
+  config: {
+    scrollZoom: true
+  }
 });

@@ -6,16 +6,8 @@ const draw = regl({
   vert: `
     precision mediump float;
     attribute vec2 xy;
-    varying vec2 uv;
-    void main () {
-      uv = xy;
-      gl_Position = vec4(xy, 0, 1);
-    }
-  `,
-  frag: `
-    precision mediump float;
-    uniform mat4 projection, view, iproj, iview;
-    varying vec2 uv;
+    varying vec3 dir;
+    uniform mat4 iproj, iview;
     void main () {
       // Compute the view-space position. The fourth component here is related
       // to perspective, so we need it:
@@ -25,10 +17,18 @@ const draw = regl({
       // vec3 x = mat3(iview) * sx.xyz;
 
       // Here it is in short form:
-      vec3 x = mat3(iview) * (iproj * vec4(-uv, 0, 1)).xyz;
 
       // Now we have an unnormalized direction. I'll compute polar coordinates:
-      vec2 polar = vec2(atan(x.x, x.z), acos(x.y / length(x)));
+      dir = mat3(iview) * (iproj * vec4(-xy, 0, 1)).xyz;
+
+      gl_Position = vec4(xy, 0, 1);
+    }
+  `,
+  frag: `
+    precision mediump float;
+    varying vec3 dir;
+    void main () {
+      vec2 polar = vec2(atan(dir.x, dir.z), acos(dir.y / length(dir)));
 
       // Now make a nice pattern with it so we can see it:
       gl_FragColor = vec4(0.5 + 0.5 * cos(polar * 15.0), 0, 1);

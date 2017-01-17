@@ -10274,8 +10274,8 @@ var regl = require('regl')();
 var camera = require('./camera')(regl, { damping: 0 });
 
 var draw = regl({
-  vert: '\n    precision mediump float;\n    attribute vec2 xy;\n    varying vec2 uv;\n    void main () {\n      uv = xy;\n      gl_Position = vec4(xy, 0, 1);\n    }\n  ',
-  frag: '\n    precision mediump float;\n    uniform mat4 projection, view, iproj, iview;\n    varying vec2 uv;\n    void main () {\n      // Compute the screen-space position. The fourth component here is related\n      // to perspective, so we need it:\n      // vec4 sx = iproj * vec4(-uv, 0, 1);\n\n      // Invert the *direction* of the view transform:\n      // vec3 x = mat3(iview) * sx.xyz;\n\n      // Here it is in short form:\n      vec3 x = mat3(iview) * (iproj * vec4(-uv, 0, 1)).xyz;\n\n      // Now we have an unnormalized direction. I\'ll compute polar coordinates:\n      vec2 polar = vec2(atan(x.x, x.z), acos(x.y / length(x)));\n\n      // Now make a nice pattern with it so we can see it:\n      gl_FragColor = vec4(0.5 + 0.5 * cos(polar * 15.0), 0, 1);\n    }\n  ',
+  vert: '\n    precision mediump float;\n    attribute vec2 xy;\n    varying vec3 dir;\n    uniform mat4 iproj, iview;\n    void main () {\n      // Compute the view-space position. The fourth component here is related\n      // to perspective, so we need it:\n      // vec4 sx = iproj * vec4(-uv, 0, 1);\n\n      // Invert the *direction* of the view transform:\n      // vec3 x = mat3(iview) * sx.xyz;\n\n      // Here it is in short form:\n\n      // Now we have an unnormalized direction. I\'ll compute polar coordinates:\n      dir = mat3(iview) * (iproj * vec4(-xy, 0, 1)).xyz;\n\n      gl_Position = vec4(xy, 0, 1);\n    }\n  ',
+  frag: '\n    precision mediump float;\n    varying vec3 dir;\n    void main () {\n      vec2 polar = vec2(atan(dir.x, dir.z), acos(dir.y / length(dir)));\n\n      // Now make a nice pattern with it so we can see it:\n      gl_FragColor = vec4(0.5 + 0.5 * cos(polar * 15.0), 0, 1);\n    }\n  ',
   attributes: { xy: [[-4, -4], [0, 4], [4, -4]] },
   depth: { enable: false },
   count: 3
