@@ -10,48 +10,46 @@ var Plotly = require('plotly.js');
 var gd = window.gd = h('div');
 document.body.appendChild(gd);
 
-Plotly.plot(gd, {
-  data: [{
+var traces = [];
+for (j = 0; j < 14; j++) {
+  traces.push({
     carpetid: 'c',
-    a: [4, 4, 4, 5, 5, 5, 6, 6, 6],
-    b: [1, 2, 3, 1, 2, 3, 1, 2, 3],
-    y: [2, 3, 4, 5.5, 6.8, 7.5, 8, 9, 10],
-    cheaterslope: 1,
-    type: 'carpet',
-    aaxis: {
-      tickprefix: 'a = ',
-      ticksuffix: 'm',
-      minorgridcount: 9,
-      cheatertype: 'value',
-      tickmode: 'array',
+    type: 'scattercarpet',
+    a: new Array(8).fill(0).map((d, i) => i * 0.5 + 3.5).map(a => a * 1e-6),
+    b: new Array(8).fill(0).map(() => j * 0.5 + 0.25).map(b => b * 1e6),
+    line: {shape: 'spline', smoothing: 1},
+    mode: 'lines+markers',
+  });
+}
+
+Plotly.plot(gd, {
+  data: [
+    {
+      carpetid: 'c',
+      a: [4, 4, 4, 4.5, 4.5, 4.5, 5, 5, 5, 6, 6, 6].map(a => a * 1e-6),
+      b: [1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3].map(b => b * 1e6),
+      y: [2, 3.5, 4, 3, 4.5, 5, 5.5, 6.5, 7.5, 8, 8.5, 10],
+      type: 'carpet',
+      aaxis: {
+        tickprefix: 'a = ',
+        ticksuffix: 'm',
+        smoothing: 0,
+        minorgridcount: 9,
+      },
+      baxis: {
+        tickprefix: 'b = ',
+        ticksuffix: 'Pa',
+        smoothing: 0,
+        minorgridcount: 9,
+      },
+      xaxis: 'x',
+      yaxis: 'y',
     },
-    baxis: {
-      tickprefix: 'b = ',
-      ticksuffix: 'Pa',
-      minorgridcount: 9,
-      cheatertype: 'value',
-      tickmode: 'array',
-    },
-    xaxis: 'x',
-    yaxis: 'y',
-  },
-  /*{
-    x: [-1, 0, 1],
-    y: [2, 8, 3],
-    xaxis: 'x',
-    yaxis: 'y2',
-  }*/
-  ],
+  ].concat(traces),
   layout: {
     margin: {t: 10, r: 10, b: 20, l: 20},
     height: window.innerHeight,
     width: window.innerWidth,
-    /*yaxis: {
-      domain: [0, 0.5]
-    },
-    yaxis2: {
-      domain: [0.5, 1]
-    },*/
     dragmode: 'pan'
   },
   config: {

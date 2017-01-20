@@ -19,7 +19,7 @@ const draw = regl({
       // Here it is in short form:
 
       // Now we have an unnormalized direction. I'll compute polar coordinates:
-      dir = mat3(iview) * (iproj * vec4(-xy, 0, 1)).xyz;
+      dir = mat3(iview) * (iproj * vec4(-xy, 0.99999999, 1)).xyz;
 
       gl_Position = vec4(xy, 0, 1);
     }

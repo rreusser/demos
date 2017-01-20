@@ -47,9 +47,9 @@ function run (regl) {
   params.n = params.degree + 1;
 
   var byColormap = {
-    viridis: glslify(`
+    jet: glslify(`
       precision mediump float;
-      #pragma glslify: colormap = require(glsl-colormap/viridis)
+      #pragma glslify: colormap = require(glsl-colormap/jet)
       uniform sampler2D src;
       uniform float alf, alpha, gamma;
       varying vec2 uv;
@@ -61,9 +61,9 @@ function run (regl) {
         gl_FragColor = vec4(color.xyz * color.w, 1);
       }
     `),
-    electric: glslify(`
+    hsv: glslify(`
       precision mediump float;
-      #pragma glslify: colormap = require(glsl-colormap/electric)
+      #pragma glslify: colormap = require(glsl-colormap/hsv)
       uniform sampler2D src;
       uniform float alf, alpha, gamma;
       varying vec2 uv;
@@ -75,9 +75,79 @@ function run (regl) {
         gl_FragColor = vec4(color.xyz * color.w, 1);
       }
     `),
-    density: glslify(`
+    hot: glslify(`
       precision mediump float;
-      #pragma glslify: colormap = require(glsl-colormap/density)
+      #pragma glslify: colormap = require(glsl-colormap/hot)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    cool: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/cool)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    spring: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/spring)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    summer: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/summer)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    autumn: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/autumn)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    winter: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/winter)
       uniform sampler2D src;
       uniform float alf, alpha, gamma;
       varying vec2 uv;
@@ -103,9 +173,9 @@ function run (regl) {
         gl_FragColor = vec4(color.xyz * color.w, 1);
       }
     `),
-    chlorophyll: glslify(`
+    copper: glslify(`
       precision mediump float;
-      #pragma glslify: colormap = require(glsl-colormap/chlorophyll)
+      #pragma glslify: colormap = require(glsl-colormap/copper)
       uniform sampler2D src;
       uniform float alf, alpha, gamma;
       varying vec2 uv;
@@ -117,9 +187,261 @@ function run (regl) {
         gl_FragColor = vec4(color.xyz * color.w, 1);
       }
     `),
-    par: glslify(`
+    greys: glslify(`
       precision mediump float;
-      #pragma glslify: colormap = require(glsl-colormap/par)
+      #pragma glslify: colormap = require(glsl-colormap/greys)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    yignbu: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/yignbu)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    greens: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/greens)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    yiorrd: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/yiorrd)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    bluered: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/bluered)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    rdbu: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/rdbu)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    picnic: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/picnic)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    rainbow: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/rainbow)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    portland: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/portland)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    blackbody: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/blackbody)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    earth: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/earth)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    electric: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/electric)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    viridis: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/viridis)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    inferno: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/inferno)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    magma: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/magma)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    plasma: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/plasma)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    warm: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/warm)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    'rainbow-soft': glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/rainbow-soft)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    bathymetry: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/bathymetry)
       uniform sampler2D src;
       uniform float alf, alpha, gamma;
       varying vec2 uv;
@@ -145,9 +467,163 @@ function run (regl) {
         gl_FragColor = vec4(color.xyz * color.w, 1);
       }
     `),
-    inferno: glslify(`
+    chlorophyll: glslify(`
       precision mediump float;
-      #pragma glslify: colormap = require(glsl-colormap/inferno)
+      #pragma glslify: colormap = require(glsl-colormap/chlorophyll)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    density: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/density)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    'freesurface-blue': glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/freesurface-blue)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    'freesurface-red': glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/freesurface-red)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    oxygen: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/oxygen)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    par: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/par)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    phase: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/phase)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    salinity: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/salinity)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    temperature: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/temperature)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    turbidity: glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/turbidity)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    'velocity-blue': glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/velocity-blue)
+      uniform sampler2D src;
+      uniform float alf, alpha, gamma;
+      varying vec2 uv;
+      void main () {
+        float dens = texture2D(src, uv).x;
+        float r = length(dens);
+        float intens = max(0.0, min(1.0, dens / r * alpha * pow(r * alf, gamma)));
+        vec4 color = colormap(intens);
+        gl_FragColor = vec4(color.xyz * color.w, 1);
+      }
+    `),
+    'velocity-green': glslify(`
+      precision mediump float;
+      #pragma glslify: colormap = require(glsl-colormap/velocity-green)
       uniform sampler2D src;
       uniform float alf, alpha, gamma;
       varying vec2 uv;
