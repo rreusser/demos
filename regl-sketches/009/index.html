@@ -165,6 +165,30 @@ else
 })()
 
 },{}],4:[function(require,module,exports){
+var inserted = {};
+
+module.exports = function (css, options) {
+    if (inserted[css]) return;
+    inserted[css] = true;
+    
+    var elem = document.createElement('style');
+    elem.setAttribute('type', 'text/css');
+
+    if ('textContent' in elem) {
+      elem.textContent = css;
+    } else {
+      elem.styleSheet.cssText = css;
+    }
+    
+    var head = document.getElementsByTagName('head')[0];
+    if (options && options.prepend) {
+        head.insertBefore(elem, head.childNodes[0]);
+    } else {
+        head.appendChild(elem);
+    }
+};
+
+},{}],5:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -371,7 +395,7 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":5}],5:[function(require,module,exports){
+},{"mouse-event":6}],6:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -433,7 +457,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict'
 
 var toPX = require('to-px')
@@ -475,7 +499,7 @@ function mouseWheelListen(element, callback, noScroll) {
   return listener
 }
 
-},{"to-px":9}],7:[function(require,module,exports){
+},{"to-px":10}],8:[function(require,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -486,7 +510,7 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
@@ -9991,7 +10015,7 @@ return wrapREGL;
 })));
 
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict'
 
 var parseUnit = require('parse-unit')
@@ -10052,7 +10076,9 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":7}],10:[function(require,module,exports){
+},{"parse-unit":8}],11:[function(require,module,exports){
+var h = require('h');
+require('insert-css')('\n.explanation {\n  position: absolute;\n  z-index: 100;\n  top: 5px;\n  left: 5px;\n  font-family: sans-serif;\n  font-style: italic;\n}\n.explanation h4 {\n  margin: 0;\n}\n');
 var glsl = require('glslify');
 var mouse = require('mouse-event');
 var mouseWheel = require('mouse-wheel');
@@ -10069,6 +10095,9 @@ var regl = require('regl')({
 });
 
 function run(regl) {
+  var explanation = h('div.explanation', [h('h4', 'Logistic Map'), h('div', 'Drag and scroll to pan/zoom. Shift to zoom vertically')]);
+  document.body.appendChild(explanation);
+
   var accum = 0;
   var width = 512;
   var height = 512;
@@ -10085,56 +10114,98 @@ function run(regl) {
   }
 
   var params = {
-    xmin: 2.5,
+    xmin: 1,
     xmax: 4,
-    ymin: 0,
+    ymin: 0.0,
     ymax: 1
   };
 
-  var previ = void 0;
-  mouseChange(function (btn, i) {
+  var previ = void 0,
+      prevj = void 0;
+  var shift = false;
+  mouseChange(function (btn, i, j, mods) {
+    shift = mods.shift;
     if (btn === 1 && previ !== undefined) {
       var dx = (params.xmax - params.xmin) * (i - previ) / window.innerWidth;
+      var dy = -(params.ymax - params.ymin) * (j - prevj) / window.innerHeight;
       var xmin0 = params.xmin;
       var xmax0 = params.xmax;
+      var ymin0 = params.ymin;
+      var ymax0 = params.ymax;
       var newXmin = Math.max(1.0, xmin0 - dx);
       var newXmax = Math.min(4.0, xmax0 - dx);
-      if (newXmin > 0.0 && newXmax < 4.0 && (newXmin !== xmin0 || newXmax !== xmax0)) {
-        params.xmin = newXmin;
-        params.xmax = newXmax;
-        refresh();
+      var newYmin = Math.max(0.0, ymin0 - dy);
+      var newYmax = Math.min(1.0, ymax0 - dy);
+
+      params.xmin = Math.max(0, newXmin);
+      params.xmax = Math.min(4, newXmax);
+      params.ymin = Math.max(0, newYmin);
+      params.ymax = Math.min(1, newYmax);
+
+      if (newXmin !== xmin0 || newXmax !== xmax0 || newYmin !== ymin0 || newYmax !== ymax0) {
+        needsAccel = false;
+        needsQuick = true;
       }
     }
     previ = i;
+    prevj = j;
   });
 
   mouseWheel(function (dx, dy, dz, ev) {
-    var x0 = params.xmin + (params.xmax - params.xmin) * mouse.x(ev) / window.innerWidth;
-    var xmin0 = params.xmin;
-    var xmax0 = params.xmax;
-    var xp = params.xmax - x0;
-    var xm = x0 - params.xmin;
-    var zoom = Math.exp(dy / 50.0);
-    xm *= zoom;
-    xp *= zoom;
-    params.xmin = Math.max(1.0, x0 - xm);
-    params.xmax = Math.min(4.0, x0 + xp);
-    if (params.xmin !== xmin0 || params.xmax !== xmax0) refresh();
+    if (shift) {
+      var y0 = params.ymin + (params.ymax - params.ymin) * (1 - mouse.y(ev) / window.innerHeight);
+      var ymin0 = params.ymin;
+      var ymax0 = params.ymax;
+      var yp = params.ymax - y0;
+      var ym = y0 - params.ymin;
+      var zoom = Math.exp(dy / 50.0);
+      ym *= zoom;
+      yp *= zoom;
+      params.ymin = Math.max(0, y0 - ym);
+      params.ymax = Math.min(1, y0 + yp);
+      if (params.ymin !== ymin0 || params.ymax !== ymax0) {
+        needsAccel = false;
+        needsQuick = true;
+      }
+    } else {
+      var x0 = params.xmin + (params.xmax - params.xmin) * mouse.x(ev) / window.innerWidth;
+      var xmin0 = params.xmin;
+      var xmax0 = params.xmax;
+      var xp = params.xmax - x0;
+      var xm = x0 - params.xmin;
+      var _zoom = Math.exp(dy / 50.0);
+      xm *= _zoom;
+      xp *= _zoom;
+      params.xmin = Math.max(1.0, x0 - xm);
+      params.xmax = Math.min(4.0, x0 + xp);
+      if (params.xmin !== xmin0 || params.xmax !== xmax0) {
+        needsAccel = false;
+        needsQuick = true;
+      }
+    }
   });
 
   var samplerCoords = regl.buffer(new Array(width * height).fill(0).map(function (d, i) {
     return [i % width / Math.max(1, width - 1), Math.floor(i / width) / Math.max(1, height - 1)];
   }));
 
-  var textures = new Array(2).fill(0).map(function () {
-    return regl.texture({ width: width, height: height, data: data, type: 'float32' });
-  });
+  var initial = regl.texture({ width: width, height: height, data: data, type: 'float32' });
 
   var values = new Array(2).fill(0).map(function (d, i) {
     return regl.framebuffer({
-      color: textures[i],
+      color: regl.texture({ width: width, height: height, data: data, type: 'float32' }),
       depth: false
     });
+  });
+
+  var initializeOp = regl({
+    vert: '\n      precision mediump float;\n      attribute vec2 xy;\n      varying vec2 uv;\n      void main () {\n        uv = 0.5 * (1.0 + xy);\n        gl_Position = vec4(xy, 0, 1);\n      }\n    ',
+    frag: '\n      precision mediump float;\n      varying vec2 uv;\n      uniform sampler2D src;\n      void main () {\n        gl_FragColor = texture2D(src, uv);\n      }\n    ',
+    framebuffer: regl.prop('dest'),
+    uniforms: { src: initial },
+    attributes: { xy: [[-4, -4], [0, 4], [4, -4]] },
+    depth: { enable: false },
+    count: 3
   });
 
   var iterateOp = regl({
@@ -10147,24 +10218,19 @@ function run(regl) {
     count: 3
   });
 
-  var iterate = function () {
-    for (var _i = needsAccel ? 100 : 1; _i >= 0; _i--) {
-      iterateOp({ src: values[0], dest: values[1] });
-      swap(values);
-    }
-    accum++;
-    needsAccel = false;
-  };
-
   var drawPoints = regl({
-    vert: '\n      precision mediump float;\n      attribute vec2 uv;\n      uniform sampler2D data;\n      uniform float select;\n      void main () {\n        vec4 p = texture2D(data, uv);\n        vec2 y = p.xy * select + p.zw * (1.0 - select);\n        gl_Position = vec4(y.x, y.y * 2.0 - 1.0, 0, 1);\n        gl_PointSize = 1.0;\n      }\n    ',
+    vert: '\n      precision mediump float;\n      attribute vec2 uv;\n      uniform sampler2D data;\n      uniform float select;\n      uniform vec4 viewport;\n      void main () {\n        vec4 p = texture2D(data, uv);\n        vec2 y = p.xy * select + p.zw * (1.0 - select);\n        gl_Position = vec4(y.x, y.y * viewport.z + viewport.w, 0, 1);\n        gl_PointSize = 1.0;\n      }\n    ',
     frag: '\n      precision mediump float;\n      void main () {\n        gl_FragColor = vec4(1);\n      }\n    ',
     blend: {
       enable: true,
       func: { srcRGB: 'src alpha', srcAlpha: 1, dstRGB: 1, dstAlpha: 1 },
       equation: { rgb: 'add', alpha: 'add' }
     },
-    uniforms: { select: regl.prop('select') },
+    uniforms: {
+      data: regl.prop('src'),
+      select: regl.prop('select')
+    },
+    framebuffer: regl.prop('dest'),
     attributes: { uv: samplerCoords },
     primitive: 'points',
     count: width * height
@@ -10174,16 +10240,33 @@ function run(regl) {
     var tmp = arr[0];arr[0] = arr[1];arr[1] = tmp;
   };
 
-  var buffer = regl.framebuffer({
-    width: regl._gl.canvas.width,
-    height: regl._gl.canvas.height,
-    colorType: 'float',
-    depth: false
+  var buffers = new Array(2).fill(0).map(function () {
+    return regl.framebuffer({
+      width: regl._gl.canvas.width,
+      height: regl._gl.canvas.height,
+      colorType: 'float',
+      depth: false
+    });
+  });
+
+  var decay = regl({
+    vert: '\n      precision mediump float;\n      attribute vec2 xy;\n      varying vec2 uv;\n      void main () {\n        uv = 0.5 * (1.0 + xy);\n        gl_Position = vec4(xy, 0, 1);\n      }\n    ',
+    frag: '\n      precision mediump float;\n      uniform sampler2D src;\n      varying vec2 uv;\n      uniform float decay;\n      void main () {\n        float col = texture2D(src, uv).x;\n        gl_FragColor = vec4(col * decay, 0, 0, 1);\n      }\n    ',
+    attributes: { xy: [[-4, -4], [0, 4], [4, -4]] },
+    uniforms: {
+      src: regl.prop('src'),
+      decay: function () {
+        return decayConst;
+      }
+    },
+    framebuffer: regl.prop('dest'),
+    depth: { enable: false },
+    count: 3
   });
 
   var drawToScreen = regl({
     vert: '\n      precision mediump float;\n      attribute vec2 xy;\n      varying vec2 uv;\n      void main () {\n        uv = 0.5 * (1.0 + xy);\n        gl_Position = vec4(xy, 0, 1);\n      }\n    ',
-    frag: '\n      precision mediump float;\n      uniform sampler2D src;\n      uniform float scalar;\n      varying vec2 uv;\n      void main () {\n        vec3 value = texture2D(src, uv).xyz;\n        gl_FragColor = vec4(1.0 - value * scalar, 1);\n      }\n    ',
+    frag: '\n      precision mediump float;\n      uniform sampler2D src;\n      uniform float scalar;\n      varying vec2 uv;\n      void main () {\n        float value = texture2D(src, uv).x;\n        gl_FragColor = vec4(vec3(1.0 - value * scalar), 1);\n      }\n    ',
     attributes: { xy: [[-4, -4], [0, 4], [4, -4]] },
     uniforms: { src: regl.prop('src') },
     depth: { enable: false },
@@ -10191,27 +10274,50 @@ function run(regl) {
   });
 
   var setUniforms = regl({ uniforms: {
-      data: regl.prop('src'),
       scalar: function (ctx) {
         var ret = 0.1 / accum;
         ret *= 512 * 512 / width / height;
         ret /= 700 * 700 / ctx.viewportWidth / ctx.viewportHeight;
+        ret /= Math.sqrt(params.ymax - params.ymin);
         return ret;
       },
       viewport: function () {
-        return [(params.xmin + params.xmax) * 0.5, 0.5 * (params.xmax - params.xmin), params.ymin, params.ymax];
+        return [(params.xmin + params.xmax) * 0.5, 0.5 * (params.xmax - params.xmin), 1.0 / (params.ymax - params.ymin) * 2, -params.ymin / (params.ymax - params.ymin) * 2 - 1];
       }
     } });
 
-  var needsAccel = false;
+  var needsQuick = false;
+  var needsAccel = true;
+  var decayConst = 0.98;
+
+  var iterate = function () {
+    var iters = needsAccel ? 100 : needsQuick ? 20 : 1;
+
+    if (needsQuick || needsAccel) refresh();
+
+    for (var _i = iters; _i >= 0; _i--) {
+      iterateOp({ src: values[0], dest: values[1] });
+      swap(values);
+    }
+
+    accum *= decayConst;
+    accum++;
+
+    if (needsQuick) {
+      needsQuick = false;
+      needsAccel = true;
+    } else if (needsAccel) {
+      needsAccel = false;
+      needsQuick = false;
+    }
+  };
+
   var refresh = function () {
-    textures[0]({ width: width, height: height, data: data, type: 'float32' });
-    textures[1]({ width: width, height: height, data: data, type: 'float32' });
-    buffer.use(function () {
+    initializeOp({ dest: values[0] });
+    buffers[0].use(function () {
       return regl.clear({ color: [0, 0, 0, 1] });
     });
     accum = 0;
-    needsAccel = true;
   };
 
   refresh();
@@ -10219,20 +10325,19 @@ function run(regl) {
   regl.frame(function (_ref) {
     var tick = _ref.tick;
 
-    if (tick % 5 === 1 || needsAccel) {
-      setUniforms({ src: values[0] }, function () {
-        iterate();
-        buffer.use(function () {
-          return drawPoints([{ select: 0 }, { select: 1 }]);
-        });
-      });
+    setUniforms(function () {
+      iterate();
 
-      setUniforms({ src: values[0] }, function () {
-        drawToScreen({ src: buffer });
-      });
-    }
+      drawPoints([{ src: values[0], select: 0, dest: buffers[0] }, { src: values[0], select: 1, dest: buffers[0] }]);
+
+      decay({ src: buffers[0], dest: buffers[1] });
+
+      drawToScreen({ src: buffers[0] });
+    });
+
+    swap(buffers);
   });
 }
-},{"fail-nicely":1,"glslify":2,"mouse-change":4,"mouse-event":5,"mouse-wheel":6,"regl":8}]},{},[10]);
+},{"fail-nicely":1,"glslify":2,"h":3,"insert-css":4,"mouse-change":5,"mouse-event":6,"mouse-wheel":7,"regl":9}]},{},[11]);
 </script>
 </html>
