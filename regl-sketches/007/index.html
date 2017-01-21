@@ -10468,9 +10468,9 @@ function run(regl) {
     fovy: 1.5
   });
 
-  var phasemult = 30;
+  var phasemult = 2;
   require('mouse-change')(function (b, x, y) {
-    phasemult = Math.round(x / window.innerWidth * 60.0);
+    phasemult = x / window.innerWidth * 60.0;
   });
 
   var mbsamples = 11;
