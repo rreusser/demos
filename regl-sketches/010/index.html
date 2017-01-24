@@ -36366,6 +36366,8 @@ function run(regl) {
     camera.taint();
   });
 
+  window.addEventListener('resize', camera.taint);
+
   var draw = require('./draw-mesh')(regl, mesh);
   var setUniforms = require('./uniforms')(regl, params);
 

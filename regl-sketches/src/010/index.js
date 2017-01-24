@@ -41,6 +41,8 @@ function run (regl) {
     camera.taint();
   })
 
+  window.addEventListener('resize', camera.taint);
+
   const draw = require('./draw-mesh')(regl, mesh);
   const setUniforms = require('./uniforms')(regl, params);
 
