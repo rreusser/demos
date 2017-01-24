@@ -10,6 +10,7 @@ module.exports = function (regl, params) {
       velocity: () => params.velocity,
       cpAlpha: () => params.cpAlpha,
       streamAlpha: () => params.streamAlpha,
+      colorScale: () => params.colorScale,
       scale: () => {
         var theta0 = Math.atan2(-params.muy, 1 - params.mux);
         var r0 = Math.sqrt(Math.pow(1 - params.mux, 2) + Math.pow(params.muy, 2));

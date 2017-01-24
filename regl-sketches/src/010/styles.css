@@ -13,10 +13,18 @@
   display: block;
 }
 
-.control-header {
-  font-family: monospace;
+.control-header,
+.control-footer {
   padding: 5px 10px;
   background-color: #333;
   color: white;
+}
+
+.control-header {
   cursor: pointer;
+  font-family: monospace;
+}
+
+.control-footer {
+  font-family: 'Helvetica', sans-serif;
 }

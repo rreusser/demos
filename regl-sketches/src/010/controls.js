@@ -9,6 +9,7 @@ module.exports = function (fields, state, cb) {
   const control = h('div#control');
   document.body.appendChild(control);
   const controlHeader = h('div.control-header', 'Controls')
+  //const controlFooter = h('div.control-footer', 'Footer');
   control.appendChild(controlHeader);
   control.addEventListener('mousemove', e => e.stopPropagation());
   control.addEventListener('mousedown', e => e.stopPropagation());
@@ -25,10 +26,12 @@ module.exports = function (fields, state, cb) {
   require('control-panel')(fields, {
     root: control,
     theme: 'dark',
-    width: 325
+    width: 350
   }).on('input', data => {
     pstate = extend({}, state);
     mutate(state, data);
     cb && cb(pstate, state);
   });
+
+  //control.appendChild(controlFooter);
 };

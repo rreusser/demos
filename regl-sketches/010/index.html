@@ -36235,10 +36235,10 @@ function extend(target) {
 },{}],193:[function(require,module,exports){
 'use strict';
 
-module.exports = function (regl, opts) {
-  opts = opts || {};
-  var x = opts.x || [0, 0];
-  var zoom = opts.zoom || 1;
+module.exports = function (regl, config) {
+  config = config || {};
+  config.x = config.x || [0, 0];
+  config.zoom = config.zoom || 1;
 
   var state = {
     view: [1, 0, 0, 0, 1, 0, 0, 0, 1],
@@ -36249,10 +36249,10 @@ module.exports = function (regl, opts) {
     uniforms: {
       view: function (ctx) {
         var aspectRatio = ctx.framebufferHeight / ctx.framebufferWidth;
-        state.view[0] = aspectRatio * zoom;
-        state.view[4] = zoom;
-        state.view[6] = -x[0] * zoom;
-        state.view[7] = -x[1] * zoom;
+        state.view[0] = aspectRatio * config.zoom;
+        state.view[4] = config.zoom;
+        state.view[6] = -config.x[0] * config.zoom;
+        state.view[7] = -config.x[1] * config.zoom;
         return state.view;
       }
     }
@@ -36285,6 +36285,7 @@ module.exports = function (fields, state, cb) {
   var control = h('div#control');
   document.body.appendChild(control);
   var controlHeader = h('div.control-header', 'Controls');
+  //const controlFooter = h('div.control-footer', 'Footer');
   control.appendChild(controlHeader);
   control.addEventListener('mousemove', function (e) {
     return e.stopPropagation();
@@ -36298,19 +36299,21 @@ module.exports = function (fields, state, cb) {
   });
   control.classList.toggle('expanded');
 
-  css("#control {\n  z-index: 1000;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n\n#control .control-panel {\n  display: none;\n}\n\n#control.expanded .control-panel {\n  display: block;\n}\n\n.control-header {\n  font-family: monospace;\n  padding: 5px 10px;\n  background-color: #333;\n  color: white;\n  cursor: pointer;\n}\n");
+  css("#control {\n  z-index: 1000;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n\n#control .control-panel {\n  display: none;\n}\n\n#control.expanded .control-panel {\n  display: block;\n}\n\n.control-header,\n.control-footer {\n  padding: 5px 10px;\n  background-color: #333;\n  color: white;\n}\n\n.control-header {\n  cursor: pointer;\n  font-family: monospace;\n}\n\n.control-footer {\n  font-family: 'Helvetica', sans-serif;\n}\n");
 
   var pstate = extend({}, state);
 
   require('control-panel')(fields, {
     root: control,
     theme: 'dark',
-    width: 325
+    width: 350
   }).on('input', function (data) {
     pstate = extend({}, state);
     mutate(state, data);
     cb && cb(pstate, state);
   });
+
+  //control.appendChild(controlFooter);
 };
 },{"control-panel":60,"h":105,"insert-css":115,"xtend":191,"xtend/mutable":192}],195:[function(require,module,exports){
 'use strict';
@@ -36319,8 +36322,8 @@ var glsl = require('glslify');
 
 module.exports = function (regl, mesh) {
   return regl({
-    vert: '\n      precision mediump float;\n      attribute vec2 rth;\n      //attribute vec2 barycentric;\n      varying float psi, cp, r0;\n      varying vec2 b;\n      uniform mat3 view;\n      uniform vec2 x0;\n      uniform float radius, theta0, n, circulation, scale;\n      #define OPI2 0.15915494309\n      void main () {\n        //b = barycentric;\n        r0 = rth.x;\n        float rad = 1.0 + rth.x * scale * 1.0;\n        float r2 = rad * rad;\n        float theta = rth.y + theta0;\n        float r = rad * radius;\n        float sth = sin(theta);\n        float cth = cos(theta);\n        vec2 xy = x0 + r * vec2(cth, sth);\n\n        float det = xy.x * xy.x + xy.y * xy.y;\n        vec2 opz = vec2(1.0 + xy.x / det, -xy.y / det);\n        vec2 omz = vec2(1.0 - xy.x / det, xy.y / det);\n\n        float opznarg = atan(opz.y, opz.x) * n;\n        float opznmod = pow(dot(opz, opz), n * 0.5);\n        vec2 opzn = opznmod * vec2(cos(opznarg), sin(opznarg));\n\n        float omznarg = atan(omz.y, omz.x) * n;\n        float omznmod = pow(dot(omz, omz), n * 0.5);\n        vec2 omzn = omznmod * vec2(cos(omznarg), sin(omznarg));\n\n        vec2 num = opzn + omzn;\n        vec2 den = opzn - omzn;\n\n        xy = n / dot(den, den) * vec2(\n          den.x * num.x + den.y * num.y,\n          den.x * num.y - den.y * num.x\n        );\n\n        xy.x -= n;\n        xy /= scale;\n        xy.x += 0.5;\n        xy *= 4.0;\n\n        psi = 10.0 * (rad - 1.0 /  rad) * sth + circulation * OPI2 * log(rad);\n\n        float vr = 10.0 * (1.0 - 1.0 / r2) * cth;\n        float vth = -10.0 * (1.0 + 1.0 / r2) * sth - circulation * OPI2 / rad;\n\n        float k1 = circulation * OPI2 * 0.1;\n        cp = 1.0 - (vr * vr + vth * vth) * 0.01;\n\n        vec2 pos = (view * vec3(xy, 1)).xy;\n        gl_Position = vec4(pos, 0, 1);\n      }\n    ',
-    frag: glsl(["\n      #extension GL_OES_standard_derivatives : enable\n      precision mediump float;\n#define GLSLIFY 1\n\n      vec4 viridis (float x_0) {\n  const float e0 = 0.0;\n  const vec4 v0 = vec4(0.26666666666666666,0.00392156862745098,0.32941176470588235,1);\n  const float e1 = 0.13;\n  const vec4 v1 = vec4(0.2784313725490196,0.17254901960784313,0.47843137254901963,1);\n  const float e2 = 0.25;\n  const vec4 v2 = vec4(0.23137254901960785,0.3176470588235294,0.5450980392156862,1);\n  const float e3 = 0.38;\n  const vec4 v3 = vec4(0.17254901960784313,0.44313725490196076,0.5568627450980392,1);\n  const float e4 = 0.5;\n  const vec4 v4 = vec4(0.12941176470588237,0.5647058823529412,0.5529411764705883,1);\n  const float e5 = 0.63;\n  const vec4 v5 = vec4(0.15294117647058825,0.6784313725490196,0.5058823529411764,1);\n  const float e6 = 0.75;\n  const vec4 v6 = vec4(0.3607843137254902,0.7843137254901961,0.38823529411764707,1);\n  const float e7 = 0.88;\n  const vec4 v7 = vec4(0.6666666666666666,0.8627450980392157,0.19607843137254902,1);\n  const float e8 = 1.0;\n  const vec4 v8 = vec4(0.9921568627450981,0.9058823529411765,0.1450980392156863,1);\n  float a0 = smoothstep(e0,e1,x_0);\n  float a1 = smoothstep(e1,e2,x_0);\n  float a2 = smoothstep(e2,e3,x_0);\n  float a3 = smoothstep(e3,e4,x_0);\n  float a4 = smoothstep(e4,e5,x_0);\n  float a5 = smoothstep(e5,e6,x_0);\n  float a6 = smoothstep(e6,e7,x_0);\n  float a7 = smoothstep(e7,e8,x_0);\n  return max(mix(v0,v1,a0)*step(e0,x_0)*step(x_0,e1),\n    max(mix(v1,v2,a1)*step(e1,x_0)*step(x_0,e2),\n    max(mix(v2,v3,a2)*step(e2,x_0)*step(x_0,e3),\n    max(mix(v3,v4,a3)*step(e3,x_0)*step(x_0,e4),\n    max(mix(v4,v5,a4)*step(e4,x_0)*step(x_0,e5),\n    max(mix(v5,v6,a5)*step(e5,x_0)*step(x_0,e6),\n    max(mix(v6,v7,a6)*step(e6,x_0)*step(x_0,e7),mix(v7,v8,a7)*step(e7,x_0)*step(x_0,e8)\n  )))))));\n}\n\n      varying float psi, cp, r0;\n      uniform float cpAlpha, streamAlpha;\n      float gridFactor (float parameter, float width, float feather) {\n  float w1 = width - feather * 0.5;\n  float d = fwidth(parameter);\n  float looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  return smoothstep(d * w1, d * (w1 + feather), looped);\n}\n\nfloat gridFactor (vec2 parameter, float width, float feather) {\n  float w1 = width - feather * 0.5;\n  vec2 d = fwidth(parameter);\n  vec2 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec2 a2 = smoothstep(d * w1, d * (w1 + feather), looped);\n  return min(a2.x, a2.y);\n}\n\nfloat gridFactor (vec3 parameter, float width, float feather) {\n  float w1 = width - feather * 0.5;\n  vec3 d = fwidth(parameter);\n  vec3 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec3 a3 = smoothstep(d * w1, d * (w1 + feather), looped);\n  return min(min(a3.x, a3.y), a3.z);\n}\n\nfloat gridFactor (vec4 parameter, float width, float feather) {\n  float w1 = width - feather * 0.5;\n  vec4 d = fwidth(parameter);\n  vec4 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec4 a4 = smoothstep(d * w1, d * (w1 + feather), looped);\n  return min(min(min(a4.x, a4.y), a4.z), a4.w);\n}\n\nfloat gridFactor (float parameter, float width) {\n  float d = fwidth(parameter);\n  float looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  return smoothstep(d * (width - 0.5), d * (width + 0.5), looped);\n}\n\nfloat gridFactor (vec2 parameter, float width) {\n  vec2 d = fwidth(parameter);\n  vec2 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec2 a2 = smoothstep(d * (width - 0.5), d * (width + 0.5), looped);\n  return min(a2.x, a2.y);\n}\n\nfloat gridFactor (vec3 parameter, float width) {\n  vec3 d = fwidth(parameter);\n  vec3 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec3 a3 = smoothstep(d * (width - 0.5), d * (width + 0.5), looped);\n  return min(min(a3.x, a3.y), a3.z);\n}\n\nfloat gridFactor (vec4 parameter, float width) {\n  vec4 d = fwidth(parameter);\n  vec4 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec4 a4 = smoothstep(d * (width - 0.5), d * (width + 0.5), looped);\n  return min(min(min(a4.x, a4.y), a4.z), a4.z);\n}\n\n      void main () {\n        float boundary = gridFactor(r0, 3.0, 1.0);\n        float pressure = 1.0 - (1.0 - gridFactor(cp * 2.0, 1.0)) * cpAlpha;\n        float stream = (1.0 - gridFactor(psi, 1.0)) * streamAlpha;\n        vec3 color = viridis(fract(1.0 + 0.12 * (cp - 1.0))).xyz;\n        gl_FragColor = vec4((color * pressure + stream) * boundary, 1);\n      }\n    "]),
+    vert: '\n      precision mediump float;\n      attribute vec2 rth;\n      //attribute vec2 barycentric;\n      varying float psi, cp, r0;\n      varying vec2 b;\n      uniform mat3 view;\n      uniform vec2 x0;\n      uniform float radius, theta0, n, circulation, scale;\n      #define OPI2 0.15915494309\n\n      vec2 cdiv (vec2 a, vec2 b) {\n        return vec2(a.x * b.x + a.y * b.y, a.y * b.x - a.x * b.y) / dot(b, b);\n      }\n\n      vec2 cmul (vec2 a, vec2 b) {\n        return vec2(a.x * b.x - a.y * b.y, a.y * b.x + a.x * b.y);\n      }\n\n      vec2 csqr (vec2 a) {\n        return vec2(a.x * a.x - a.y * a.y, 2.0 * a.x * a.y);\n      }\n\n      vec2 cinv (vec2 a) {\n        return vec2(a.x, -a.y) / dot(a, a);\n      }\n\n      void main () {\n        //b = barycentric;\n        r0 = rth.x;\n        float rad = 1.0 + rth.x * scale * 1.0;\n        float r2 = rad * rad;\n        float theta = rth.y + theta0;\n        float r = rad * radius;\n        float sth = sin(theta);\n        float cth = cos(theta);\n        vec2 z = x0 + r * vec2(cth, sth);\n\n        float det = z.x * z.x + z.y * z.y;\n        vec2 opz = vec2(1.0 + z.x / det, -z.y / det);\n        vec2 omz = vec2(1.0 - z.x / det, z.y / det);\n\n        float opznarg = atan(opz.y, opz.x) * n;\n        float opznmod = pow(dot(opz, opz), n * 0.5);\n        vec2 opzn = opznmod * vec2(cos(opznarg), sin(opznarg));\n\n        float omznarg = atan(omz.y, omz.x) * n;\n        float omznmod = pow(dot(omz, omz), n * 0.5);\n        vec2 omzn = omznmod * vec2(cos(omznarg), sin(omznarg));\n\n        vec2 num = opzn + omzn;\n        vec2 den = opzn - omzn;\n\n        z = n / dot(den, den) * vec2(\n          den.x * num.x + den.y * num.y,\n          den.x * num.y - den.y * num.x\n        );\n\n        // Compute z^2 - 1\n        psi = 10.0 * (rad - 1.0 / rad) * sth + circulation * OPI2 * log(rad);\n\n        vec2 z2m1 = csqr(z);\n        z2m1.x -= 1.0;\n        vec2 jac = 4.0 * n * n * cdiv(cdiv(cmul(opzn, omzn), csqr(opzn - omzn)), z2m1);\n\n        vec2 v = cdiv(vec2(\n          10.0 * (1.0 - 1.0 / r2) * cth,\n          -10.0 * (1.0 + 1.0 / r2) * sth - circulation * OPI2 / rad\n        ), jac);\n\n        cp = 1.0 - dot(v, v) / 10.0 / 10.0;\n\n        z.x -= n;\n        z /= scale;\n        z.x += 0.5;\n        z *= 4.0;\n\n        vec2 pos = (view * vec3(z, 1)).xy;\n        gl_Position = vec4(pos, 0, 1);\n      }\n    ',
+    frag: glsl(["\n      #extension GL_OES_standard_derivatives : enable\n      precision mediump float;\n#define GLSLIFY 1\n\n      vec4 viridis (float x_0) {\n  const float e0 = 0.0;\n  const vec4 v0 = vec4(0.26666666666666666,0.00392156862745098,0.32941176470588235,1);\n  const float e1 = 0.13;\n  const vec4 v1 = vec4(0.2784313725490196,0.17254901960784313,0.47843137254901963,1);\n  const float e2 = 0.25;\n  const vec4 v2 = vec4(0.23137254901960785,0.3176470588235294,0.5450980392156862,1);\n  const float e3 = 0.38;\n  const vec4 v3 = vec4(0.17254901960784313,0.44313725490196076,0.5568627450980392,1);\n  const float e4 = 0.5;\n  const vec4 v4 = vec4(0.12941176470588237,0.5647058823529412,0.5529411764705883,1);\n  const float e5 = 0.63;\n  const vec4 v5 = vec4(0.15294117647058825,0.6784313725490196,0.5058823529411764,1);\n  const float e6 = 0.75;\n  const vec4 v6 = vec4(0.3607843137254902,0.7843137254901961,0.38823529411764707,1);\n  const float e7 = 0.88;\n  const vec4 v7 = vec4(0.6666666666666666,0.8627450980392157,0.19607843137254902,1);\n  const float e8 = 1.0;\n  const vec4 v8 = vec4(0.9921568627450981,0.9058823529411765,0.1450980392156863,1);\n  float a0 = smoothstep(e0,e1,x_0);\n  float a1 = smoothstep(e1,e2,x_0);\n  float a2 = smoothstep(e2,e3,x_0);\n  float a3 = smoothstep(e3,e4,x_0);\n  float a4 = smoothstep(e4,e5,x_0);\n  float a5 = smoothstep(e5,e6,x_0);\n  float a6 = smoothstep(e6,e7,x_0);\n  float a7 = smoothstep(e7,e8,x_0);\n  return max(mix(v0,v1,a0)*step(e0,x_0)*step(x_0,e1),\n    max(mix(v1,v2,a1)*step(e1,x_0)*step(x_0,e2),\n    max(mix(v2,v3,a2)*step(e2,x_0)*step(x_0,e3),\n    max(mix(v3,v4,a3)*step(e3,x_0)*step(x_0,e4),\n    max(mix(v4,v5,a4)*step(e4,x_0)*step(x_0,e5),\n    max(mix(v5,v6,a5)*step(e5,x_0)*step(x_0,e6),\n    max(mix(v6,v7,a6)*step(e6,x_0)*step(x_0,e7),mix(v7,v8,a7)*step(e7,x_0)*step(x_0,e8)\n  )))))));\n}\n\n      varying float psi, cp, r0;\n      uniform float cpAlpha, streamAlpha, colorScale;\n      float gridFactor (float parameter, float width, float feather) {\n  float w1 = width - feather * 0.5;\n  float d = fwidth(parameter);\n  float looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  return smoothstep(d * w1, d * (w1 + feather), looped);\n}\n\nfloat gridFactor (vec2 parameter, float width, float feather) {\n  float w1 = width - feather * 0.5;\n  vec2 d = fwidth(parameter);\n  vec2 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec2 a2 = smoothstep(d * w1, d * (w1 + feather), looped);\n  return min(a2.x, a2.y);\n}\n\nfloat gridFactor (vec3 parameter, float width, float feather) {\n  float w1 = width - feather * 0.5;\n  vec3 d = fwidth(parameter);\n  vec3 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec3 a3 = smoothstep(d * w1, d * (w1 + feather), looped);\n  return min(min(a3.x, a3.y), a3.z);\n}\n\nfloat gridFactor (vec4 parameter, float width, float feather) {\n  float w1 = width - feather * 0.5;\n  vec4 d = fwidth(parameter);\n  vec4 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec4 a4 = smoothstep(d * w1, d * (w1 + feather), looped);\n  return min(min(min(a4.x, a4.y), a4.z), a4.w);\n}\n\nfloat gridFactor (float parameter, float width) {\n  float d = fwidth(parameter);\n  float looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  return smoothstep(d * (width - 0.5), d * (width + 0.5), looped);\n}\n\nfloat gridFactor (vec2 parameter, float width) {\n  vec2 d = fwidth(parameter);\n  vec2 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec2 a2 = smoothstep(d * (width - 0.5), d * (width + 0.5), looped);\n  return min(a2.x, a2.y);\n}\n\nfloat gridFactor (vec3 parameter, float width) {\n  vec3 d = fwidth(parameter);\n  vec3 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec3 a3 = smoothstep(d * (width - 0.5), d * (width + 0.5), looped);\n  return min(min(a3.x, a3.y), a3.z);\n}\n\nfloat gridFactor (vec4 parameter, float width) {\n  vec4 d = fwidth(parameter);\n  vec4 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec4 a4 = smoothstep(d * (width - 0.5), d * (width + 0.5), looped);\n  return min(min(min(a4.x, a4.y), a4.z), a4.z);\n}\n\n      void main () {\n        float boundary = gridFactor(r0, 3.0, 1.0);\n        float pressure = 1.0 - (1.0 - gridFactor(cp * 2.0, 1.0)) * cpAlpha;\n        float stream = (1.0 - gridFactor(psi, 1.0)) * streamAlpha;\n        vec3 color = viridis(max(0.0, min(1.0, 1.0 - colorScale * (1.0 - cp)))).xyz;\n        gl_FragColor = vec4((color * pressure + stream) * boundary, 1);\n      }\n    "]),
     attributes: {
       rth: mesh.positions
     },
@@ -36343,26 +36346,29 @@ var regl = require('regl')({
 });
 
 function run(regl) {
-  var camera = require('./camera-2d')(regl, { x: [0, 0], zoom: 0.3 });
-
-  var wireframe = require('glsl-solid-wireframe');
-  var mesh = require('./mesh')(function (r, th) {
-    return [Math.pow(r, 1.5), th];
-  }, 31, 81, [0, 1], [0, Math.PI * 2]);
-
   var params = {
     mux: -0.08,
     muy: 0.08,
     n: 1.94,
     circulation: 9.31,
     kuttaCondition: false,
-    cpAlpha: 0.8,
-    streamAlpha: 0.2
+    cpAlpha: 0.0,
+    streamAlpha: 0.2,
+    colorScale: 0.1,
+    zoom: 0.3,
+    x: [0, 0]
   };
+
+  var camera = require('./camera-2d')(regl, params);
+
+  var wireframe = require('glsl-solid-wireframe');
+  var mesh = require('./mesh')(function (r, th) {
+    return [Math.pow(r, 1.5), th];
+  }, 31, 81, [0, 1], [0, Math.PI * 2]);
 
   var controls = require('./controls')([{ type: 'range', label: 'mux', initial: params.mux, min: -0.4, max: 0.0, step: 0.01 }, { type: 'range', label: 'muy', initial: params.muy, min: -0.4, max: 0.4, step: 0.01 }, { type: 'range', label: 'n', initial: params.n, min: 1.0, max: 2.0, step: 0.01 },
   //{type: 'range', label: 'velocity', initial: params.velocity, min: 0.01, max: 10.0, step: 0.01},
-  { type: 'range', label: 'circulation', initial: params.circulation, min: -50.0, max: 50.0, step: 0.01 }, { type: 'checkbox', label: 'kuttaCondition', initial: params.kuttaCondition }, { type: 'range', label: 'cpAlpha', initial: params.cpAlpha, min: 0.0, max: 1.0, step: 0.01 }, { type: 'range', label: 'streamAlpha', initial: params.streamAlpha, min: 0.0, max: 1.0, step: 0.01 }], params, function () {
+  { type: 'range', label: 'circulation', initial: params.circulation, min: -50.0, max: 50.0, step: 0.01 }, { type: 'checkbox', label: 'kuttaCondition', initial: params.kuttaCondition }, { type: 'range', label: 'cpAlpha', initial: params.cpAlpha, min: 0.0, max: 1.0, step: 0.01 }, { type: 'range', label: 'streamAlpha', initial: params.streamAlpha, min: 0.0, max: 1.0, step: 0.01 }, { type: 'range', label: 'colorScale', initial: params.colorScale, min: 0.0, max: 0.25, step: 0.01 }, { type: 'range', label: 'zoom', initial: params.zoom, min: 0.1, max: 1.0, step: 0.01 }], params, function () {
     camera.taint();
   });
 
@@ -36489,6 +36495,9 @@ module.exports = function (regl, params) {
       },
       streamAlpha: function () {
         return params.streamAlpha;
+      },
+      colorScale: function () {
+        return params.colorScale;
       },
       scale: function () {
         var theta0 = Math.atan2(-params.muy, 1 - params.mux);
