@@ -9,10 +9,10 @@ module.exports = function (regl, mesh) {
       attribute vec2 rth;
       //attribute vec2 barycentric;
       varying float psi, cp, r0;
-      varying vec2 b;
+      varying vec2 b, uv;
       uniform mat3 view;
-      uniform vec2 x0;
-      uniform float radius, theta0, n, circulation, scale;
+      uniform vec2 x0, gridSize;
+      uniform float radius, theta0, n, circulation, scale, size, alpha;
       #define OPI2 0.15915494309
 
       vec2 cdiv (vec2 a, vec2 b) {
@@ -32,9 +32,14 @@ module.exports = function (regl, mesh) {
       }
 
       void main () {
+        uv = rth;
+        uv.x = pow(uv.x, 0.66666666);
+        uv *= gridSize;
+        uv.y *= OPI2;
+
         //b = barycentric;
         r0 = rth.x;
-        float rad = 1.0 + rth.x * scale * 1.0;
+        float rad = 1.0 + rth.x * size;
         float r2 = rad * rad;
         float theta = rth.y + theta0;
         float r = rad * radius;
@@ -63,18 +68,18 @@ module.exports = function (regl, mesh) {
         );
 
         // Compute z^2 - 1
-        psi = 10.0 * (rad - 1.0 / rad) * sth + circulation * OPI2 * log(rad);
+        psi = (rad - 1.0 / rad) * sin(theta + alpha) + circulation * OPI2 * log(rad);
 
         vec2 z2m1 = csqr(z);
         z2m1.x -= 1.0;
         vec2 jac = 4.0 * n * n * cdiv(cdiv(cmul(opzn, omzn), csqr(opzn - omzn)), z2m1);
 
         vec2 v = cdiv(vec2(
-          10.0 * (1.0 - 1.0 / r2) * cth,
-          -10.0 * (1.0 + 1.0 / r2) * sth - circulation * OPI2 / rad
+          (1.0 - 1.0 / r2) * cos(theta + alpha),
+          -(1.0 + 1.0 / r2) * sin(theta + alpha) - circulation * OPI2 / rad
         ), jac);
 
-        cp = 1.0 - dot(v, v) / 10.0 / 10.0;
+        cp = 1.0 - dot(v, v);
 
         z.x -= n;
         z /= scale;
@@ -90,13 +95,17 @@ module.exports = function (regl, mesh) {
       precision mediump float;
       #pragma glslify: colormap = require(glsl-colormap/viridis)
       varying float psi, cp, r0;
-      uniform float cpAlpha, streamAlpha, colorScale;
+      varying vec2 uv;
+      uniform float cpAlpha, streamAlpha, colorScale, gridAlpha;
       #pragma glslify: grid = require(glsl-solid-wireframe/cartesian/scaled)
       void main () {
         float boundary = grid(r0, 3.0, 1.0);
         float pressure = 1.0 - (1.0 - grid(cp * 2.0, 1.0)) * cpAlpha;
-        float stream = (1.0 - grid(psi, 1.0)) * streamAlpha;
+        float stream = (1.0 - grid(10.0 * psi, 1.0)) * streamAlpha;
+        float gridLines = (1.0 - grid(uv, 1.0)) * gridAlpha;
         vec3 color = colormap(max(0.0, min(1.0, 1.0 - colorScale * (1.0 - cp)))).xyz;
+        color *= 1.0 - gridLines;
+        color.x += gridLines;
         gl_FragColor = vec4((color * pressure + stream) * boundary, 1);
       }
     `),

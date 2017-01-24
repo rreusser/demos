@@ -16,7 +16,11 @@ module.exports = function (xy, nr, nth, rrange, thrange) {
       let b = xy(r0, th1);
       let c = xy(r1, th0);
       let d = xy(r1, th1);
-      let e = xy(0.5 * (r0 + r1), 0.5 * (th0 + th1));
+      /*let e = [
+        0.25 * (a[0] + b[0] + c[0] + d[0]),
+        0.25 * (a[1] + b[1] + c[1] + d[1])
+      ];*/
+      var e = xy(0.5 * (r0 + r1), 0.5 * (th0 + th1));
 
       let ia = cnt++;
       let ib = cnt++;

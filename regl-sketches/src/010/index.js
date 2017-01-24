@@ -10,16 +10,22 @@ const regl = require('regl')({
 });
 
 function run (regl) {
+  const size = [41, 81];
+
   const params = {
     mux: -0.08,
     muy: 0.08,
     n: 1.94,
-    circulation: 9.31,
-    kuttaCondition: false,
+    circulation: 0.93,
+    alpha: 5,
+    kuttaCondition: true,
     cpAlpha: 0.0,
-    streamAlpha: 0.2,
-    colorScale: 0.1,
-    zoom: 0.3,
+    streamAlpha: 0.15,
+    colorScale: 0.25,
+    gridAlpha: 0.0,
+    zoom: 0.2,
+    size: 6.0,
+    gridSize: size,
     x: [0, 0],
   };
 
@@ -28,20 +34,23 @@ function run (regl) {
   const wireframe = require('glsl-solid-wireframe');
   const mesh = require('./mesh')(
     (r, th) => [Math.pow(r, 1.5), th],
-    31, 81, [0, 1], [0, Math.PI * 2]
+    size[0], size[1], [0, 1], [0, Math.PI * 2]
   );
 
   const controls = require('./controls')([
     {type: 'range', label: 'mux', initial: params.mux, min: -0.4, max: 0.0, step: 0.01},
     {type: 'range', label: 'muy', initial: params.muy, min: -0.4, max: 0.4, step: 0.01},
     {type: 'range', label: 'n', initial: params.n, min: 1.0, max: 2.0, step: 0.01},
+    {type: 'range', label: 'alpha', initial: params.alpha, min: -30, max: 30, step: 0.1},
     //{type: 'range', label: 'velocity', initial: params.velocity, min: 0.01, max: 10.0, step: 0.01},
-    {type: 'range', label: 'circulation', initial: params.circulation, min: -50.0, max: 50.0, step: 0.01},
+    {type: 'range', label: 'circulation', initial: params.circulation, min: -5.0, max: 5.0, step: 0.01},
     {type: 'checkbox', label: 'kuttaCondition', initial: params.kuttaCondition},
+    {type: 'range', label: 'gridAlpha', initial: params.gridAlpha, min: 0.0, max: 1.0, step: 0.01},
     {type: 'range', label: 'cpAlpha', initial: params.cpAlpha, min: 0.0, max: 1.0, step: 0.01},
     {type: 'range', label: 'streamAlpha', initial: params.streamAlpha, min: 0.0, max: 1.0, step: 0.01},
     {type: 'range', label: 'colorScale', initial: params.colorScale, min: 0.0, max: 0.25, step: 0.01},
     {type: 'range', label: 'zoom', initial: params.zoom, min: 0.1, max: 1.0, step: 0.01},
+    {type: 'range', label: 'size', initial: params.size, min: 0.1, max: 10.0, step: 0.1},
   ], params, () => {
     camera.taint();
   })
