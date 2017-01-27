@@ -2,7 +2,7 @@ const analyse = require('web-audio-analyser');
 
 module.exports = function (cb) {
   var div = require('soundcloud-badge')({
-    client_id: 'ded451c6d8f9ff1c62f72523f49dab68',
+    client_id: 'LpsRq1IMQlO5FPArJ8B7dwiOce3HINLj',
     song: 'https://soundcloud.com/madeinheights/viices',
     dark: false,
     getFonts: true

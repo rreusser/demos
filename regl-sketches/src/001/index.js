@@ -4,7 +4,7 @@ const glslify = require('glslify');
 const simplex = new (require('simplex-noise'))();
 const hsv = require('hsv-rgb');
 const tap = require('tap-to-start');
-const hasAudio = window.location.search.match(/audio=true/);
+const hasAudio = !window.location.search.match(/audio=false/);
 
 require('regl')({
   pixelRatio: 1,
