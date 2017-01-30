@@ -34,8 +34,8 @@ Plotly.plot(gd, {
     yaxis: 'y2'
   }],
   layout: {
-    width: window.innerWidth,
-    height: window.innerHeight,
+    //width: window.innerWidth,
+    //height: window.innerHeight,
     yaxis: {
       range: [0, 1],
       domain: [0, 0.45],
