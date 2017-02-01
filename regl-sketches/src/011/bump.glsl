@@ -1,7 +1,7 @@
 #pragma glslify: snoise4 = require(glsl-noise/simplex/4d)
 
 float falloff (float f) {
-  return mix(f, 0.15, smoothstep(0.1, 0.2, f));
+  return mix(f, 0.2, smoothstep(0.1, 0.2, f));
 }
 
 float noise (vec4 p, float t, float scale) {
