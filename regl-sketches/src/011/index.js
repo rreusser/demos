@@ -36,7 +36,7 @@ let matcaps = [
 let manifest = matcaps.reduce((a, b) => {
   a[b] = {
     type: 'image',
-    src: '../../common/textures/' + b,
+    src: '../common/textures/' + b,
     parser: data => {
       return data;
     }
