@@ -47,6 +47,9 @@ Plotly.plot(gd, {
       domain: [0.55, 1],
       autorange: false
     }
+  },
+  config: {
+    scrollZoom: true
   }
 }).then(animate);
 

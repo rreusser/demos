@@ -6,6 +6,7 @@ html, body {
 }
 `);
 var Plotly = require('plotly.js');
+var map2darray = require('plotly.js/src/traces/carpet/map_2d_array');
 
 var gd = window.gd = h('div');
 document.body.appendChild(gd);
@@ -15,10 +16,14 @@ function f (z) {
 }
 
 var y = [
-  [1, 0.9, 1.1, 1.75],
+  [1, 1.4, 1.6, 1.75],
   [2, 2.25, 2.5, 2.75],
   [3, 3.5, 3.9, 3.75]
 ];
+
+z = map2darray(null, y, y => y * y);
+z[2][2] = 5;
+z[2][1] = 5;
 
 Plotly.plot(gd, {
   data: [
@@ -26,11 +31,64 @@ Plotly.plot(gd, {
       carpetid: 'c',
       a: [0, 1, 2, 3],
       b: [4, 5, 6],
-      y: y,
+      y: [
+        [1, 1.4, 1.6, 1.75],
+        [2, 2.25, 2.5, 2.75],
+        [3, 3.5, 3.7, 3.75]
+      ],
       //cheaterslope: 0.25,
       x: [
         [2, 3, 4, 5],
-        [1.4, 2.75, 3.75, 5.1],
+        [2.2, 3.1, 3.75, 5.1],
+        [1.5, 2.5, 3.5, 4.5]
+      ],
+      type: 'carpet',
+      aaxis: {
+        tickprefix: 'a = ',
+        smoothing: 1,
+        minorgridcount: 9,
+      },
+      baxis: {
+        tickprefix: 'b = ',
+        smoothing: 1,
+        minorgridcount: 9,
+      },
+      xaxis: 'x',
+      yaxis: 'y',
+    },
+    {
+      carpetid: 'c',
+      type: 'contourcarpet',
+      autocontour: false,
+      contours: {
+        start: 3.5,
+        end: 16,
+        size: 1,
+      },
+      line: {
+        width: 2,
+        //color: 'red'
+      },
+      colorscale: 'Viridis',
+      z: z,
+      a: [0, 1, 2, 3],
+      b: [4, 5, 6],
+      xaxis: 'x',
+      yaxis: 'y',
+    },
+    {
+      carpetid: 'c2',
+      a: [0, 1, 2, 3],
+      b: [4, 5, 6],
+      y: [
+        [1, 1.4, 1.6, 1.75],
+        [2, 2.25, 2.5, 2.75],
+        [3, 3.5, 3.7, 3.75]
+      ],
+      //cheaterslope: 0.25,
+      x: [
+        [2, 3, 4, 5],
+        [2.2, 3.1, 3.75, 5.1],
         [1.5, 2.5, 3.5, 4.5]
       ],
       type: 'carpet',
@@ -45,32 +103,40 @@ Plotly.plot(gd, {
         minorgridcount: 9,
       },
       xaxis: 'x',
-      yaxis: 'y',
+      yaxis: 'y2',
     },
     {
-      carpetid: 'c',
+      carpetid: 'c2',
       type: 'contourcarpet',
       autocontour: false,
       contours: {
-        start: 1.9,
-        end: 4,
-        size: 4,
+        start: 3.55,
+        end: 16,
+        size: 1,
       },
       line: {
         width: 2,
         //color: 'red'
       },
       colorscale: 'Viridis',
-      z: y,
+      z: z,
       a: [0, 1, 2, 3],
       b: [4, 5, 6],
+      xaxis: 'x',
+      yaxis: 'y2',
     }
   ],
   layout: {
     margin: {t: 10, r: 10, b: 20, l: 20},
     height: window.innerHeight,
     width: window.innerWidth,
-    dragmode: 'pan'
+    dragmode: 'pan',
+    yaxis: {
+      domain: [0, 0.48]
+    },
+    yaxis2: {
+      domain: [0.52, 1]
+    }
   },
   config: {
     scrollZoom: true
