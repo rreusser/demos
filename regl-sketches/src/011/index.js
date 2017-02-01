@@ -72,7 +72,7 @@ function randomColor (a, b) {
 
 function run(regl, assets) {
   let textures = [
-    regl.texture({data: assets[matcaps[0]], flipY: true}),
+    regl.texture({data: assets[matcaps[19]], flipY: true}),
     regl.texture({data: assets[matcaps[Math.floor(Math.random() * matcaps.length)]], flipY: true}),
   ]
 
