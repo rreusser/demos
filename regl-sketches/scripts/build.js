@@ -14,11 +14,7 @@ var repoUrl = 'https://github.com/rreusser/demos/tree/master/regl-sketches';
 var webUrlBase = 'http://rickyreusser.com/demos/regl-sketches/';
 var srcUrlBase = 'https://github.com/rreusser/demos/blob/master/regl-sketches/';
 
-var ghcornerify = require('github-cornerify')({
-  url: repoUrl,
-  bg: '#fff',
-  fg: '#2a3235',
-});
+var ghcornerify = require('github-cornerify')
 
 if (!process.argv[2]) {
   console.error(`[0;31mOops! You need to specify a source file.
@@ -59,16 +55,10 @@ function processFiles (pattern) {
       var humanname = humanize(basename);
       var htmlname = filename.replace(/\.js$/, '.html').replace(/^src\//,'');
       var htmlstream = fs.createWriteStream(path.join(__dirname, '../', htmlname));
-      var srcUrl = path.join(srcUrlBase, filename);
+      var srcUrl = path.join(srcUrlBase, filename).replace(/index\.js$/,'');
       var webUrl = path.join(webUrlBase, htmlname);
 
-      var appendIndexLink = hyperstream({
-        body: {_prependHtml:
-          `<div class="links">
-            <a href="${repoUrl}#pages">&larr; Back</a> | <a href="${srcUrl}"><code>${basename}.js</code></a>
-          </div>`
-        }
-      });
+      console.log('srcUrl', srcUrl);
 
       var b = browserify();
       b.add(path.join(__dirname, '../', filename));
@@ -77,11 +67,14 @@ function processFiles (pattern) {
       b.transform(require('es2040'));
       b.bundle()
         .pipe(indexhtmlify())
-        //.pipe(appendIndexLink)
         .pipe(metadataify({
           name: humanname
         }))
-        .pipe(ghcornerify)
+        .pipe(ghcornerify({
+          url: srcUrl,
+          bg: '#fff',
+          fg: '#2a3235',
+        }))
         .pipe(htmlstream);
 
       cb && cb({

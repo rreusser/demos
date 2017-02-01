@@ -6,7 +6,7 @@ module.exports = function (regl) {
   return regl({
     vert: glslify(`
       precision mediump float;
-      #pragma glslify: snoise4 = require(glsl-noise/simplex/4d)
+      #pragma glslify: bump = require(./bump)
       #pragma glslify: matcap = require(matcap)
 
       uniform float st, scale, t;
@@ -16,10 +16,7 @@ module.exports = function (regl) {
       uniform vec3 eye;
       //varying vec2 uv;
       varying vec3 eyedir, normal;
-
-      float noise (vec4 p, float t) {
-        return scale * (pow(abs(snoise4(p)), 2.0) + 0.2 * sin(3.0 * p.y + 1.0 * t * 3.14159) * p.y);
-      }
+      varying float noisemag;
 
       void main () {
         //n = normal;
@@ -28,21 +25,21 @@ module.exports = function (regl) {
         p = p0;
 
         float freq = 2.0;
-        float noisemag = noise(vec4(p * freq, st), t);
+        noisemag = bump(vec4(p * freq, st), t, scale);
 
         float h = 0.001;
         vec3 np = p * freq;
         vec3 grad = (vec3(
-          noise(vec4(np + vec3(h, 0, 0), st), t),
-          noise(vec4(np + vec3(0, h, 0), st), t),
-          noise(vec4(np + vec3(0, 0, h), st), t)
+          bump(vec4(np + vec3(h, 0, 0), st), t, scale),
+          bump(vec4(np + vec3(0, h, 0), st), t, scale),
+          bump(vec4(np + vec3(0, 0, h), st), t, scale)
         ) - noisemag) / h;
 
-        p += n * noisemag;
+        p = p0 * noisemag;
         n = normalize(p0 - grad * 0.8);
 
         mat3 view3 = mat3(view);
-        eyedir = -view3 * normalize(eye - p);
+        eyedir = view3 * normalize(p - eye);
         normal = view3 * normalize(n);
 
         gl_Position = projection * view * vec4(p, 1);
@@ -51,12 +48,15 @@ module.exports = function (regl) {
     frag: glslify(`
       precision mediump float;
       #pragma glslify: matcap = require(matcap)
+      #pragma glslify: hotspot = require(./hotspot)
       uniform mat4 view;
       uniform float tween;
       uniform sampler2D texture0;
       uniform sampler2D texture1;
+      uniform float t;
       //varying vec2 uv;
       varying vec3 eyedir, normal;
+      varying float noisemag;
 
       varying vec3 n, p;
       uniform vec3 eye;
@@ -69,8 +69,8 @@ module.exports = function (regl) {
           tween
         );
 
-        //float hot = smoothstep(1.55, 8.0, dot(p, p));
-        //col = mix(col, vec3(10), hot);
+        float hot = hotspot(noisemag - 1.0);
+        col = mix(col, vec3(1.2, 1.1, 1.0), hot);
 
         gl_FragColor = vec4(col, 1);
       }

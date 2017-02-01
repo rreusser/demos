@@ -52,7 +52,7 @@ require('regl')({
       foreground: '#fff',
       background: '#2a3235',
       accent: '#2a3235',
-      skip: true//!hasAudio
+      skip: !hasAudio
     }, () => {
       require('resl')({
         manifest: manifest,
@@ -84,6 +84,15 @@ function run(regl, assets) {
     }),
   });
 
+  let rayFBO = regl.framebuffer({
+    color: regl.texture({
+      width: Math.round(window.innerWidth / 8),
+      height: Math.round(window.innerHeight / 8),
+      mag: 'linear',
+    }),
+    depth: false,
+  });
+
   let analyser;
   let scaleContribution = 1;
   if (hasAudio) {
@@ -98,9 +107,10 @@ function run(regl, assets) {
   });
 
   let drawBlob = require('./blob')(regl);
-  let drawOcclusion = require('./render-occlusion')(regl);
+  let drawOcclusion = require('./draw-occlusion')(regl);
   let drawRays = require('./draw-rays')(regl);
   let drawBg = require('./bg')(regl);
+  let transferRays = require('./transfer-rays')(regl);
 
   let t0 = Date.now();
   let t = 0;
@@ -156,7 +166,6 @@ function run(regl, assets) {
 
     var rays = true;
 
-
     camera({dtheta: 0.005}, () => {
       drawBg({t: t});
 
@@ -180,7 +189,14 @@ function run(regl, assets) {
         tween: Math.max(0, Math.min(1, tweentime / transitionDuration))
       });
 
-      if (rays) drawRays({src: occlusionFBO});
+      if (rays) {
+        rayFBO.use(() => {
+          regl.clear({color: [0, 0, 0, 1]});
+          drawRays({src: occlusionFBO});
+        });
+
+        transferRays({src: rayFBO});
+      }
     });
   });
 }

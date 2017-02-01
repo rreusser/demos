@@ -6,31 +6,28 @@ module.exports = function (regl) {
   return regl({
     vert: glslify(`
       precision mediump float;
-      #pragma glslify: snoise4 = require(glsl-noise/simplex/4d)
+      #pragma glslify: bump = require(./bump)
 
       uniform float st, scale, t;
       uniform mat4 projection, view;
-      varying vec3 p;
       attribute vec3 xyz;
-
-      float noise (vec4 p, float t) {
-        return scale * (pow(abs(snoise4(p)), 2.0) + 0.2 * sin(3.0 * p.y + 1.0 * t * 3.14159) * p.y);
-      }
+      varying float noisemag;
 
       void main () {
         vec3 p0 = xyz * (0.8 + 1.0 * scale);
-        p = p0;
+        //p = p0;
         float freq = 2.0;
-        float noisemag = noise(vec4(p * freq, st), t);
-        p += p0 * noisemag;
-        gl_Position = projection * view * vec4(p, 1);
+        noisemag = bump(vec4(p0 * freq, st), t, scale);
+        p0 *= noisemag;
+        gl_Position = projection * view * vec4(p0, 1);
       }
     `),
     frag: glslify(`
       precision mediump float;
-      varying vec3 p;
+      #pragma glslify: hotspot = require(./hotspot)
+      varying float noisemag;
       void main () {
-        gl_FragColor = vec4(vec3(smoothstep(1.6, 1.7, dot(p, p))), 1.0);
+        gl_FragColor = vec4(hotspot(noisemag - 1.0), vec3(1));
       }
     `),
     attributes: {
