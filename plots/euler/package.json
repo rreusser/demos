@@ -1,0 +1,23 @@
+{
+  "name": "euler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "budo --open --live --host localhost index.js -- -t es2040 -g cwise",
+    "build": "browserify index.js | indexhtmlify | metadataify | github-cornerify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cwise": "^1.0.9",
+    "es2040": "^1.2.4",
+    "ndarray": "^1.0.18",
+    "ndarray-fill": "^1.0.1",
+    "ndarray-linspace": "^2.0.3",
+    "ndarray-show": "^2.0.0",
+    "ndarray-vector-fill": "^1.0.0",
+    "semistandard": "^9.2.1"
+  }
+}
