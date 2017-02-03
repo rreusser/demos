@@ -36,6 +36,7 @@
     "hsv-rgb": "^1.0.0",
     "humanize-string": "^1.0.1",
     "icosphere": "^1.0.0",
+    "katex": "^0.7.1",
     "lcm": "^0.0.3",
     "matcap": "^0.0.1",
     "mouse-change": "^1.4.0",

@@ -33,7 +33,8 @@
     "ndarray-unpack": "^1.0.0",
     "ode-rk4": "^1.1.3",
     "transform-loader": "^0.2.3",
-    "transpose": "0.0.2"
+    "transpose": "0.0.2",
+    "uniq": "^1.0.1"
   },
   "dependencies": {
     "h": "^0.1.0",
