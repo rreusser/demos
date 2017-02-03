@@ -5,7 +5,7 @@ module.exports = function (regl, onDone) {
   let texNum = 29;
 
   state.next = function (cb) {
-    let filename = `../../common/textures/${texNum > 9 ? '000' : '0000'}${texNum}.png`
+    let filename = `../common/textures/${texNum > 9 ? '000' : '0000'}${texNum}.png`
     resl({
       manifest: {
         texture: {
