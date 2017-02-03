@@ -20051,6 +20051,7 @@ module.exports = function (regl) {
   var drawTorus = regl({
     vert: glslify(["\n      precision mediump float;\n#define GLSLIFY 1\n\n\n      attribute vec3 position;\n      attribute vec3 normal;\n      uniform mat4 projection, view;\n      uniform vec3 eye;\n      varying vec3 eyedir, n;\n      void main () {\n        mat3 view3 = mat3(view);\n        eyedir = view3 * normalize(position - eye);\n        n = view3 * normalize(normal);\n\n        gl_Position = projection * view * vec4(position, 1);\n      }\n    "]),
     frag: glslify(["\n      precision mediump float;\n#define GLSLIFY 1\n\n\n      vec2 matcap(vec3 eye, vec3 normal) {\n  vec3 reflected = reflect(eye, normal);\n\n  float m = 2.0 * sqrt(\n    pow(reflected.x, 2.0) +\n    pow(reflected.y, 2.0) +\n    pow(reflected.z + 1.0, 2.0)\n  );\n\n  return reflected.xy / m + 0.5;\n}\n\n      uniform sampler2D texture;\n      varying vec3 eyedir, n;\n\n      void main () {\n        vec2 uv = matcap(eyedir, n);\n\n        gl_FragColor = vec4(texture2D(texture, uv).xyz, 1);\n      }\n    "]),
+    cull: { enable: true, face: 'back' },
     uniforms: {
       texture: regl.prop('texture')
     },

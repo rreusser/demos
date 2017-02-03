@@ -57,6 +57,7 @@ module.exports = function (regl) {
         gl_FragColor = vec4(texture2D(texture, uv).xyz, 1);
       }
     `),
+    cull: {enable: true, face: 'back'},
     uniforms: {
       texture: regl.prop('texture')
     },
