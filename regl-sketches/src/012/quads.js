@@ -43,9 +43,9 @@ module.exports = function fromFunction (f, nu, nv, computeNormals, uPeriodic, vP
       let index = i + nu * j
       quads.cells.push([
         index,
-        index + 1,
+        index + nu,
         index + nu + 1,
-        index + nu
+        index + 1
       ])
     }
   }

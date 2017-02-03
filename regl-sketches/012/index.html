@@ -20016,7 +20016,9 @@ css("@font-face{font-family:KaTeX_AMS;src:url(fonts/KaTeX_AMS-Regular.eot);src:u
 module.exports = function (onclick) {
   var btn = h('button', 'Change material', { class: 'btn' });
 
-  btn.addEventListener('click', onclick);
+  btn.addEventListener('click', function () {
+    return onclick();
+  });
 
   var controls = h('div', [btn], { class: 'controls' });
 
@@ -20172,7 +20174,7 @@ module.exports = function fromFunction(f, nu, nv, computeNormals, uPeriodic, vPe
   for (var _j2 = 0; _j2 < nv - 1; _j2++) {
     for (var _i2 = 0; _i2 < nu - 1; _i2++) {
       var index = _i2 + nu * _j2;
-      quads.cells.push([index, index + 1, index + nu + 1, index + nu]);
+      quads.cells.push([index, index + nu, index + nu + 1, index + 1]);
     }
   }
 

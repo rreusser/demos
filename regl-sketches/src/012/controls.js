@@ -39,7 +39,7 @@ css(fs.readFileSync(__dirname + '/../../node_modules/katex/dist/katex.min.css', 
 module.exports = function (onclick) {
   let btn = h('button', 'Change material', {class: 'btn'})
 
-  btn.addEventListener('click', onclick);
+  btn.addEventListener('click', () => onclick());
 
   let controls = h('div', [btn], {class: 'controls'})
 
