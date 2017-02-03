@@ -10,6 +10,7 @@ css(`
   left: 0;
   padding: 8px;
   font-family: 'Helvetica', 'Arial', sans-serif;
+  pointer-events: none;
 }
 
 .explanation h3 {

@@ -22,6 +22,7 @@ css(`
   border-radius: 3px;
   cursor: pointer;
   outline: none;
+  display: block;
 }
 
 .controls .btn:hover {
@@ -36,12 +37,17 @@ css(`
 css(fs.readFileSync(__dirname + '/../../node_modules/katex/dist/katex.min.css', 'utf8'));
 
 
-module.exports = function (onclick) {
-  let btn = h('button', 'Change material', {class: 'btn'})
+module.exports = function (callbacks) {
+  let nextTexBtn = h('button', 'Change material', {class: 'btn'})
+  nextTexBtn.addEventListener('click', () => callbacks.nextTexture());
 
-  btn.addEventListener('click', () => onclick());
+  let toggleGridBtn = h('button', 'Toggle grid', {class: 'btn'})
+  toggleGridBtn.addEventListener('click', () => callbacks.toggleGrid());
 
-  let controls = h('div', [btn], {class: 'controls'})
+  let controls = h('div', [
+    nextTexBtn,
+    toggleGridBtn
+  ], {class: 'controls'})
 
   document.body.appendChild(controls);
 };
