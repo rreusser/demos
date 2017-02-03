@@ -10,9 +10,9 @@ module.exports = function (regl) {
       let pu = (u - 0.5) * Math.PI * 2
       let pv = (v - 0.5) * Math.PI * 2
       return [
-        Math.sin(pu) * (7 + 0.5 * Math.cos(pu / 3 - 2 * pv) + 2 * Math.cos(pu / 3 + pv)),
-        Math.cos(pu) * (7 + 0.5 * Math.cos(pu / 3 - 2 * pv) + 2 * Math.cos(pu / 3 + pv)),
-        0.5 * Math.sin(pu / 3 - 2 * pv) + 2 * Math.sin(pu / 3 + pv)
+        Math.sin(pu) * (7 + Math.cos(pu / 3 - 2 * pv) + 2 * Math.cos(pu / 3 + pv)),
+        Math.cos(pu) * (7 + Math.cos(pu / 3 - 2 * pv) + 2 * Math.cos(pu / 3 + pv)),
+        Math.sin(pu / 3 - 2 * pv) + 2 * Math.sin(pu / 3 + pv)
       ]
     },
     nu, nv,
