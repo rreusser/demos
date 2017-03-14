@@ -81,9 +81,9 @@ Plotly.plot(gd, {
       a: [0, 1, 2, 3],
       b: [4, 5, 6],
       y: [
-        [1, 1.4, 1.6, 1.75],
-        [2, 2.25, 2.5, 2.75],
-        [3, 3.5, 3.7, 3.75]
+        [1, 2.4, 1.6, 1.75],
+        [2, 3.25, 2.5, 2.75],
+        [3, 4.5, 3.7, 3.75]
       ],
       //cheaterslope: 0.25,
       x: [
@@ -94,12 +94,12 @@ Plotly.plot(gd, {
       type: 'carpet',
       aaxis: {
         tickprefix: 'a = ',
-        smoothing: 0,
+        smoothing: 1,
         minorgridcount: 9,
       },
       baxis: {
         tickprefix: 'b = ',
-        smoothing: 0,
+        smoothing: 1,
         minorgridcount: 9,
       },
       xaxis: 'x',

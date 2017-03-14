@@ -1,7 +1,7 @@
 var h = require('h');
-var gd = h('div');
+var gd = window.gd = h('div');
 document.body.appendChild(gd);
-var Plotly = require('plotly.js');
+var Plotly = window.Plotly = require('plotly.js');
 
 Plotly.plot(gd, [{
   x: [1, 2, 3],
