@@ -11,7 +11,10 @@ const normalize2 = require('gl-vec2/normalize');
 const colorString = require('color-string');
 
 const regl = require('regl')({
-  extensions: ['oes_texture_float', 'oes_element_index_uint'],
+  extensions: ['oes_texture_half_float', 'oes_texture_float', 'oes_element_index_uint'],
+  attributes: {
+    antialias: false,
+  },
   pixelRatio: 1,
   onDone: (err, regl) => {
     if (err) return require('fail-nicely')(err);
@@ -101,13 +104,13 @@ function run (regl) {
 
   const lights = [{
     position: [-1000, 1000, 1000],
-    color: [1, 0.9, 0.8]
+    color: [1, 0.95, 0.9]
   }, {
     position: [1000, 1000, 1000],
-    color: [0.8, 1, 0.9]
+    color: [0.9, 1, 0.95]
   }, {
     position: [-500, 1000, -1000],
-    color: [0.9, 0.8, 1]
+    color: [0.95, 0.9, 1]
   }];
 
   const ambient = [0.05, 0.05, 0.05];
@@ -131,8 +134,8 @@ function run (regl) {
     roughness: 0.5,
     fresnel: 2.0,
     diffuse: 0.9,
-    specular: 4,
-    modelColor: 'rgb(44, 45, 56)',
+    specular: 1,
+    modelColor: 'rgb(200, 205, 210)',
     planeColor: 'rgb(255, 255, 255)',
   };
 
@@ -191,7 +194,7 @@ function run (regl) {
   }
 
   const ssaoDownsample = 1;
-  const sampleCnt = 32;
+  const sampleCnt = 64;
   const rotationSize = 4;
 
   const sampleUniforms = {};
@@ -205,7 +208,7 @@ function run (regl) {
     data: createRotations(rotationSize),
     width: rotationSize,
     height: rotationSize,
-    type: 'float',
+    type: 'float16',
     wrapS: 'repeat',
     wrapT: 'repeat'
   });
@@ -231,7 +234,7 @@ function run (regl) {
     height: regl._gl.canvas.height,
     depth: true,
     colorFormat: 'rgba',
-    colorType: 'float',
+    colorType: 'float16',
   });
 
   const ssaoBuffer = regl.framebuffer({
@@ -359,7 +362,7 @@ function run (regl) {
       precision mediump float;
       #pragma glslify: random = require(glsl-random)
 
-      const int samples = 32;
+      const int samples = 64;
 
       uniform sampler2D depthNormalBuf, diffuseBuf;//, rotationsBuf;
       uniform mat4 projection, view, iProj;

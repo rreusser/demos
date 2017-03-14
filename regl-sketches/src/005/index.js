@@ -4,6 +4,9 @@ const extend = require('xtend/mutable');
 
 require('regl')({
   //pixelRatio: 0.5,
+  attributes: {
+    antialias: false,
+  },
   extensions: [
     'oes_texture_float',
     'oes_texture_float_linear',

@@ -1,4 +1,3 @@
-const glsl = require('glslify');
 const regl = require('regl')({
   extensions: ['WEBGL_draw_buffers', 'OES_texture_float'],
   onDone: (err, regl) => {

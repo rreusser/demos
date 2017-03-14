@@ -37,17 +37,17 @@ module.exports = function fromFunction (f, nu, nv, computeNormals, uPeriodic, vP
     }
   }
 
-
   for (let j = 0; j < nv - 1; j++) {
     for (let i = 0; i < nu - 1; i++) {
       let index = i + nu * j
       quads.cells.push([
         index,
-        index + nu,
+        index + 1,
         index + nu + 1,
-        index + 1
+        index + nu,
       ])
     }
+
   }
 
   let dimension = quads.positions[0].length

@@ -12839,6 +12839,9 @@ var manifest = matcaps.reduce(function (a, b) {
 
 require('regl')({
   pixelRatio: 1,
+  attributes: {
+    antialias: false
+  },
   onDone: function (err, regl) {
     if (err) return require('fail-nicely')(err);
     tap({

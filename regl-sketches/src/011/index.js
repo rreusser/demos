@@ -46,6 +46,9 @@ let manifest = matcaps.reduce((a, b) => {
 
 require('regl')({
   pixelRatio: 1,
+  attributes: {
+    antialias: false,
+  },
   onDone: (err, regl) => {
     if (err) return require('fail-nicely')(err);
     tap({

@@ -1,5 +1,8 @@
 const regl = require('regl')({
   extensions: ['OES_element_index_uint', 'OES_standard_derivatives'],
+  attributes: {
+    antialias: false,
+  },
   onDone: (err, regl) => {
     if (err) return require('fail-nicely')(err);
     require('./texture-load')(regl, run)

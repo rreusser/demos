@@ -20098,6 +20098,9 @@ module.exports = function () {
 },{"h":10,"insert-css":11,"katex":12}],49:[function(require,module,exports){
 var regl = require('regl')({
   extensions: ['OES_element_index_uint', 'OES_standard_derivatives'],
+  attributes: {
+    antialias: false
+  },
   onDone: function (err, regl) {
     if (err) return require('fail-nicely')(err);
     require('./texture-load')(regl, run);

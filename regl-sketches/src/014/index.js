@@ -11,22 +11,19 @@ function run (regl) {
   var quads = require('./quads')(
     (u, v) => [
       u - 0.5,
-      v - 0.5
+      v - 0.5 + Math.pow(u - 0.5, 3) * 0.5
     ],
-    1, 1,
+    5, 5,
     true, false, false, true, true,
     {uv: (u, v) => [u, v]}
   );
 
-  var smoothContours = require('./smooth-contours')(
+  var mesh = require('./smooth-contours')(
     quads.cells,
     quads.positions
   );
 
-  var draw = require('./draw-smooth-contours')(regl,
-    smoothContours.cells,
-    smoothContours.positions
-  );
+  var draw = require('./draw-smooth-contours')(regl, mesh);
 
   const loop = regl.frame(({tick}) => {
     if (tick !== 1) return;
