@@ -5,6 +5,10 @@ const lighting = require('./lighting');
 
 require('regl')({
   extensions: ['oes_standard_derivatives'],
+  attributes: {
+    alpha: false,
+    antialias: false,
+  },
   onDone: (err, regl) => {
     if (err) return require('fail-nicely')(err);
     run(regl)
@@ -54,9 +58,10 @@ function run(regl) {
   const drawMesh = regl({
     frag: glslify(`
       #extension GL_OES_standard_derivatives : enable
+      precision mediump float;
+
       #pragma glslify: blinnPhongSpec = require(glsl-specular-blinn-phong)
 
-      precision mediump float;
       uniform vec2 stride;
       varying vec2 griduv;
       varying vec3 n;

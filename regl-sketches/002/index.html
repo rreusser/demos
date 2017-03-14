@@ -11,7 +11,7 @@
 <meta itemprop="title" content="Index">
 <meta property="og:title" content="Index">
 <style type="text/css">.github-corner{display:block;position:absolute;top:0;left:auto;right:0;z-index:10000}.github-corner svg{display:block}.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%{transform:rotate(0)}20%{transform:rotate(-25deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-25deg)}80%{transform:rotate(10deg)}100%{transform:rotate(0)}}@media(max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></head>
-<body><a href="https://github.com/rreusser/demos/tree/master/regl-sketches" class="github-corner" aria-label="View source on Github"><svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 250 250" fill="#2a3235">
+<body><a href="https:/github.com/rreusser/demos/blob/master/regl-sketches/src/002/" class="github-corner" aria-label="View source on Github"><svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 250 250" fill="#2a3235">
   <path d="M0 0l115 115h15l12 27 108 108V0z" fill="#fff"/>
   <path class="octo-arm" d="M128 109c-15-9-9-19-9-19 3-7 2-11 2-11-1-7 3-2 3-2 4 5 2 11 2 11-3 10 5 15 9 16" style="-webkit-transform-origin: 130px 106px; transform-origin: 130px 106px"/>
   <path class="octo-body" d="M115 115s4 2 5 0l14-14c3-2 6-3 8-3-8-11-15-24 2-41 5-5 10-7 16-7 1-2 3-7 12-11 0 0 5 3 7 16 4 2 8 5 12 9s7 8 9 12c14 3 17 7 17 7-4 8-9 11-11 11 0 6-2 11-7 16-16 16-30 10-41 2 0 3-1 7-5 11l-12 11c-1 1 1 5 1 5z"/>
@@ -10513,6 +10513,10 @@ var lighting = require('./lighting');
 
 require('regl')({
   extensions: ['oes_standard_derivatives'],
+  attributes: {
+    alpha: false,
+    antialias: false
+  },
   onDone: function (err, regl) {
     if (err) return require('fail-nicely')(err);
     run(regl);
@@ -10552,7 +10556,7 @@ function run(regl) {
   });
 
   var drawMesh = regl({
-    frag: glslify(["\n      #extension GL_OES_standard_derivatives : enable\n      float blinnPhongSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float shininess) {\n\n  //Calculate Blinn-Phong power\n  vec3 H = normalize(viewDirection + lightDirection);\n  return pow(max(0.0, dot(surfaceNormal, H)), shininess);\n}\n\n      precision mediump float;\n#define GLSLIFY 1\n\n      uniform vec2 stride;\n      varying vec2 griduv;\n      varying vec3 n;\n      varying vec3 pos;\n\n      uniform float light0power, light1power, light2power;\n      uniform vec4 lightambient, light0color, light1color, light2color;\n      uniform vec3 light0position, light1position, light2position;\n      uniform vec3 eye;\n\n      float grid (vec3 uv) {\n        vec3 d = fwidth(uv);\n        vec3 a3 = smoothstep(vec3(0.0), 1.5 * d, 0.5 - abs(mod(uv, 1.0) - 0.5));\n        return min(a3.x, a3.y);\n      }\n\n      void main () {\n        vec3 eyedir = normalize(eye - pos);\n        vec3 normal = normalize(n);\n\n        vec3 light = lightambient.xyz * lightambient.w;\n        light += blinnPhongSpecular(light0position - pos, eyedir, normal, light0power) * light0color.xyz * light0color.w;\n        light += blinnPhongSpecular(light1position - pos, eyedir, normal, light1power) * light1color.xyz * light1color.w;\n        light += blinnPhongSpecular(light2position - pos, eyedir, normal, light2power) * light2color.xyz * light2color.w;\n        float ef = grid(vec3(griduv / stride, 0));\n        vec3 col = vec3(0.8 + 0.2 * abs(normal));\n\n        gl_FragColor = vec4(light * col * vec3(ef), 1.0);\n      }\n    "]),
+    frag: glslify(["\n      #extension GL_OES_standard_derivatives : enable\n      precision mediump float;\n#define GLSLIFY 1\n\n\n      float blinnPhongSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float shininess) {\n\n  //Calculate Blinn-Phong power\n  vec3 H = normalize(viewDirection + lightDirection);\n  return pow(max(0.0, dot(surfaceNormal, H)), shininess);\n}\n\n      uniform vec2 stride;\n      varying vec2 griduv;\n      varying vec3 n;\n      varying vec3 pos;\n\n      uniform float light0power, light1power, light2power;\n      uniform vec4 lightambient, light0color, light1color, light2color;\n      uniform vec3 light0position, light1position, light2position;\n      uniform vec3 eye;\n\n      float grid (vec3 uv) {\n        vec3 d = fwidth(uv);\n        vec3 a3 = smoothstep(vec3(0.0), 1.5 * d, 0.5 - abs(mod(uv, 1.0) - 0.5));\n        return min(a3.x, a3.y);\n      }\n\n      void main () {\n        vec3 eyedir = normalize(eye - pos);\n        vec3 normal = normalize(n);\n\n        vec3 light = lightambient.xyz * lightambient.w;\n        light += blinnPhongSpecular(light0position - pos, eyedir, normal, light0power) * light0color.xyz * light0color.w;\n        light += blinnPhongSpecular(light1position - pos, eyedir, normal, light1power) * light1color.xyz * light1color.w;\n        light += blinnPhongSpecular(light2position - pos, eyedir, normal, light2power) * light2color.xyz * light2color.w;\n        float ef = grid(vec3(griduv / stride, 0));\n        vec3 col = vec3(0.7 + 0.2 * abs(normal));\n\n        gl_FragColor = vec4(light * col * vec3(ef), 1.0);\n      }\n    "]),
     vert: '\n      precision mediump float;\n      uniform mat4 projection, view;\n      attribute vec3 xyz, normal;\n      attribute vec2 grid;\n      varying vec2 griduv;\n      varying vec3 n, pos;\n\n      void main () {\n        griduv = grid;\n        n = normal;\n        pos = xyz;\n        gl_Position = projection * view * vec4(xyz, 1);\n      }\n    ',
     uniforms: { stride: [10, 10] },
     attributes: { xyz: positions, normal: normals, grid: grid },
@@ -10561,8 +10565,8 @@ function run(regl) {
   });
 
   var camera = require('./camera')(regl, {
-    phi: Math.PI * 0.08,
-    distance: 10
+    phi: Math.PI * 0.12,
+    distance: 20
   });
 
   regl.frame(function () {
