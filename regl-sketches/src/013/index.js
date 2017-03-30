@@ -1,54 +1,34 @@
 const regl = require('regl')({
-  extensions: ['WEBGL_draw_buffers', 'OES_texture_float'],
+  extensions: ['OES_element_index_uint', 'OES_standard_derivatives'],
+  attributes: {
+    antialias: false,
+  },
   onDone: (err, regl) => {
     if (err) return require('fail-nicely')(err);
-    run(regl);
+    require('./texture-load')(regl, run)
   }
 });
 
-function run (regl) {
-  const camera = require('@rreusser/regl-camera')(regl, {
-    distance: 3,
-    theta: 1.5
-  });
+function run (regl, assets, loader) {
+  let grid = 0
 
-  const lighting = require('./lighting')(regl, [{
-    position: ctx => [100 * Math.cos(ctx.time), 100, 100 * Math.sin(ctx.time)],
-    color: [1, 0.8, 0.6]
-  }, {
-    position: ctx => [-100 * Math.sin(ctx.time), 100, 100 * Math.cos(ctx.time)],
-    color: [0.6, 0.8, 1.0]
-  }]);
-
-  const dragon = require('./dragon')({
-    diffuse: [0.3, 0.35, 0.3],
-    ambient: [0.1, 0.1, 0.1],
-    specular: 1.0,
-    roughness: 0.5,
-    fresnel: 1.0,
-  });
-
+  const camera = require('./camera')(regl, {distance: 30, phi: 0.1, theta: 5.0});
+  const drawBg = require('./draw-bg')(regl);
+  const drawTorus = require('./draw-torus')(regl);
   const invertCamera = require('./invert-camera')(regl);
-  const createDeferredFBO = require('./buffer')(regl);
-  const deferredPass = require('./defer')(regl);
-  const renderPass = require('./render')(regl);
-  const deferredFBO = createDeferredFBO();
+  require('./explanation')();
+  require('./controls')({
+    nextTexture: loader.next,
+    toggleGrid: () => grid = 1 - grid
+  });
 
   regl.frame(() => {
-    camera(() => {
-      deferredFBO.use(() => {
-        regl.clear({color: [0, 0, 0, 1], depth: 1});
-
-        deferredPass([
-          dragon
-        ]);
-      });
-
-      regl.clear({color: [0, 0, 0, 1], depth: 1});
-
+    camera({dtheta: 0.003}, () => {
       invertCamera(() => {
-        lighting(() => {
-          renderPass({data: deferredFBO.color});
+        drawBg();
+        drawTorus({
+          texture: loader.texture,
+          grid: grid
         });
       });
     });

@@ -17,13 +17,12 @@ function f (z) {
 
 var y = [
   [1, 1.4, 1.6, 1.75],
-  [2, 2.25, 2.5, 2.75],
+  [2, 2.25, 1.5, 2.75],
   [3, 3.5, 3.9, 3.75]
 ];
 
 z = map2darray(null, y, y => y * y);
-z[2][2] = 5;
-z[2][1] = 5;
+z[1][2] = 1
 
 Plotly.plot(gd, {
   data: [
@@ -45,12 +44,12 @@ Plotly.plot(gd, {
       type: 'carpet',
       aaxis: {
         tickprefix: 'a = ',
-        smoothing: 1,
+        smoothing: 0,
         minorgridcount: 9,
       },
       baxis: {
         tickprefix: 'b = ',
-        smoothing: 1,
+        smoothing: 0,
         minorgridcount: 9,
       },
       xaxis: 'x',
@@ -61,13 +60,13 @@ Plotly.plot(gd, {
       type: 'contourcarpet',
       autocontour: false,
       contours: {
-        start: 3.5,
-        end: 16,
-        size: 1,
+        start: 1,
+        end: 14,
+        size: 1.0,
       },
       line: {
         width: 2,
-        //color: 'red'
+        smoothing: 0,
       },
       colorscale: 'Viridis',
       z: z,
@@ -81,9 +80,9 @@ Plotly.plot(gd, {
       a: [0, 1, 2, 3],
       b: [4, 5, 6],
       y: [
-        [1, 2.4, 1.6, 1.75],
-        [2, 3.25, 2.5, 2.75],
-        [3, 4.5, 3.7, 3.75]
+        [1, 1.4, 1.6, 1.75],
+        [2, 2.25, 2.5, 2.75],
+        [3, 3.5, 3.7, 3.75]
       ],
       //cheaterslope: 0.25,
       x: [
@@ -110,8 +109,8 @@ Plotly.plot(gd, {
       type: 'contourcarpet',
       autocontour: false,
       contours: {
-        start: 3.55,
-        end: 16,
+        start: 1,
+        end: 14,
         size: 1,
       },
       line: {

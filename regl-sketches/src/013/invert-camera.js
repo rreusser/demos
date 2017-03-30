@@ -1,13 +1,13 @@
 const invert = require('gl-mat4/invert');
 
 module.exports = function (regl) {
-  const ip = [];
-  const iv = [];
+  let m1 = [];
+  let m2 = [];
 
   return regl({
     uniforms: {
-      iprojection: ctx => invert(ip, ctx.projection),
-      iview: ctx => invert(iv, ctx.view)
+      iview: ctx => invert(m1, ctx.view),
+      iproj: ctx => invert(m2, ctx.projection),
     }
   });
-};
+}
