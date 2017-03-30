@@ -6,4 +6,4 @@ Anyway, glad you found this and I hope you find something interesting. [regl](gi
 
 ## License
 
-&copy; Ricky Reusser 2017. MIT License. (Just going with MIT since it's *something* and since it's hard to imagine much of this will be worthwhile, though we can dream. To be honest, if you wanted to use anything here in your own work, I'd mostly just be thrilled and touched. I'd ask for a maybe small reference if you use a significant portion, but honestly please just be decent and maybe let me know [on twitter](https://twitter.com/rickyreusser) or something. 🚀)
+&copy; Ricky Reusser 2017. MIT License. (Just going with MIT since it's *something* and since it's hard to imagine much of this will be worthwhile, though we can dream. To be honest, if you wanted to use anything here in your own work, I'd mostly just be thrilled and honored. I'd ask for a maybe small reference if you use a significant portion, but honestly please just be decent and maybe let me know [on twitter](https://twitter.com/rickyreusser) or something. 🚀)
