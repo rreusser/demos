@@ -56,8 +56,8 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
       Fun with the SoundCloud API, Part 2: this time with <a href="https://github.com/Erkaman/glsl-godrays">godrays</a>
     </td>
     <td width="300" valign="top">
-      <a href="http://rickyreusser.com/demos/regl-sketches/010"><img src="./thumbs/flow.jpg" alt="" width="290"></a>
-      Analytical fluid flow over an airfoil using the <a href="https://en.wikipedia.org/wiki/Joukowsky_transform#K.C3.A1rm.C3.A1n.E2.80.93Trefftz_transform">Kármán–Trefftz</a> transform (Pressure coloring is wrong 🤷‍♂️)
+      <a href="http://rickyreusser.com/demos/regl-sketches/010"><img src="./thumbs/flow.png" alt="" width="290"></a>
+      Analytical fluid flow over an airfoil using the <a href="https://en.wikipedia.org/wiki/Joukowsky_transform#K.C3.A1rm.C3.A1n.E2.80.93Trefftz_transform">Kármán–Trefftz</a> transform
     </td>
   </tr>
   <tr>
