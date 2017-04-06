@@ -3,16 +3,17 @@ const karmanTrefftz = require('./karman-trefftz');
 module.exports = function (regl, params) {
   return regl({
     uniforms: {
-      x0: () => [params.mux, params.muy],
+      mu: () => [params.mux, params.muy],
       theta0: () => Math.atan2(-params.muy, 1 - params.mux),
       n: () => params.n,
-      radius: () => Math.sqrt(Math.pow(1 - params.mux, 2) + Math.pow(params.muy, 2)),
+      r0: () => Math.sqrt(Math.pow(1 - params.mux, 2) + Math.pow(params.muy, 2)),
       velocity: () => params.velocity,
-      size: () => params.size,
+      rsize: () => params.size,
       cpAlpha: () => params.cpAlpha,
       streamAlpha: () => params.streamAlpha,
       colorScale: () => params.colorScale,
       gridAlpha: () => params.gridAlpha,
+      //karmanTrefftz: () => params.karmanTrefftz,
       gridSize: () => params.gridSize,
       scale: () => {
         var theta0 = Math.atan2(-params.muy, 1 - params.mux);
@@ -27,7 +28,7 @@ module.exports = function (regl, params) {
           var r0 = Math.sqrt(Math.pow(1 - params.mux, 2) + Math.pow(params.muy, 2));
           return -Math.sin(theta0) * (1 + 1 / r0 / r0) * Math.PI * 2.0 * r0;
         } else {
-          return params.circulation
+          return params.circulation;
         }
       }
     }
