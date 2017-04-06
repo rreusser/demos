@@ -7,7 +7,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
   <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/plotly-airfoil-example/"><img src="./thumbs/airfoil.png" alt="Karman-Trefftz airfoil" width="290"></a>
-      Potential flow over a cylinder conformally mapped into an airfoil via the <a href="https://en.wikipedia.org/wiki/Joukowsky_transform#K.C3.A1rm.C3.A1n.E2.80.93Trefftz_transform">Karman-Trefftz</a>
+      Potential flow over a cylinder conformally mapped into an airfoil via the <a href="https://en.wikipedia.org/wiki/Joukowsky_transform#K.C3.A1rm.C3.A1n.E2.80.93Trefftz_transform">Karman-Trefftz</a> transform
     </td>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/schrodinger-1d/"><img src="./thumbs/schrodingers-equation.jpg" alt="The Schrödinger Equation with a potential barrier in 1D, using the FFT for spatial differencing, RK-4 for temporal integration, and Perfectly Matched Layers (PML) for non-reflecting boundary conditions." width="290"></a>
