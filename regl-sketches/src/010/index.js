@@ -17,7 +17,7 @@ function run (regl) {
     muy: 0.08,
     n: 1.94,
     circulation: 0.0,
-    alpha: 0,
+    alpha: 10,
     kuttaCondition: true,
     cpAlpha: 0.2,
     streamAlpha: 0.15,
