@@ -24,9 +24,10 @@ module.exports = function (regl, params) {
       alpha: () => -params.alpha * Math.PI / 180,
       circulation: () => {
         if (params.kuttaCondition) {
-          var theta0 = Math.atan2(-params.muy, 1 - params.mux) - params.alpha * Math.PI / 180.0;
+          //var theta0 = Math.atan2(-params.muy, 1 - params.mux) - params.alpha * Math.PI / 180.0;
           var r0 = Math.sqrt(Math.pow(1 - params.mux, 2) + Math.pow(params.muy, 2));
-          return -Math.sin(theta0) * (1 + 1 / r0 / r0) * Math.PI * 2.0 * r0;
+          return -4.0 * Math.PI * Math.sin(-params.alpha * Math.PI / 180 - Math.asin(params.muy / r0));
+          //return -Math.sin(theta0) * (1 + 1 / r0 / r0) * Math.PI * 2.0 * r0;
         } else {
           return params.circulation;
         }

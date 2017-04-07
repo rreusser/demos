@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "budo": "^9.4.7",
     "mouse-event": "^1.0.5"
   }
 }

@@ -8,7 +8,7 @@ module.exports = function (regl, mesh) {
       precision mediump float;
       attribute vec2 rth;
       //attribute vec2 barycentric;
-      varying float psi, cp, rref;
+      varying float psi, cp, rgrid;
       varying vec2 b, uv;
       uniform mat3 view;
       uniform vec2 mu, gridSize;
@@ -49,19 +49,20 @@ module.exports = function (regl, mesh) {
         uv.y *= OPI2;
 
         //b = barycentric;
-        rref = rth.x; float rad = 1.0 + rref * rsize;
-        float r2 = r0 * r0;
+        rgrid = rth.x;
+        float r = 1.0 + rgrid * rsize;
+        float r02 = r0 * r0;
         float theta = rth.y + theta0;
-        float r = rad * r0;
         vec2 rot = vec2(cos(alpha), sin(alpha));
-        vec2 irot = vec2(rot.x, -rot.y);
+        vec2 irot = vec2(cos(-alpha), sin(-alpha));
         vec2 zeta = r * vec2(cos(theta), sin(theta));
-        vec2 zetamu = mu + zeta;
 
-        // Comput 1 + 1 / (mu + zeta) and 1 - 1 / (mu + zeta):
-        float det = zetamu.x * zetamu.x + zetamu.y * zetamu.y;
-        vec2 opz = vec2(1.0 + zetamu.x / det, -zetamu.y / det);
-        vec2 omz = vec2(1.0 - zetamu.x / det, zetamu.y / det);
+        // Compute 1 + 1 / zeta and 1 - 1 / zeta:
+        vec2 oz = cinv(r0 * zeta + mu);
+        vec2 opz = oz;
+        vec2 omz = -oz;
+        opz.x += 1.0;
+        omz.x += 1.0;
 
         // Exponentiate both of the above:
         float opznarg = atan(opz.y, opz.x) * n;
@@ -76,23 +77,25 @@ module.exports = function (regl, mesh) {
 
         // Compute the potential:
         vec2 circ = circulation * OPI2 * vec2(0.0, 1.0);
-        vec2 wt = (rot - r2 * cdiv(csqr(cinv(zeta)), rot)) + cdiv(circ, zeta);
+        vec2 wt = (rot - r02 * cdiv(csqr(cinv((zeta * r0))), rot)) + cdiv(circ, zeta);
 
         // Compute the final coordinate, z:
         vec2 z = n * cdiv(opzn + omzn, opzn - omzn);
+        //vec2 z = mu + r0 * zeta;
 
         // Compute the jacobian:
-        vec2 dzdzeta = 4.0 * n * n * cdiv(cmul(opzn, omzn), cmul(csqr(zetamu) - vec2(1, 0), csqr(opzn - omzn)));
+        vec2 dzdzeta = 4.0 * n * n * cdiv(cmul(opzn, omzn), cmul(csqr(r0 * zeta + mu) - vec2(1, 0), csqr(opzn - omzn)));
+        //vec2 dzdzeta = vec2(1, 0);
 
         cp = 1.0 - cmag2(cdiv(wt, dzdzeta)) * colorScale;
 
         // Compute z^2 - 1
-        psi = (rad - 1.0 / rad) * sin(theta + alpha) + circulation * OPI2 * log(rad);
+        psi = (r - 1.0 / r) * sin(theta + alpha) + circulation * OPI2 * log(r);
 
-        z.x -= n;
-        z /= scale;
-        z.x += 0.5;
-        z *= 4.0;
+        //z.x -= n;
+        //z /= scale;
+        //z.x += 0.5;
+        //z *= 4.0;
 
         vec2 pos = (view * vec3(z, 1)).xy;
         gl_Position = vec4(pos, 0, 1);
@@ -102,12 +105,12 @@ module.exports = function (regl, mesh) {
       #extension GL_OES_standard_derivatives : enable
       precision mediump float;
       #pragma glslify: colormap = require(glsl-colormap/viridis)
-      varying float psi, cp, rref;
+      varying float psi, cp, rgrid;
       varying vec2 uv;
       uniform float cpAlpha, streamAlpha, gridAlpha;
       #pragma glslify: grid = require(glsl-solid-wireframe/cartesian/scaled)
       void main () {
-        float boundary = grid(rref, 3.0, 1.0);
+        float boundary = grid(rgrid, 3.0, 1.0);
         float pressure = 1.0 - (1.0 - grid(cp * 20.0, 1.0)) * cpAlpha;
         float stream = (1.0 - grid(10.0 * psi, 1.0)) * streamAlpha;
         float gridLines = (1.0 - grid(uv, 1.0)) * gridAlpha;
