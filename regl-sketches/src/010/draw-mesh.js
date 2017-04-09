@@ -108,10 +108,13 @@ module.exports = function (regl, mesh) {
       uniform float cpAlpha, streamAlpha, gridAlpha;
       #pragma glslify: grid = require(glsl-solid-wireframe/cartesian/scaled)
       const float feather = 1.0;
+      const float streamWidth = 1.0;
+      const float pressureWidth = 1.0;
+      const float boundaryWidth = 3.0;
       void main () {
-        float boundary = grid(rgrid, 3.0, feather);
-        float pressure = 1.0 - (1.0 - grid(cp * 20.0, feather)) * cpAlpha;
-        float stream = (1.0 - grid(10.0 * psi, 1.0)) * streamAlpha;
+        float boundary = grid(rgrid, boundaryWidth, feather);
+        float pressure = 1.0 - (1.0 - grid(cp * 20.0, pressureWidth, feather)) * cpAlpha;
+        float stream = (1.0 - grid(5.0 * psi, streamWidth, feather)) * streamAlpha;
         vec3 color = colormap(max(0.0, min(1.0, cp))).xyz;
 
         float gridLines = (1.0 - grid(uv, 1.0, feather)) * gridAlpha;

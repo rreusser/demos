@@ -9,16 +9,15 @@ module.exports = function (regl) {
   }
 
   function alpha (ctx, props) {
-    return -(props.alpha + ctx.time * 180 * 0) * Math.PI / 180;
+    return -(props.alpha + ctx.time * props.rotation) * Math.PI / 180;
   }
 
   function muy (ctx, props) {
     return props.muy;
-    //return props.muy * Math.sin(ctx.time * 180 * Math.PI / 180)
   }
 
   function n (ctx, props) {
-    return props.n;// + 0.0 * Math.sin(ctx.time * 180 * Math.PI / 180)
+    return props.n;
   }
 
   return regl({
@@ -51,6 +50,15 @@ module.exports = function (regl) {
       },
       modelview: (ctx, props) => {
         return rotateZ(modelview, ctx.view, alpha(ctx, props));
+      }
+    },
+    context: {
+      time: (ctx, props) => {
+        if (props.time !== undefined) {
+          return props.time;
+        } else {
+          return ctx.time;
+        }
       }
     }
   });

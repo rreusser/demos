@@ -1,12 +1,50 @@
-const karmanTrefftz = require('./karman-trefftz');
 const glsl = require('glslify');
+
+var qs = require('query-string');
+var q = qs.parse(window.location.search);
+
+function downloadURI(uri, name) {
+  var link = document.createElement("a");
+  link.download = name;
+  link.href = uri;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+require('insert-css')(`
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+canvas {
+  margin-left: auto;
+  margin-right: auto;
+  display: inline-block;
+}
+`)
+
+var canvas = null;
+if (q.w && q.h) {
+  var dpr = q.dpr ? parseFloat(q.dpr) : 1;
+  canvas = document.createElement('canvas');
+  canvas.width = q.w * dpr;
+  canvas.height = q.h * dpr;
+  canvas.style.width = parseInt(q.w) + 'px'
+  canvas.style.height = parseInt(q.h) + 'px'
+  document.body.append(canvas);
+}
+
 const regl = require('regl')({
   extensions: ['oes_standard_derivatives'],
+  canvas: canvas,
   attributes: {
     antialias: false,
     stencil: false,
     depth: false,
-    alpha: false
+    alpha: false,
+    preserveDrawingBuffer: true
   },
   onDone: (err, regl) => {
     if (err) return require('fail-nicely')(err);
@@ -28,13 +66,14 @@ function run (regl) {
     kuttaCondition: true,
     cpAlpha: 0.2,
     streamAlpha: 0.15,
-    colorScale: 0.4,
+    colorScale: 0.425,
     gridAlpha: 0.0,
-    //karmanTrefftz: 1.0,
-    size: 15.0,
+    size: 10,
     gridSize: size,
-    xmin: -3,
-    xmax: 3,
+    xmin: -2,
+    xmax: 2,
+    frames: q.frames ? parseFloat(q.frames) : 1,
+    rotation: q.rotation ? parseFloat(q.rotation) : 0
   };
 
   const camera = require('./camera-2d')(regl, params);
@@ -66,13 +105,34 @@ function run (regl) {
   const draw = require('./draw-mesh')(regl, mesh);
   const setUniforms = require('./uniforms')(regl);
 
-  const loop = regl.frame(({tick}) => {
+  let frame = 0;
+  let newframe = false;
+  let t = 0;
+
+  if (q.frames) {
+    params.time = 0;
+  }
+
+  regl.frame(({tick}) => {
+
     camera.draw(({dirty}) => {
-      if (!dirty) return;
+      if (!dirty && !q.rotation) return;
+
       setUniforms(params, () => {
         regl.clear({color: [1, 1, 1, 1], depth: 1});
         draw();
       });
+
+      newframe = true;
+
     });
+
+    if (q.frames && newframe && frame < params.frames) {
+      downloadURI(regl._gl.canvas.toDataURL(), 'frame-' + (1000 + frame) + '.png');
+      frame++;
+      params.time = frame / params.frames;
+      camera.taint();
+      newframe = false;
+    }
   });
 }
