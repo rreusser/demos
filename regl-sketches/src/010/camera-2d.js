@@ -26,7 +26,7 @@ mat4.viewport = function viewport(out, x, y, w, h, n, f) {
 
 module.exports = function makeCamera2D (regl, opts) {
   var options = extend({
-    element: opts.element || window,
+    element: opts.element || regl._gl.canvas,
   }, opts || {});
 
 
