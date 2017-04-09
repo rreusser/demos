@@ -10,7 +10,7 @@ module.exports = function (regl, mesh) {
       //attribute vec2 barycentric;
       varying float psi, cp, rgrid;
       varying vec2 b, uv;
-      uniform mat3 view;
+      uniform mat4 view;
       uniform vec2 mu, gridSize;
       uniform float r0, theta0, n, circulation, scale, rsize, alpha, colorScale;
       #define OPI2 0.15915494309
@@ -97,8 +97,7 @@ module.exports = function (regl, mesh) {
         //z.x += 0.5;
         //z *= 4.0;
 
-        vec2 pos = (view * vec3(z, 1)).xy;
-        gl_Position = vec4(pos, 0, 1);
+        gl_Position = view * vec4(z, 0, 1);
       }
     `,
     frag: glsl(`
@@ -116,7 +115,6 @@ module.exports = function (regl, mesh) {
         float gridLines = (1.0 - grid(uv, 1.0)) * gridAlpha;
         vec3 color = colormap(max(0.0, min(1.0, cp))).xyz;
         color *= 1.0 - gridLines;
-        color.x += gridLines;
         gl_FragColor = vec4((color * pressure + stream) * boundary, 1);
       }
     `),

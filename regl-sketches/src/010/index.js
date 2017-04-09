@@ -16,6 +16,7 @@ function run (regl) {
     mux: -0.08,
     muy: 0.08,
     n: 1.94,
+    radius: 1,
     circulation: 0.0,
     alpha: 10,
     kuttaCondition: true,
@@ -24,34 +25,32 @@ function run (regl) {
     colorScale: 0.25,
     gridAlpha: 0.0,
     //karmanTrefftz: 1.0,
-    zoom: 0.25,
     size: 8.0,
     gridSize: size,
-    x: [0, 0],
+    xmin: -3,
+    xmax: 3,
   };
 
   const camera = require('./camera-2d')(regl, params);
+  window.addEventListener('resize', camera.resize);
 
-  const wireframe = require('glsl-solid-wireframe');
   const mesh = require('./mesh')(
     (r, th) => [Math.pow(r, 1.5), th],
     size[0], size[1], [0, 1], [0, Math.PI * 2]
   );
 
   const controls = require('./controls')([
-    {type: 'range', label: 'mux', initial: params.mux, min: -0.4, max: 0.0, step: 0.01},
-    {type: 'range', label: 'muy', initial: params.muy, min: -0.4, max: 0.4, step: 0.01},
+    {type: 'range', label: 'mux', initial: params.mux, min: -0.8, max: 0.0, step: 0.01},
+    {type: 'range', label: 'muy', initial: params.muy, min: -0.8, max: 0.8, step: 0.01},
     {type: 'range', label: 'n', initial: params.n, min: 1.0, max: 2.0, step: 0.01},
-    {type: 'range', label: 'alpha', initial: params.alpha, min: -30, max: 30, step: 0.1},
-    //{type: 'range', label: 'velocity', initial: params.velocity, min: 0.01, max: 10.0, step: 0.01},
+    {type: 'range', label: 'radius', initial: params.radius, min: 1.0, max: 2.0, step: 0.01},
+    {type: 'range', label: 'alpha', initial: params.alpha, min: -90, max: 90, step: 0.1},
     {type: 'range', label: 'circulation', initial: params.circulation, min: -5.0, max: 5.0, step: 0.01},
     {type: 'checkbox', label: 'kuttaCondition', initial: params.kuttaCondition},
-    //{type: 'range', label: 'karmanTrefftz', initial: params.karmanTrefftz, min: 0.0, max: 1.0, step: 0.01},
     {type: 'range', label: 'gridAlpha', initial: params.gridAlpha, min: 0.0, max: 1.0, step: 0.01},
     {type: 'range', label: 'cpAlpha', initial: params.cpAlpha, min: 0.0, max: 1.0, step: 0.01},
     {type: 'range', label: 'streamAlpha', initial: params.streamAlpha, min: 0.0, max: 1.0, step: 0.01},
     {type: 'range', label: 'colorScale', initial: params.colorScale, min: 0.0, max: 1.0, step: 0.01},
-    {type: 'range', label: 'zoom', initial: params.zoom, min: 0.1, max: 1.0, step: 0.01},
     {type: 'range', label: 'size', initial: params.size, min: 0.1, max: 10.0, step: 0.1},
   ], params, () => {
     camera.taint();
@@ -63,7 +62,7 @@ function run (regl) {
   const setUniforms = require('./uniforms')(regl, params);
 
   const loop = regl.frame(({tick}) => {
-    camera(({dirty}) => {
+    camera.draw(({dirty}) => {
       if (!dirty) return;
       setUniforms(() => {
         regl.clear({color: [1, 1, 1, 1], depth: 1});
