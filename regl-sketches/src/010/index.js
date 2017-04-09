@@ -28,7 +28,7 @@ function run (regl) {
     kuttaCondition: true,
     cpAlpha: 0.2,
     streamAlpha: 0.15,
-    colorScale: 0.25,
+    colorScale: 0.4,
     gridAlpha: 0.0,
     //karmanTrefftz: 1.0,
     size: 15.0,
@@ -63,14 +63,13 @@ function run (regl) {
   })
 
   window.addEventListener('resize', camera.taint);
-
   const draw = require('./draw-mesh')(regl, mesh);
-  const setUniforms = require('./uniforms')(regl, params);
+  const setUniforms = require('./uniforms')(regl);
 
   const loop = regl.frame(({tick}) => {
     camera.draw(({dirty}) => {
       if (!dirty) return;
-      setUniforms(() => {
+      setUniforms(params, () => {
         regl.clear({color: [1, 1, 1, 1], depth: 1});
         draw();
       });

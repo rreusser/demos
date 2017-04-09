@@ -7,7 +7,6 @@ module.exports = function (regl, mesh) {
     vert: `
       precision mediump float;
       attribute vec2 rth;
-      //attribute vec2 barycentric;
       varying float psi, cp, rgrid;
       varying vec2 b, uv;
       uniform mat4 modelview;

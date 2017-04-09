@@ -38380,7 +38380,7 @@ var glsl = require('glslify');
 
 module.exports = function (regl, mesh) {
   return regl({
-    vert: '\n      precision mediump float;\n      attribute vec2 rth;\n      //attribute vec2 barycentric;\n      varying float psi, cp, rgrid;\n      varying vec2 b, uv;\n      uniform mat4 modelview;\n      uniform vec2 mu, gridSize;\n      uniform float r0, theta0, n, circulation, scale, rsize, alpha, colorScale;\n      #define OPI2 0.15915494309\n\n      vec2 cdiv (vec2 a, vec2 b) {\n        return vec2(a.x * b.x + a.y * b.y, a.y * b.x - a.x * b.y) / dot(b, b);\n      }\n\n      vec2 cmul (vec2 a, vec2 b) {\n        return vec2(a.x * b.x - a.y * b.y, a.y * b.x + a.x * b.y);\n      }\n\n      vec2 csqr (vec2 a) {\n        return vec2(a.x * a.x - a.y * a.y, 2.0 * a.x * a.y);\n      }\n\n      vec2 cinv (vec2 a) {\n        return vec2(a.x, -a.y) / dot(a, a);\n      }\n\n      float cmag2 (vec2 a) {\n        return dot(a, a);\n      }\n\n      vec2 clog (vec2 a) {\n        return vec2(\n          0.5 * log(cmag2(a)),\n          atan(a.y, a.x)\n        );\n      }\n\n      void main () {\n        uv = rth;\n        uv.x = pow(uv.x, 0.6666666);\n        uv *= gridSize;\n        uv.y *= OPI2;\n\n        //b = barycentric;\n        rgrid = rth.x;\n        float r = 1.0 + rgrid * rsize;\n        float theta = rth.y + theta0;\n        vec2 rot = vec2(cos(alpha), sin(alpha));\n        vec2 zeta = r * vec2(cos(theta), sin(theta));\n\n        // Compute 1 + 1 / zeta and 1 - 1 / zeta:\n        vec2 oz = cinv(r0 * zeta + mu);\n        vec2 opz = oz;\n        vec2 omz = -oz;\n        opz.x += 1.0;\n        omz.x += 1.0;\n\n        // Exponentiate both of the above:\n        float opznarg = atan(opz.y, opz.x) * n;\n        float opznmod = pow(dot(opz, opz), n * 0.5);\n\n        // (1 + 1 / (zeta + mu)) ** n:\n        vec2 opzn = opznmod * vec2(cos(opznarg), sin(opznarg));\n\n        float omznarg = atan(omz.y, omz.x) * n;\n        float omznmod = pow(dot(omz, omz), n * 0.5);\n\n        // (1 - 1 / (zeta + mu)) ** n:\n        vec2 omzn = omznmod * vec2(cos(omznarg), sin(omznarg));\n\n        // Compute the potential:\n        vec2 circ = vec2(0.0, circulation * OPI2);\n        vec2 wt = rot - cdiv(csqr(cinv(zeta)), rot) + cdiv(circ, zeta);\n\n        // Compute the final coordinate, z:\n        vec2 z = n * cdiv(opzn + omzn, opzn - omzn);\n        //vec2 z = mu + r0 * zeta;\n\n        // Compute the jacobian:\n        vec2 dzdzeta = 4.0 * n * n * cdiv(cmul(opzn, omzn), cmul(csqr(r0 * zeta + mu) - vec2(1, 0), csqr(opzn - omzn)));\n        //vec2 dzdzeta = vec2(1, 0);\n\n        cp = 1.0 - cmag2(cdiv(wt, dzdzeta)) * colorScale;\n\n        // Compute z^2 - 1\n        psi = (r - 1.0 / r) * sin(theta + alpha) + circulation * OPI2 * log(r);\n\n        //z.x -= n;\n        //z /= scale;\n        //z.x += 0.5;\n        //z *= 4.0;\n\n        gl_Position = modelview * vec4(z, 0, 1);\n      }\n    ',
+    vert: '\n      precision mediump float;\n      attribute vec2 rth;\n      varying float psi, cp, rgrid;\n      varying vec2 b, uv;\n      uniform mat4 modelview;\n      uniform vec2 mu, gridSize;\n      uniform float r0, theta0, n, circulation, scale, rsize, alpha, colorScale;\n      #define OPI2 0.15915494309\n\n      vec2 cdiv (vec2 a, vec2 b) {\n        return vec2(a.x * b.x + a.y * b.y, a.y * b.x - a.x * b.y) / dot(b, b);\n      }\n\n      vec2 cmul (vec2 a, vec2 b) {\n        return vec2(a.x * b.x - a.y * b.y, a.y * b.x + a.x * b.y);\n      }\n\n      vec2 csqr (vec2 a) {\n        return vec2(a.x * a.x - a.y * a.y, 2.0 * a.x * a.y);\n      }\n\n      vec2 cinv (vec2 a) {\n        return vec2(a.x, -a.y) / dot(a, a);\n      }\n\n      float cmag2 (vec2 a) {\n        return dot(a, a);\n      }\n\n      vec2 clog (vec2 a) {\n        return vec2(\n          0.5 * log(cmag2(a)),\n          atan(a.y, a.x)\n        );\n      }\n\n      void main () {\n        uv = rth;\n        uv.x = pow(uv.x, 0.6666666);\n        uv *= gridSize;\n        uv.y *= OPI2;\n\n        //b = barycentric;\n        rgrid = rth.x;\n        float r = 1.0 + rgrid * rsize;\n        float theta = rth.y + theta0;\n        vec2 rot = vec2(cos(alpha), sin(alpha));\n        vec2 zeta = r * vec2(cos(theta), sin(theta));\n\n        // Compute 1 + 1 / zeta and 1 - 1 / zeta:\n        vec2 oz = cinv(r0 * zeta + mu);\n        vec2 opz = oz;\n        vec2 omz = -oz;\n        opz.x += 1.0;\n        omz.x += 1.0;\n\n        // Exponentiate both of the above:\n        float opznarg = atan(opz.y, opz.x) * n;\n        float opznmod = pow(dot(opz, opz), n * 0.5);\n\n        // (1 + 1 / (zeta + mu)) ** n:\n        vec2 opzn = opznmod * vec2(cos(opznarg), sin(opznarg));\n\n        float omznarg = atan(omz.y, omz.x) * n;\n        float omznmod = pow(dot(omz, omz), n * 0.5);\n\n        // (1 - 1 / (zeta + mu)) ** n:\n        vec2 omzn = omznmod * vec2(cos(omznarg), sin(omznarg));\n\n        // Compute the potential:\n        vec2 circ = vec2(0.0, circulation * OPI2);\n        vec2 wt = rot - cdiv(csqr(cinv(zeta)), rot) + cdiv(circ, zeta);\n\n        // Compute the final coordinate, z:\n        vec2 z = n * cdiv(opzn + omzn, opzn - omzn);\n        //vec2 z = mu + r0 * zeta;\n\n        // Compute the jacobian:\n        vec2 dzdzeta = 4.0 * n * n * cdiv(cmul(opzn, omzn), cmul(csqr(r0 * zeta + mu) - vec2(1, 0), csqr(opzn - omzn)));\n        //vec2 dzdzeta = vec2(1, 0);\n\n        cp = 1.0 - cmag2(cdiv(wt, dzdzeta)) * colorScale;\n\n        // Compute z^2 - 1\n        psi = (r - 1.0 / r) * sin(theta + alpha) + circulation * OPI2 * log(r);\n\n        //z.x -= n;\n        //z /= scale;\n        //z.x += 0.5;\n        //z *= 4.0;\n\n        gl_Position = modelview * vec4(z, 0, 1);\n      }\n    ',
     frag: glsl(["\n      #extension GL_OES_standard_derivatives : enable\n      precision mediump float;\n#define GLSLIFY 1\n\n      vec4 viridis (float x_0) {\n  const float e0 = 0.0;\n  const vec4 v0 = vec4(0.26666666666666666,0.00392156862745098,0.32941176470588235,1);\n  const float e1 = 0.13;\n  const vec4 v1 = vec4(0.2784313725490196,0.17254901960784313,0.47843137254901963,1);\n  const float e2 = 0.25;\n  const vec4 v2 = vec4(0.23137254901960785,0.3176470588235294,0.5450980392156862,1);\n  const float e3 = 0.38;\n  const vec4 v3 = vec4(0.17254901960784313,0.44313725490196076,0.5568627450980392,1);\n  const float e4 = 0.5;\n  const vec4 v4 = vec4(0.12941176470588237,0.5647058823529412,0.5529411764705883,1);\n  const float e5 = 0.63;\n  const vec4 v5 = vec4(0.15294117647058825,0.6784313725490196,0.5058823529411764,1);\n  const float e6 = 0.75;\n  const vec4 v6 = vec4(0.3607843137254902,0.7843137254901961,0.38823529411764707,1);\n  const float e7 = 0.88;\n  const vec4 v7 = vec4(0.6666666666666666,0.8627450980392157,0.19607843137254902,1);\n  const float e8 = 1.0;\n  const vec4 v8 = vec4(0.9921568627450981,0.9058823529411765,0.1450980392156863,1);\n  float a0 = smoothstep(e0,e1,x_0);\n  float a1 = smoothstep(e1,e2,x_0);\n  float a2 = smoothstep(e2,e3,x_0);\n  float a3 = smoothstep(e3,e4,x_0);\n  float a4 = smoothstep(e4,e5,x_0);\n  float a5 = smoothstep(e5,e6,x_0);\n  float a6 = smoothstep(e6,e7,x_0);\n  float a7 = smoothstep(e7,e8,x_0);\n  return max(mix(v0,v1,a0)*step(e0,x_0)*step(x_0,e1),\n    max(mix(v1,v2,a1)*step(e1,x_0)*step(x_0,e2),\n    max(mix(v2,v3,a2)*step(e2,x_0)*step(x_0,e3),\n    max(mix(v3,v4,a3)*step(e3,x_0)*step(x_0,e4),\n    max(mix(v4,v5,a4)*step(e4,x_0)*step(x_0,e5),\n    max(mix(v5,v6,a5)*step(e5,x_0)*step(x_0,e6),\n    max(mix(v6,v7,a6)*step(e6,x_0)*step(x_0,e7),mix(v7,v8,a7)*step(e7,x_0)*step(x_0,e8)\n  )))))));\n}\n\n      varying float psi, cp, rgrid;\n      varying vec2 uv;\n      uniform float cpAlpha, streamAlpha, gridAlpha;\n      float gridFactor (float parameter, float width, float feather_0) {\n  float w1 = width - feather_0 * 0.5;\n  float d = fwidth(parameter);\n  float looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  return smoothstep(d * w1, d * (w1 + feather_0), looped);\n}\n\nfloat gridFactor (vec2 parameter, float width, float feather_0) {\n  float w1 = width - feather_0 * 0.5;\n  vec2 d = fwidth(parameter);\n  vec2 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec2 a2 = smoothstep(d * w1, d * (w1 + feather_0), looped);\n  return min(a2.x, a2.y);\n}\n\nfloat gridFactor (vec3 parameter, float width, float feather_0) {\n  float w1 = width - feather_0 * 0.5;\n  vec3 d = fwidth(parameter);\n  vec3 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec3 a3 = smoothstep(d * w1, d * (w1 + feather_0), looped);\n  return min(min(a3.x, a3.y), a3.z);\n}\n\nfloat gridFactor (vec4 parameter, float width, float feather_0) {\n  float w1 = width - feather_0 * 0.5;\n  vec4 d = fwidth(parameter);\n  vec4 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec4 a4 = smoothstep(d * w1, d * (w1 + feather_0), looped);\n  return min(min(min(a4.x, a4.y), a4.z), a4.w);\n}\n\nfloat gridFactor (float parameter, float width) {\n  float d = fwidth(parameter);\n  float looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  return smoothstep(d * (width - 0.5), d * (width + 0.5), looped);\n}\n\nfloat gridFactor (vec2 parameter, float width) {\n  vec2 d = fwidth(parameter);\n  vec2 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec2 a2 = smoothstep(d * (width - 0.5), d * (width + 0.5), looped);\n  return min(a2.x, a2.y);\n}\n\nfloat gridFactor (vec3 parameter, float width) {\n  vec3 d = fwidth(parameter);\n  vec3 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec3 a3 = smoothstep(d * (width - 0.5), d * (width + 0.5), looped);\n  return min(min(a3.x, a3.y), a3.z);\n}\n\nfloat gridFactor (vec4 parameter, float width) {\n  vec4 d = fwidth(parameter);\n  vec4 looped = 0.5 - abs(mod(parameter, 1.0) - 0.5);\n  vec4 a4 = smoothstep(d * (width - 0.5), d * (width + 0.5), looped);\n  return min(min(min(a4.x, a4.y), a4.z), a4.z);\n}\n\n      const float feather = 1.0;\n      void main () {\n        float boundary = gridFactor(rgrid, 3.0, feather);\n        float pressure = 1.0 - (1.0 - gridFactor(cp * 20.0, feather)) * cpAlpha;\n        float stream = (1.0 - gridFactor(10.0 * psi, 1.0)) * streamAlpha;\n        vec3 color = viridis(max(0.0, min(1.0, cp))).xyz;\n\n        float gridLines = (1.0 - gridFactor(uv, 1.0, feather)) * gridAlpha;\n        color *= 1.0 - gridLines;\n\n        gl_FragColor = vec4((color * pressure + stream) * boundary, 1);\n      }\n    "]),
     attributes: {
       rth: mesh.positions
@@ -38425,7 +38425,7 @@ function run(regl) {
     kuttaCondition: true,
     cpAlpha: 0.2,
     streamAlpha: 0.15,
-    colorScale: 0.25,
+    colorScale: 0.4,
     gridAlpha: 0.0,
     //karmanTrefftz: 1.0,
     size: 15.0,
@@ -38446,9 +38446,8 @@ function run(regl) {
   });
 
   window.addEventListener('resize', camera.taint);
-
   var draw = require('./draw-mesh')(regl, mesh);
-  var setUniforms = require('./uniforms')(regl, params);
+  var setUniforms = require('./uniforms')(regl);
 
   var loop = regl.frame(function (_ref) {
     var tick = _ref.tick;
@@ -38457,7 +38456,7 @@ function run(regl) {
       var dirty = _ref2.dirty;
 
       if (!dirty) return;
-      setUniforms(function () {
+      setUniforms(params, function () {
         regl.clear({ color: [1, 1, 1, 1], depth: 1 });
         draw();
       });
@@ -38550,67 +38549,72 @@ module.exports = function (xy, nr, nth, rrange, thrange) {
 var karmanTrefftz = require('./karman-trefftz');
 var rotateZ = require('gl-mat4/rotateZ');
 
-module.exports = function (regl, params) {
+module.exports = function (regl) {
   var modelview = [];
+
+  function r0(ctx, props) {
+    return Math.sqrt(Math.pow(1 - props.mux, 2) + Math.pow(muy(ctx, props), 2)) * props.radius;
+  }
+
+  function alpha(ctx, props) {
+    return -(props.alpha + ctx.time * 180 * 0) * Math.PI / 180;
+  }
+
+  function muy(ctx, props) {
+    return props.muy;
+    //return props.muy * Math.sin(ctx.time * 180 * Math.PI / 180)
+  }
+
+  function n(ctx, props) {
+    return props.n; // + 0.0 * Math.sin(ctx.time * 180 * Math.PI / 180)
+  }
 
   return regl({
     uniforms: {
-      mu: function () {
-        return [params.mux, params.muy];
+      mu: function (ctx, props) {
+        return [props.mux, muy(ctx, props)];
       },
-      theta0: function () {
-        return Math.atan2(-params.muy, 1 - params.mux);
+      theta0: function (ctx, props) {
+        return Math.atan2(-muy(ctx, props), 1 - props.mux);
       },
-      n: function () {
-        return params.n;
+      n: n,
+      r0: r0,
+      velocity: function (ctx, props) {
+        return props.velocity;
       },
-      r0: function () {
-        return Math.sqrt(Math.pow(1 - params.mux, 2) + Math.pow(params.muy, 2)) * params.radius;
+      rsize: function (ctx, props) {
+        return props.size / Math.sqrt(props.radius) / r0(ctx, props);
       },
-      velocity: function () {
-        return params.velocity;
+      cpAlpha: function (ctx, props) {
+        return props.cpAlpha;
       },
-      rsize: function () {
-        var r0 = Math.sqrt(Math.pow(1 - params.mux, 2) + Math.pow(params.muy, 2)) * params.radius;
-        return params.size / Math.sqrt(params.radius) / r0;
+      streamAlpha: function (ctx, props) {
+        return props.streamAlpha;
       },
-      cpAlpha: function () {
-        return params.cpAlpha;
+      colorScale: function (ctx, props) {
+        return props.colorScale;
       },
-      streamAlpha: function () {
-        return params.streamAlpha;
+      gridAlpha: function (ctx, props) {
+        return props.gridAlpha;
       },
-      colorScale: function () {
-        return params.colorScale;
+      gridSize: function (ctx, props) {
+        return [props.gridSize[0] - 1, props.gridSize[1] - 1];
       },
-      gridAlpha: function () {
-        return params.gridAlpha;
+      scale: function (ctx, props) {
+        var theta0 = Math.atan2(-muy(ctx, props), 1 - props.mux);
+        var a = props.mux - Math.cos(theta0) * r0(ctx, props);
+        return n(ctx, props) - karmanTrefftz(n(ctx, props), a, 0)[0];
       },
-      //karmanTrefftz: () => params.karmanTrefftz,
-      gridSize: function () {
-        return [params.gridSize[0] - 1, params.gridSize[1] - 1];
-      },
-      scale: function () {
-        var theta0 = Math.atan2(-params.muy, 1 - params.mux);
-        var r0 = Math.sqrt(Math.pow(1 - params.mux, 2) + Math.pow(params.muy, 2)) * params.radius;
-        var a = params.mux - Math.cos(theta0) * r0;
-        return params.n - karmanTrefftz(params.n, a, 0)[0];
-      },
-      alpha: function () {
-        return -params.alpha * Math.PI / 180;
-      },
-      circulation: function () {
-        if (params.kuttaCondition) {
-          //var theta0 = Math.atan2(-params.muy, 1 - params.mux) - params.alpha * Math.PI / 180.0;
-          var r0 = Math.sqrt(Math.pow(1 - params.mux, 2) + Math.pow(params.muy, 2)) * params.radius;
-          return -4.0 * Math.PI * Math.sin(-params.alpha * Math.PI / 180 - Math.asin(params.muy / r0));
-          //return -Math.sin(theta0) * (1 + 1 / r0 / r0) * Math.PI * 2.0 * r0;
+      alpha: alpha,
+      circulation: function (ctx, props) {
+        if (props.kuttaCondition) {
+          return -4.0 * Math.PI * Math.sin(alpha(ctx, props) - Math.asin(muy(ctx, props) / r0(ctx, props)));
         } else {
-          return params.circulation;
+          return props.circulation;
         }
       },
-      modelview: function (ctx) {
-        return rotateZ(modelview, ctx.view, -params.alpha * Math.PI / 180);
+      modelview: function (ctx, props) {
+        return rotateZ(modelview, ctx.view, alpha(ctx, props));
       }
     }
   });
