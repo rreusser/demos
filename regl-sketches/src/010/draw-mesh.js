@@ -125,6 +125,9 @@ module.exports = function (regl, mesh) {
       rth: mesh.positions,
       //barycentric: mesh.barycentric,
     },
+    depth: {
+      enable: false
+    },
     elements: mesh.cells,
     count: mesh.cells.length * 3
   });

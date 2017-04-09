@@ -2,6 +2,12 @@ const karmanTrefftz = require('./karman-trefftz');
 const glsl = require('glslify');
 const regl = require('regl')({
   extensions: ['oes_standard_derivatives'],
+  attributes: {
+    antialias: false,
+    stencil: false,
+    depth: false,
+    alpha: false
+  },
   onDone: (err, regl) => {
     if (err) return require('fail-nicely')(err);
     document.querySelector('canvas').addEventListener('mousewheel', e => e.preventDefault());
@@ -10,7 +16,7 @@ const regl = require('regl')({
 });
 
 function run (regl) {
-  const size = [41, 61];
+  const size = [41, 81];
 
   const params = {
     mux: -0.08,

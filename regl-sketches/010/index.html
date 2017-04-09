@@ -38385,6 +38385,9 @@ module.exports = function (regl, mesh) {
     attributes: {
       rth: mesh.positions
     },
+    depth: {
+      enable: false
+    },
     elements: mesh.cells,
     count: mesh.cells.length * 3
   });
@@ -38394,6 +38397,12 @@ var karmanTrefftz = require('./karman-trefftz');
 var glsl = require('glslify');
 var regl = require('regl')({
   extensions: ['oes_standard_derivatives'],
+  attributes: {
+    antialias: false,
+    stencil: false,
+    depth: false,
+    alpha: false
+  },
   onDone: function (err, regl) {
     if (err) return require('fail-nicely')(err);
     document.querySelector('canvas').addEventListener('mousewheel', function (e) {
@@ -38404,7 +38413,7 @@ var regl = require('regl')({
 });
 
 function run(regl) {
-  var size = [41, 61];
+  var size = [41, 81];
 
   var params = {
     mux: -0.08,
