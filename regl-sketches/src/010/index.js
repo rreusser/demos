@@ -10,7 +10,7 @@ const regl = require('regl')({
 });
 
 function run (regl) {
-  const size = [41, 81];
+  const size = [41, 61];
 
   const params = {
     mux: -0.08,
@@ -25,7 +25,7 @@ function run (regl) {
     colorScale: 0.25,
     gridAlpha: 0.0,
     //karmanTrefftz: 1.0,
-    size: 8.0,
+    size: 15.0,
     gridSize: size,
     xmin: -3,
     xmax: 3,
@@ -51,7 +51,7 @@ function run (regl) {
     {type: 'range', label: 'cpAlpha', initial: params.cpAlpha, min: 0.0, max: 1.0, step: 0.01},
     {type: 'range', label: 'streamAlpha', initial: params.streamAlpha, min: 0.0, max: 1.0, step: 0.01},
     {type: 'range', label: 'colorScale', initial: params.colorScale, min: 0.0, max: 1.0, step: 0.01},
-    {type: 'range', label: 'size', initial: params.size, min: 0.1, max: 10.0, step: 0.1},
+    {type: 'range', label: 'size', initial: params.size, min: 0.1, max: 20.0, step: 0.1},
   ], params, () => {
     camera.taint();
   })

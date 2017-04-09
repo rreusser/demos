@@ -10,7 +10,7 @@ module.exports = function (regl, mesh) {
       //attribute vec2 barycentric;
       varying float psi, cp, rgrid;
       varying vec2 b, uv;
-      uniform mat4 view;
+      uniform mat4 modelview;
       uniform vec2 mu, gridSize;
       uniform float r0, theta0, n, circulation, scale, rsize, alpha, colorScale;
       #define OPI2 0.15915494309
@@ -44,17 +44,15 @@ module.exports = function (regl, mesh) {
 
       void main () {
         uv = rth;
-        uv.x = pow(uv.x, 0.66666666);
+        uv.x = pow(uv.x, 0.6666666);
         uv *= gridSize;
         uv.y *= OPI2;
 
         //b = barycentric;
         rgrid = rth.x;
         float r = 1.0 + rgrid * rsize;
-        float r02 = r0 * r0;
         float theta = rth.y + theta0;
         vec2 rot = vec2(cos(alpha), sin(alpha));
-        vec2 irot = vec2(cos(-alpha), sin(-alpha));
         vec2 zeta = r * vec2(cos(theta), sin(theta));
 
         // Compute 1 + 1 / zeta and 1 - 1 / zeta:
@@ -67,17 +65,19 @@ module.exports = function (regl, mesh) {
         // Exponentiate both of the above:
         float opznarg = atan(opz.y, opz.x) * n;
         float opznmod = pow(dot(opz, opz), n * 0.5);
+
         // (1 + 1 / (zeta + mu)) ** n:
         vec2 opzn = opznmod * vec2(cos(opznarg), sin(opznarg));
 
         float omznarg = atan(omz.y, omz.x) * n;
         float omznmod = pow(dot(omz, omz), n * 0.5);
+
         // (1 - 1 / (zeta + mu)) ** n:
         vec2 omzn = omznmod * vec2(cos(omznarg), sin(omznarg));
 
         // Compute the potential:
-        vec2 circ = circulation * OPI2 * vec2(0.0, 1.0);
-        vec2 wt = (rot - r02 * cdiv(csqr(cinv((zeta * r0))), rot)) + cdiv(circ, zeta);
+        vec2 circ = vec2(0.0, circulation * OPI2);
+        vec2 wt = rot - cdiv(csqr(cinv(zeta)), rot) + cdiv(circ, zeta);
 
         // Compute the final coordinate, z:
         vec2 z = n * cdiv(opzn + omzn, opzn - omzn);
@@ -97,7 +97,7 @@ module.exports = function (regl, mesh) {
         //z.x += 0.5;
         //z *= 4.0;
 
-        gl_Position = view * vec4(z, 0, 1);
+        gl_Position = modelview * vec4(z, 0, 1);
       }
     `,
     frag: glsl(`
@@ -108,13 +108,16 @@ module.exports = function (regl, mesh) {
       varying vec2 uv;
       uniform float cpAlpha, streamAlpha, gridAlpha;
       #pragma glslify: grid = require(glsl-solid-wireframe/cartesian/scaled)
+      const float feather = 1.0;
       void main () {
-        float boundary = grid(rgrid, 3.0, 1.0);
-        float pressure = 1.0 - (1.0 - grid(cp * 20.0, 1.0)) * cpAlpha;
+        float boundary = grid(rgrid, 3.0, feather);
+        float pressure = 1.0 - (1.0 - grid(cp * 20.0, feather)) * cpAlpha;
         float stream = (1.0 - grid(10.0 * psi, 1.0)) * streamAlpha;
-        float gridLines = (1.0 - grid(uv, 1.0)) * gridAlpha;
         vec3 color = colormap(max(0.0, min(1.0, cp))).xyz;
+
+        float gridLines = (1.0 - grid(uv, 1.0, feather)) * gridAlpha;
         color *= 1.0 - gridLines;
+
         gl_FragColor = vec4((color * pressure + stream) * boundary, 1);
       }
     `),

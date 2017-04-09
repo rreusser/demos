@@ -1,6 +1,9 @@
 const karmanTrefftz = require('./karman-trefftz');
+const rotateZ = require('gl-mat4/rotateZ');
 
 module.exports = function (regl, params) {
+  var modelview = [];
+
   return regl({
     uniforms: {
       mu: () => [params.mux, params.muy],
@@ -17,7 +20,7 @@ module.exports = function (regl, params) {
       colorScale: () => params.colorScale,
       gridAlpha: () => params.gridAlpha,
       //karmanTrefftz: () => params.karmanTrefftz,
-      gridSize: () => params.gridSize,
+      gridSize: () => [params.gridSize[0] - 1, params.gridSize[1] - 1],
       scale: () => {
         var theta0 = Math.atan2(-params.muy, 1 - params.mux);
         var r0 = Math.sqrt(Math.pow(1 - params.mux, 2) + Math.pow(params.muy, 2)) * params.radius;
@@ -34,6 +37,9 @@ module.exports = function (regl, params) {
         } else {
           return params.circulation;
         }
+      },
+      modelview: (ctx) => {
+        return rotateZ(modelview, ctx.view, -params.alpha * Math.PI / 180);
       }
     }
   });
