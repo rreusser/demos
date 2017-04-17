@@ -34,13 +34,6 @@ module.exports = function (regl, mesh) {
         return dot(a, a);
       }
 
-      vec2 clog (vec2 a) {
-        return vec2(
-          0.5 * log(cmag2(a)),
-          atan(a.y, a.x)
-        );
-      }
-
       void main () {
         uv = rth;
         uv.x = pow(uv.x, 0.6666666);
