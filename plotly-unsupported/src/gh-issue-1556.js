@@ -4,12 +4,15 @@ document.body.appendChild(gd);
 
 var data = [{
   x: [1, 1.5, 2],
-  y: [10, 10, 10],
+  y: [0.5, 0.5, 0.5],
   text: [
-    'red <span>X</span>',
+    'red <span>X</span><br>🦁',
     'green <span>X</span>',
     'red <span>X</span>'
   ],
+  textfont: {
+    size: 18
+  },
   type:'scatter',
   mode:'markers+text',
   marker: {
@@ -28,17 +31,20 @@ Plotly.plot(gd, {
   }
 });
 
-gd.on('plotly_click', function toggle() {
+var btn = document.createElement('button');
+document.body.appendChild(btn);
+btn.innerHTML = 'doit'
+btn.addEventListener('click', function () {
   var opacity = (gd.data[0].marker.opacity > 0.5) ? 0.25 : 0.75;
-  console.log('plotly_click:', gd.data[0].marker.opacity, opacity);
-
+  data[0].y[0] = Math.random();
+  data[0].y[1] = Math.random();
+  data[0].y[2] = Math.random();
   Plotly.animate(gd, {
       traces: [0],
       data: [{'marker.opacity': opacity}]
-  }, {
-      transition: {
-          easing:'cubic-in-out',
-          duration: 500
-      }
-  });
+    }, {
+      transition: {easing: 'cubic-in-out', duration: 1000},
+      frame: {duration: 1000}
+    }
+  );
 });
