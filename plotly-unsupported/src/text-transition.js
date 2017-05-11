@@ -23,7 +23,11 @@ var layout = {
   hovermode: "closest"
 };
 
-Plotly.newPlot(gd, data, layout);
+var config = {
+  scrollZoom: true
+};
+
+Plotly.newPlot(gd, data, layout, config);
 
 gd.on("plotly_click", function toggle() {
   var opacity = gd.data[0].marker.opacity > 0.5 ? 0.25 : 0.75;
