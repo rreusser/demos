@@ -39,7 +39,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
     </td>
     <td width="300" valign="top">
       <a href="https://plot.ly/~rreusser/55.embed"><img src="./thumbs/thesis.jpg" alt="Guided Wave Transmission in a Ridge-Stiffened Plate" width="290"></a>
-      <a href="https://s3.amazonaws.com/rickyreusser.com/wave-scattering-by-an-integral-stiffener.pdf">Thesis data</a> LOL
+      <a href="https://s3.amazonaws.com/rickyreusser.com/wave-scattering-by-an-integral-stiffener.pdf">Ultrasonic waves</a>
     </td>
   </tr>
 </table>
