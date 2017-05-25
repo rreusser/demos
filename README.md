@@ -5,6 +5,8 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 ## [plotly.js](https://github.com/plotly/plotly.js)
 <table>
   <tr>
+    <td width="300" valign="top">
+      <a href="http://rickyreusser.com/plotly-airfoil-example/"><img src="./thumbs/airfoil.png" alt="Karman-Trefftz airfoil" width="290"></a>
       Potential flow over a cylinder conformally mapped into an airfoil via the <a href="https://en.wikipedia.org/wiki/Joukowsky_transform#K.C3.A1rm.C3.A1n.E2.80.93Trefftz_transform">Karman-Trefftz</a> transform
     </td>
     <td width="300" valign="top">
