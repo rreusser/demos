@@ -48,11 +48,11 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 <table >
   <tr>
     <td width="300" valign="top">
-      <a href="http://rickyreusser.com/demos/regl-sketches/013"><img src="./thumbs/747.png" alt="" width="290"></a>
+      <a href="http://rickyreusser.com/747-model"><img src="./thumbs/747.png" alt="" width="290"></a>
       747 (modeled with <a href="http://www.wings3d.com/">Wings&nbsp;3D</a>)
     </td>
     <td width="300" valign="top">
-      <a href="http://rickyreusser.com/demos/regl-sketches/013"><img src="./thumbs/sailplane.png" alt="" width="290"></a>
+      <a href="http://rickyreusser.com/sailplane-model"><img src="./thumbs/sailplane.png" alt="" width="290"></a>
       Sailplane (modeled with <a href="http://www.wings3d.com/">Wings&nbsp;3D</a>)
     </td>
     <td width="300" valign="top">
