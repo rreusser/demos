@@ -1,36 +1,104 @@
 const regl = require('regl')({
-  extensions: ['OES_element_index_uint', 'OES_standard_derivatives'],
-  attributes: {
-    antialias: false,
-  },
-  onDone: (err, regl) => {
-    if (err) return require('fail-nicely')(err);
-    require('./texture-load')(regl, run)
-  }
+  extensions: [
+    'oes_texture_half_float',
+    'oes_texture_half_float_linear',
+  ],
+  optionalExtensions: [
+    'oes_texture_float',
+    'oes_texture_float_linear',
+  ],
+  onDone: require('fail-nicely')(run)
 });
 
-function run (regl, assets, loader) {
-  let grid = 0
+function run (regl) {
+  const hasFloat = regl.limits.extensions.indexOf('oes_texture_float') !== -1;
+  const hasFloatLinear = regl.limits.extensions.indexOf('oes_texture_float_linear') !== -1;
 
-  const camera = require('./camera')(regl, {distance: 30, phi: 0.1, theta: 5.0});
-  const drawBg = require('./draw-bg')(regl);
-  const drawTorus = require('./draw-torus')(regl);
-  const invertCamera = require('./invert-camera')(regl);
-  require('./explanation')();
-  require('./controls')({
-    nextTexture: loader.next,
-    toggleGrid: () => grid = 1 - grid
+  const swap = require('./swap');
+  const advect = require('./advect')(regl);
+  const relax = require('./relax')(regl);
+  const log = require('./log')(regl);
+  const field = require('./draw')(regl);
+  const computeDivergence = require('./divergence')(regl);
+  const project = require('./project')(regl);
+
+  const n = [32, 32];
+
+  const grid = require('./grid')(regl, {
+    n: n,
+    type: (hasFloat && hasFloatLinear) ? 'float' : 'half float'
   });
 
-  regl.frame(() => {
-    camera({dtheta: 0.003}, () => {
-      invertCamera(() => {
-        drawBg();
-        drawTorus({
-          texture: loader.texture,
-          grid: grid
-        });
+  const uniforms = require('./uniforms')(regl, {
+    n: n,
+    xrange: [-1, 1],
+    yrange: [-1, 1],
+    dt: 0.002,
+  });
+
+  const lines = require('./lines')(regl, {n: n});
+
+  const initialize = require('./initialize')(regl, {
+    u: `vec4 f(vec2 xy) {
+      float r = length(xy);
+      return vec4(exp(-r * r * 50.0), 0.0, 0.0, 1.0);
+    }`,
+    T: `vec4 f(vec2 xy) {
+      vec2 cen = vec2(1.0, 0.5);
+      vec2 xrel = (xy - cen) * vec2(4.0, 4.0);
+      return vec4(1.0 / (1.0 + 2.0 * dot(xrel, xrel)), 0, 0, 1);
+    }`,
+  });
+
+  uniforms(() => {
+    initialize(grid);
+  });
+
+  function iterate () {
+    uniforms(() => {
+      advect({
+        src: grid.u0,
+        dst: grid.u1,
+        u: grid.u0,
       });
+
+      computeDivergence({
+        src: grid.u0,
+        dst: grid.div
+      });
+
+      for (let i = 0; i < 10; i++) {
+        relax({
+          src: grid.phi0,
+          dst: grid.phi1,
+          div: grid.div
+        });
+
+        swap(grid, 'phi0', 'phi1');
+      }
+
+      project({
+        src: grid.u1,
+        dst: grid.u0,
+        phi: grid.phi0
+      });
+
+      computeDivergence({
+        src: grid.u0,
+        dst: grid.div
+      });
+
+      field({src: grid});
+      //lines({src: grid.u0});
     });
-  });
-}
+  }
+
+  if (true) {
+    regl.frame(({tick}) => {
+      //if (tick % 10 !== 1) return;
+      iterate();
+    });
+  } else {
+    iterate();
+  }
+};
