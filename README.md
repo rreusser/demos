@@ -57,7 +57,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
     </td>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/013"><img src="./thumbs/vortex.jpg" alt="" width="290"></a>
-      Signed distance function <a href="https://en.wikipedia.org/wiki/Vortex">Vortex</a>
+      <a href="https://en.wikipedia.org/wiki/Vortex">Vortex</a>, rendered as a signed distance function
     </td>
   </tr>
   <tr>
