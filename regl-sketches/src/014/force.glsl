@@ -22,7 +22,7 @@ vec3 force (vec2 xy, vec2 uv, float T) {
   return vec3(
       0.0,
       T * 10.0,
-      20000.0 * spot * (0.01 + 4.0 * length(mouse.zw)) - 1.0 * T
+      20000.0 * spot * (0.01 + 2.0 * length(mouse.zw)) - 1.0 * T
     ) +
     vec3(confinement * 60.0, 0.0)
     /*vec3(

@@ -4,8 +4,13 @@ module.exports = function (regl, opts) {
   var m = opts.n[0];
   var n = opts.n[1];
   window.regl = regl;
+  var canvas = regl._gl.canvas;
 
-  var mouseIJ = [window.innerWidth * 0.5, window.innerHeight * 0.5];
+  var mouseIJ = [
+    canvas.offsetWidth * 0.5,
+    canvas.offsetHeight * 0.75
+  ];
+
   var pMouse = [0, 0, 0, 0];
   var mouseDecay = 0.9;
 
@@ -103,8 +108,8 @@ module.exports = function (regl, opts) {
       ],
 
       mouse: ctx => {
-        var pm0 = mouseIJ[0] / (ctx.viewportWidth / ctx.pixelRatio) * 2.0 - 1.0;
-        var pm1 = -(mouseIJ[1] / (ctx.viewportHeight / ctx.pixelRatio) * 2.0  - 1.0);
+        var pm0 = mouseIJ[0] / (canvas.offsetWidth) * 2.0 - 1.0;
+        var pm1 = -(mouseIJ[1] / (canvas.offsetHeight) * 2.0  - 1.0);
 
         pMouse[2] *= mouseDecay;
         pMouse[3] *= mouseDecay;

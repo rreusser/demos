@@ -1,4 +1,29 @@
+const canvas = document.createElement('canvas');
+canvas.width = 384;
+canvas.height = 384;
+canvas.style.width = (384 * 2) + 'px';
+canvas.style.height = (384 * 2) + 'px';
+document.body.appendChild(canvas);
+
+require('insert-css')(`
+html, body {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+body {
+  background-color: black;
+}
+canvas {
+  position: relative;
+  top: 50vh;
+  transform: translate(0, -50%);
+}
+`);
+
 const regl = require('regl')({
+  canvas: canvas,
+  pixelRatio: 1,
   extensions: [
     'oes_texture_half_float',
     'oes_texture_half_float_linear',
@@ -100,7 +125,7 @@ function run (regl) {
   if (true) {
     regl.frame(({tick}) => {
       //if (tick % 30 !== 1) return
-      //if (tick > 800) return;
+      //if (tick > 80) return;
       iterate();
     });
   } else {
