@@ -1,6 +1,18 @@
+var mouse = require('mouse-change');
+
 module.exports = function (regl, opts) {
   var m = opts.n[0];
   var n = opts.n[1];
+  window.regl = regl;
+
+  var mouseIJ = [window.innerWidth * 0.5, window.innerHeight * 0.5];
+  var pMouse = [0, 0, 0, 0];
+  var mouseDecay = 0.9;
+
+  mouse(function (btn, x, y) {
+    mouseIJ[0] = x;
+    mouseIJ[1] = y;
+  });
 
   function compose (ta, tb) {
     return [
@@ -89,6 +101,26 @@ module.exports = function (regl, opts) {
         dx * dx * lapden,
         -dx * dx * dy * dy * lapden,
       ],
+
+      mouse: ctx => {
+        var pm0 = mouseIJ[0] / (ctx.viewportWidth / ctx.pixelRatio) * 2.0 - 1.0;
+        var pm1 = -(mouseIJ[1] / (ctx.viewportHeight / ctx.pixelRatio) * 2.0  - 1.0);
+
+        pMouse[2] *= mouseDecay;
+        pMouse[3] *= mouseDecay;
+        pMouse[2] += (1.0 - mouseDecay) * (pm0 - pMouse[0]);
+        pMouse[3] += (1.0 - mouseDecay) * (pm1 - pMouse[1]);
+
+        pMouse[0] = pm0;
+        pMouse[1] = pm1;
+
+        //pMouse[0] = 0.0;
+        //pMouse[1] = -0.75;
+        //pMouse[2] = 0.0;
+        //pMouse[3] = 0.0;
+
+        return pMouse;
+      },
 
       dt: opts.dt,
     }

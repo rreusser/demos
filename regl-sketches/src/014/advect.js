@@ -33,7 +33,7 @@ module.exports = function (regl) {
         vec2 xy = tr(uv, uv2xy);
         vec2 uvd = tr(xy - u.xy * dt, xy2uv);
 
-        vec3 f = force(xy, T);
+        vec3 f = force(xy, uv, T);
 
         gl_FragColor = vec4(texture2D(src, uvd).xyz + f * dt, 1);
       }
@@ -41,9 +41,19 @@ module.exports = function (regl) {
     attributes: {
       cl: [[-4, -4], [0, 4], [4, -4]]
     },
+    scissor: {
+      enable: true,
+      box: {
+        x: 1,
+        y: 1,
+        width: ctx => ctx.framebufferWidth - 2,
+        height: ctx => ctx.framebufferHeight - 2,
+      }
+    },
     uniforms: {
       u: regl.prop('u'),
       src: regl.prop('src'),
+      vorticity: regl.prop('vorticity')
     },
     framebuffer: regl.prop('dst'),
     depth: {enable: false},

@@ -20,9 +20,10 @@ function run (regl) {
   const log = require('./log')(regl);
   const field = require('./draw')(regl);
   const computeDivergence = require('./divergence')(regl);
+  const computeVorticity = require('./vorticity')(regl);
   const project = require('./project')(regl);
 
-  const n = [32, 32];
+  const n = [384, 384];
 
   const grid = require('./grid')(regl, {
     n: n,
@@ -33,7 +34,7 @@ function run (regl) {
     n: n,
     xrange: [-1, 1],
     yrange: [-1, 1],
-    dt: 0.002,
+    dt: 0.001,
   });
 
   const lines = require('./lines')(regl, {n: n});
@@ -56,9 +57,17 @@ function run (regl) {
 
   function iterate () {
     uniforms(() => {
+      // Use the divergence buffer to store the vorticity just between
+      // this step and the advection:
+      computeVorticity({
+        src: grid.u0,
+        dst: grid.div
+      });
+
       advect({
         src: grid.u0,
         dst: grid.u1,
+        vorticity: grid.div,
         u: grid.u0,
       });
 
@@ -67,7 +76,7 @@ function run (regl) {
         dst: grid.div
       });
 
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 15; i++) {
         relax({
           src: grid.phi0,
           dst: grid.phi1,
@@ -83,11 +92,6 @@ function run (regl) {
         phi: grid.phi0
       });
 
-      computeDivergence({
-        src: grid.u0,
-        dst: grid.div
-      });
-
       field({src: grid});
       //lines({src: grid.u0});
     });
@@ -95,7 +99,8 @@ function run (regl) {
 
   if (true) {
     regl.frame(({tick}) => {
-      //if (tick % 10 !== 1) return;
+      //if (tick % 30 !== 1) return
+      //if (tick > 800) return;
       iterate();
     });
   } else {

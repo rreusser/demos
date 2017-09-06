@@ -14,8 +14,13 @@ module.exports = function (regl) {
       varying vec2 uv;
       uniform sampler2D u;
       void main () {
-        vec4 color = texture2D(u, uv) * 0.1 + 0.5;
-        gl_FragColor = vec4(color.xyz, 1);
+        vec4 color = texture2D(u, uv) * 0.05 + 0.5;
+        gl_FragColor = vec4(
+          color.x * color.z,
+          color.z - 0.5,
+          color.y * color.z,
+          1.0
+        );
       }
     `,
     attributes: {cl: [-4, -4, 0, 4, 4, -4]},
