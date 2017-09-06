@@ -8,7 +8,7 @@ module.exports = function (regl, opts) {
 
   var mouseIJ = [
     canvas.offsetWidth * 0.5,
-    canvas.offsetHeight * 0.75
+    canvas.offsetHeight * 0.95
   ];
 
   var pMouse = [0, 0, 0, 0];
