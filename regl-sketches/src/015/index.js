@@ -18,11 +18,11 @@ rtBtn.innerHTML = 'Rayleigh-Taylor';
 const khBtn = document.createElement('button');
 khBtn.innerHTML = 'Kelvin-Helmholtz';
 
+btns.appendChild(rtBtn);
+btns.appendChild(khBtn);
 btns.appendChild(interfaceBtn);
 btns.appendChild(gridBtn);
 btns.appendChild(randomBtn);
-btns.appendChild(rtBtn);
-btns.appendChild(khBtn);
 btns.appendChild(resetBtn);
 btns.classList.add('btns');
 document.body.appendChild(btns);
