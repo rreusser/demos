@@ -1,39 +1,42 @@
-module.exports = function (regl, n) {
+module.exports = function (regl) {
   return regl({
     vert: `
       precision mediump float;
-      attribute vec4 x;
-      uniform float t, aspectRatio;
-
+      uniform sampler2D src;
+      attribute vec2 uv;
       void main () {
-        gl_Position = vec4(
-          x.x,
-          x.y * aspectRatio,
-          0,
-          1
-        );
-        gl_PointSize = 4.0;
+        vec2 xy = texture2D(src, uv).xy;
+        gl_Position = vec4(xy, 0, 1);
+        gl_PointSize = 1.0;
       }
     `,
     frag: `
       precision mediump float;
-
       void main () {
-        gl_FragColor = vec4(0, 1, 1, 1);
+        gl_FragColor = vec4(vec3(1.0), 0.2);
       }
     `,
-    depth: {
-      enable: false
-    },
-    primitive: 'points',
     attributes: {
-      x: regl.prop('x'),
+      uv: regl.prop('positions')
     },
     uniforms: {
-      t: regl.prop('t'),
-      aspectRatio: ctx => ctx.framebufferWidth / ctx.framebufferHeight
+      src: regl.prop('src'),
     },
-    count: (ctx, props) => props.x.length / 4
+    blend: {
+      enable: true,
+      func: {
+        srcRGB: 'src alpha',
+        srcAlpha: 1,
+        dstRGB: 1,
+        dstAlpha: 1
+      },
+      equation: {
+        rgb: 'add',
+        alpha: 'add'
+      },
+    },
+    depth: {enable: false},
+    count: regl.prop('n'),
+    primitive: 'points',
   });
 };
-
