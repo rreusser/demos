@@ -6,7 +6,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 <table>
   <tr>
     <td width="300" valign="top">
-      <a href="https://codepen.io/rsreusser/pen/gGmVYX"><img src="./thumbs/diffraction.jpg" alt="1D wave packet diffraction through a slit" width="290"></a>
+      <a href="https://codepen.io/rsreusser/pen/BwRMRg"><img src="./thumbs/diffraction.jpg" alt="1D wave packet diffraction through a slit" width="290"></a>
       1D diffraction of a wave packet passing within a known range at a known time.
     </td>
     <td width="300" valign="top">
