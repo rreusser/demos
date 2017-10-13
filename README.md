@@ -7,7 +7,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
   <tr>
     <td width="300" valign="top">
       <a href="https://codepen.io/rsreusser/pen/RLBmbQ"><img src="./thumbs/n-body.jpg" alt="N-body gravitational trajectories" width="290"></a>
-      <a href="https://en.wikipedia.org/wiki/N-body_problem">N-body</a> gravitational trajectories
+      <a href="https://en.wikipedia.org/wiki/N-body_problem">N-body</a> gravitational trajectories using <a href="https://github.com/scijs/ode45-cash-karp">RK45 Cash-Karp</a> adaptive integration.
     </td>
     <td width="300" valign="top">
       <a href="https://codepen.io/rsreusser/pen/BwRMRg"><img src="./thumbs/diffraction.jpg" alt="1D wave packet diffraction through a slit" width="290"></a>
