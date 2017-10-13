@@ -6,6 +6,10 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 <table>
   <tr>
     <td width="300" valign="top">
+      <a href="https://codepen.io/rsreusser/pen/RLBmbQ"><img src="./thumbs/n-body.jpg" alt="N-body gravitational trajectories" width="290"></a>
+      <a href="https://en.wikipedia.org/wiki/N-body_problem">N-body</a> gravitational trajectories
+    </td>
+    <td width="300" valign="top">
       <a href="https://codepen.io/rsreusser/pen/gGmVYX"><img src="./thumbs/diffraction.jpg" alt="1D wave packet diffraction through a slit" width="290"></a>
       1D diffraction of a wave packet passing within a known range at a known time.
     </td>
@@ -13,12 +17,12 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
       <a href="http://rickyreusser.com/plotly-airfoil-example/"><img src="./thumbs/airfoil.png" alt="Karman-Trefftz airfoil" width="290"></a>
       Potential flow over a cylinder conformally mapped into an airfoil via the <a href="https://en.wikipedia.org/wiki/Joukowsky_transform#K.C3.A1rm.C3.A1n.E2.80.93Trefftz_transform">Karman-Trefftz</a> transform
     </td>
+  </tr>
+  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/schrodinger-1d/"><img src="./thumbs/schrodingers-equation.jpg" alt="The Schrödinger Equation with a potential barrier in 1D, using the FFT for spatial differencing, RK-4 for temporal integration, and Perfectly Matched Layers (PML) for non-reflecting boundary conditions." width="290"></a>
       Frequency-domain solution of the 1D <a href="https://en.wikipedia.org/wiki/Schr%C3%B6dinger_equation">Schrodinger Equation</a> with Perfectly Matched Layers (PML)
     </td>
-  </tr>
-  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/plots/tsucs2.html"><img src="./thumbs/tsucs2.jpg" alt="Precomputing a strange attractor (TSUCS2) and then animating it as a point cloud" width="290"></a>
       Three-Scroll Unified Chaotic System Attractor #2 (TSUCS2)
@@ -27,12 +31,12 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
       <a href="http://codepen.io/rsreusser/pen/GjZwYb"><img src="./thumbs/sierpinski-pentagon.jpg" alt="Testing GPU limits using plotly.js point clouds" width="290"></a>
       ❄️❄️ Fractals ❄️❄️
     </td>
+  </tr>
+  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/gaussian-mixture-estimator/"><img src="./thumbs/gaussian-mixture-estimator.jpg" alt="Fitting n-dimensional Gaussian mixture models to scatter data" width="290"></a>
       Gaussian Mixture estimation via <a href="https://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">Expectation Maximization</a> (EM)
     </td>
-  </tr>
-  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/plots/tinkerbell.html"><img src="./thumbs/tinkerbell.jpg" alt="The tinkerbell map using plotly's point cloud feature" width="290"></a>
       <a href="https://en.wikipedia.org/wiki/Tinkerbell_map">Tinkerbell map</a>
@@ -41,6 +45,8 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
       <a href="http://rickyreusser.com/kmpp/"><img src="./thumbs/k-means.jpg" alt="K-means clustering" width="290"></a>
       <a href="https://en.wikipedia.org/wiki/K-means_clustering">K-means</a> clustering meets <a href="https://en.wikipedia.org/wiki/Lorenz_system">Lorenz Attractor</a>
     </td>
+  </tr>
+  <tr>
     <td width="300" valign="top">
       <a href="https://plot.ly/~rreusser/55.embed"><img src="./thumbs/thesis.jpg" alt="Guided Wave Transmission in a Ridge-Stiffened Plate" width="290"></a>
       <a href="https://s3.amazonaws.com/rickyreusser.com/wave-scattering-by-an-integral-stiffener.pdf">Ultrasonic waves</a>
