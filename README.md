@@ -95,7 +95,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
     </td>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/010"><img src="./thumbs/flow.png" alt="" width="290"></a>
-      Analytical fluid flow over an airfoil using the <a href="https://en.wikipedia.org/wiki/Joukowsky_transform#K.C3.A1rm.C3.A1n.E2.80.93Trefftz_transform">Kármán–Trefftz</a> transform
+      Analytical fluid flow over an airfoil using the <a href="https://en.wikipedia.org/wiki/Joukowsky_transform#K.C3.A1rm.C3.A1n.E2.80.93Trefftz_transform">Kármán–Trefftz</a> transform. Computed and visualized in a single GPU pass.
     </td>
   </tr>
   <tr>
