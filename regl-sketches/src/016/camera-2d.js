@@ -141,6 +141,9 @@ module.exports = function makeCamera2D (regl, opts) {
     taint: function () {
       dirty = true;
     },
+    matrix: function () {
+      return mView;
+    },
     resize: function () {
       computeViewport();
 

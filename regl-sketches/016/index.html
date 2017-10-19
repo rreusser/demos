@@ -427,7 +427,7 @@ function failNicely (callback, options) {
   }
 }
 
-},{"h":42}],17:[function(require,module,exports){
+},{"h":43}],17:[function(require,module,exports){
 module.exports = hsl2rgb
 function hsl2rgb (hsl) {
   var h = hsl[0],
@@ -1457,6 +1457,27 @@ function transpose(out, a) {
     return out;
 };
 },{}],42:[function(require,module,exports){
+module.exports = transformMat4;
+
+/**
+ * Transforms the vec3 with a mat4.
+ * 4th vector component is implicitly '1'
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the vector to transform
+ * @param {mat4} m matrix to transform with
+ * @returns {vec3} out
+ */
+function transformMat4(out, a, m) {
+    var x = a[0], y = a[1], z = a[2],
+        w = m[3] * x + m[7] * y + m[11] * z + m[15]
+    w = w || 1.0
+    out[0] = (m[0] * x + m[4] * y + m[8] * z + m[12]) / w
+    out[1] = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w
+    out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w
+    return out
+}
+},{}],43:[function(require,module,exports){
 ;(function () {
 
 function h() {
@@ -1521,7 +1542,7 @@ else
   this.h = h
 })()
 
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 module.exports = interactionEvents;
@@ -1872,7 +1893,7 @@ function interactionEvents (opts, callback) {
   return emitter;
 }
 
-},{"event-emitter":15,"mouse-change":44,"mouse-event":46,"mouse-event-offset":45,"util-extend":49}],44:[function(require,module,exports){
+},{"event-emitter":15,"mouse-change":45,"mouse-event":47,"mouse-event-offset":46,"util-extend":50}],45:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -2079,7 +2100,7 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":46}],45:[function(require,module,exports){
+},{"mouse-event":47}],46:[function(require,module,exports){
 var rootPosition = { left: 0, top: 0 }
 
 module.exports = mouseEventOffset
@@ -2106,7 +2127,7 @@ function getBoundingClientOffset (element) {
   }
 }
 
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -2168,7 +2189,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 'use strict'
 
 module.exports = IntegratorFactory
@@ -2473,7 +2494,6 @@ Integrator.prototype.step = function( tLimit ) {
 
 Integrator.prototype.steps = function( n, tLimit ) {
   for(var step=0; step<n; step++) {
-    //if (this.verbose) console.log(this.t);
     if( ! this.step(tLimit) ) return false;
   }
 }
@@ -2482,7 +2502,7 @@ function IntegratorFactory( y0, deriv, t, dt, options ) {
   return new Integrator( y0, deriv, t, dt, options )
 }
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
@@ -11987,7 +12007,7 @@ return wrapREGL;
 })));
 
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -12022,7 +12042,7 @@ function extend(origin, add) {
   return origin;
 }
 
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -12041,7 +12061,7 @@ function extend(target) {
     return target
 }
 
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 'use strict';
 
 var interactionEvents = require('interaction-events');
@@ -12188,6 +12208,9 @@ module.exports = function makeCamera2D(regl, opts) {
     taint: function () {
       dirty = true;
     },
+    matrix: function () {
+      return mView;
+    },
     resize: function () {
       computeViewport();
 
@@ -12196,13 +12219,13 @@ module.exports = function makeCamera2D(regl, opts) {
     }
   };
 };
-},{"gl-mat4":27,"interaction-events":43,"xtend/mutable":50}],52:[function(require,module,exports){
+},{"gl-mat4":27,"interaction-events":44,"xtend/mutable":51}],53:[function(require,module,exports){
 var hsl2rgb = require('float-hsl2rgb');
 
 module.exports = function (i, imax, l) {
   return hsl2rgb([(i + 0.65) / imax, 0.65, l === undefined ? 0.65 : l]);
 };
-},{"float-hsl2rgb":17}],53:[function(require,module,exports){
+},{"float-hsl2rgb":17}],54:[function(require,module,exports){
 module.exports = function (regl) {
   return regl({
     vert: "\n      precision mediump float;\n      attribute vec2 xy;\n      varying vec2 uv;\n      varying vec3 dir;\n      void main () {\n        uv = xy;\n        gl_Position = vec4(xy, 0, 1);\n      }\n    ",
@@ -12212,20 +12235,63 @@ module.exports = function (regl) {
     count: 3
   });
 };
-},{}],54:[function(require,module,exports){
-module.exports = function (regl) {
-  return regl({
-    vert: '\n      precision mediump float;\n      uniform mat4 viewproj;\n      attribute vec3 xyz;\n      attribute vec3 color;\n      uniform float pointSize;\n      varying vec3 c;\n\n      void main () {\n        c = color;\n        gl_Position = viewproj * vec4(xyz, 1);\n        gl_PointSize = pointSize;\n      }\n    ',
-    frag: '\n      precision mediump float;\n      varying vec3 c;\n\n      void main () {\n        float r2 = dot(gl_PointCoord - 0.5, gl_PointCoord - 0.5);\n        if (r2 > 0.25) discard;\n        gl_FragColor = vec4(c, 1);\n      }\n    ',
-    attributes: {
-      xyz: regl.prop('xyz'),
-      color: regl.prop('color')
-    },
-    primitive: 'points',
-    count: regl.prop('count')
-  });
-};
 },{}],55:[function(require,module,exports){
+var transform = require('gl-vec3/transformMat4');
+var color = require('./color');
+
+function toRGB(vec) {
+  vec[0] = Math.round(256 * Math.max(0, Math.min(1, vec[0])));
+  vec[1] = Math.round(256 * Math.max(0, Math.min(1, vec[1])));
+  vec[2] = Math.round(256 * Math.max(0, Math.min(1, vec[2])));
+
+  return 'rgb(' + vec + ')';
+}
+
+module.exports = function (camera, n) {
+  var i;
+  var els = [];
+  var xyz = [0, 0, 0];
+
+  var container = document.createElement('div');
+  container.style.position = 'absolute';
+  container.style.top = '0';
+  container.style.left = '0';
+  container.style.width = '100%';
+  container.style.height = '100%';
+  container.style.pointerEvents = 'none';
+  document.body.appendChild(container);
+
+  for (i = 0; i < n; i++) {
+    var el = document.createElement('div');
+    el.style.backgroundColor = toRGB(color(i, n, 0.5));
+    el.style.width = '10px';
+    el.style.height = '10px';
+    el.style.top = '-5px';
+    el.style.left = '-5px';
+    el.style.borderRadius = '100%';
+    el.style.position = 'absolute';
+    container.appendChild(el);
+    els.push(el);
+  }
+
+  return function (state) {
+    var i;
+    var p = state.positions;
+    var mView = camera.matrix();
+    for (i = 0, j = 0; i < p.length; i += 3, j++) {
+      xyz[0] = p[i];
+      xyz[1] = p[i + 1];
+      xyz[2] = p[i + 2];
+
+      transform(xyz, xyz, camera.matrix());
+      var x = (0.5 + 0.5 * xyz[0]) * window.innerWidth;
+      var y = (0.5 - 0.5 * xyz[1]) * window.innerHeight;
+
+      els[j].style.transform = 'translate3D(' + x + 'px,' + y + 'px, 0px)';
+    }
+  };
+};
+},{"./color":53,"gl-vec3/transformMat4":42}],56:[function(require,module,exports){
 module.exports = function (regl) {
   return regl({
     vert: '\n      precision mediump float;\n\n      attribute vec3 xyz, uvw;\n      attribute float dir;\n      uniform mat4 viewproj;\n      uniform float aspect, lineWidth;\n      varying float v;\n\n      void main () {\n\n        vec2 t = normalize((viewproj * vec4(uvw, 0)).yx);\n        t.y = -t.y;\n        t.x *= aspect;\n        t *= lineWidth;\n\n        vec4 screenpos = (viewproj * vec4(xyz, 1));\n        screenpos /= screenpos.w;\n\n        v = dir;\n\n        gl_Position = screenpos + dir * vec4(t, 0, 0);\n\n      }\n    ',
@@ -12256,7 +12322,7 @@ module.exports = function (regl) {
     elements: regl.prop('els')
   });
 };
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 var color = require('./color');
 
 module.exports = function (regl) {
@@ -12283,6 +12349,7 @@ module.exports = function (regl) {
   var ret = {
     updateBuffers: function (data) {
       ret.count = data.length / 3;
+      ret.positions = data;
       ret.xyz = (ret.xyz || regl.buffer)({
         data: data
       });
@@ -12292,7 +12359,7 @@ module.exports = function (regl) {
 
   return ret;
 };
-},{"./color":52}],57:[function(require,module,exports){
+},{"./color":53}],58:[function(require,module,exports){
 var ode45 = require('ode45-cash-karp');
 
 var dtMin = 2e-7;
@@ -12315,7 +12382,7 @@ module.exports = function (y0, dt, state) {
 
   return {
     step: function () {
-      integrator.steps(Infinity, integrator.t + dt);
+      integrator.steps(10000, integrator.t + dt);
 
       var n = y0.length / 6;
 
@@ -12329,27 +12396,38 @@ module.exports = function (y0, dt, state) {
     }
   };
 };
-},{"./newtons-law":60,"ode45-cash-karp":47}],58:[function(require,module,exports){
+},{"./newtons-law":61,"ode45-cash-karp":48}],59:[function(require,module,exports){
 var initialConditions = require('./initial-conditions');
 var computeStatic = require('./static-trajectory');
 var computeDynamic = require('./dynamic-trajectory');
 var regl = require('regl')({
+  attributes: {
+    antialias: false,
+    stencil: false
+  },
   pixelRatio: 2,
   extensions: ['oes_element_index_uint'],
   onDone: require('fail-nicely')(run)
 });
 
 function run(regl) {
-  var camera = require('./camera-2d')(regl);
+  var aspect = window.innerWidth / window.innerHeight;
+  var rect = { xmin: -0.65, xmax: 0.65 };
+  if (aspect > 1.0) {
+    rect.xmin *= aspect;
+    rect.xmax *= aspect;
+  }
+  var camera = require('./camera-2d')(regl, rect);
   var staticState = require('./state-vector')(regl, 3, 15000);
   var dynamicState = require('./dynamic-state')(regl);
-  var drawDynamic = require('./draw-dynamic')(regl);
+  //const drawDynamic = require('./draw-dynamic')(regl);
+  var drawElements = require('./draw-elements')(camera, 3);
   var drawStatic = require('./draw-static')(regl);
   var drawBg = require('./draw-bg')(regl);
   var uniforms = require('./uniforms')(regl);
   var transfer = require('./transfer-fbo')(regl);
 
-  var y0 = initialConditions.yinyang2a;
+  var y0 = initialConditions.yinyang2b;
   var tmax = 60.0;
   var dt = 0.02;
 
@@ -12357,37 +12435,46 @@ function run(regl) {
   computeStatic(y0, tmax, staticState);
   var trajectory = computeDynamic(y0, dt, dynamicState);
 
+  /*
   var staticFbo = regl.framebuffer({
     width: regl._gl.canvas.width,
-    height: regl._gl.canvas.height
+    height: regl._gl.canvas.height,
+  });*/
+
+  window.addEventListener('resize', function () {
+    camera.taint();
+    camera.resize();
+
+    //staticFbo.resize(regl._gl.canvas.width, regl._gl.canvas.height);
   });
 
   camera.taint();
+
   regl.frame(function (_ref) {
     var tick = _ref.tick;
 
-
     trajectory.step();
+    drawElements(dynamicState);
 
     camera.draw(function (_ref2) {
       var dirty = _ref2.dirty;
 
       uniforms(function () {
-
         if (dirty) {
-          staticFbo.use(function () {
-            drawBg();
-            drawStatic(staticState.paths);
-          });
+          //staticFbo.use(() => {
+          drawBg();
+          drawStatic(staticState.paths);
+          //});
         }
 
-        transfer({ src: staticFbo });
-        drawDynamic(dynamicState);
+        //transfer({src: staticFbo});
+
+        //drawDynamic(dynamicState);
       });
     });
   });
 }
-},{"./camera-2d":51,"./draw-bg":53,"./draw-dynamic":54,"./draw-static":55,"./dynamic-state":56,"./dynamic-trajectory":57,"./initial-conditions":59,"./state-vector":61,"./static-trajectory":62,"./transfer-fbo":63,"./uniforms":64,"fail-nicely":16,"regl":48}],59:[function(require,module,exports){
+},{"./camera-2d":52,"./draw-bg":54,"./draw-elements":55,"./draw-static":56,"./dynamic-state":57,"./dynamic-trajectory":58,"./initial-conditions":60,"./state-vector":62,"./static-trajectory":63,"./transfer-fbo":64,"./uniforms":65,"fail-nicely":16,"regl":49}],60:[function(require,module,exports){
 // Periodic 3-body orbits from: http://three-body.ipb.ac.rs/
 // Web gallery contains data from:
 // [1] R. Broucke and D. Boggs, Periodic orbits in the Planar General Three-Body Problem, Celest. Mech. 11, 13 (1975).
@@ -12465,7 +12552,7 @@ module.exports = {
   Henon3: [-0.9738300580, 0.0000000000, 0, 0.0000000000, 4.3072892019, 0, 1.9988948637, 0.0000000000, 0, 0.0000000000, 0.1333821680, 0, -1.0250648057, 0.0000000000, 0, 0.0000000000, -4.4406713699, 0],
   Henon42: [1.1593879407, 0.0000000000, 0, 0.0000000000, 1.1787714143, 0, 1.7740754142, 0.0000000000, 0, 0.0000000000, -0.6271771385, 0, -2.9334633549, 0.0000000000, 0, 0.0000000000, -0.5515942758, 0]
 };
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function dydt(yp, y) {
   var i, j, rx, ry, rz, r3;
   var n = y.length;
@@ -12486,7 +12573,7 @@ module.exports = function dydt(yp, y) {
     }
   }
 };
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 var color = require('./color');
 
 module.exports = function (regl, maxpaths, nmax) {
@@ -12539,7 +12626,7 @@ module.exports = function (regl, maxpaths, nmax) {
     }
   };
 };
-},{"./color":52}],62:[function(require,module,exports){
+},{"./color":53}],63:[function(require,module,exports){
 var ode45 = require('ode45-cash-karp');
 
 var dt = 0.01;
@@ -12590,7 +12677,7 @@ module.exports = function (y0, tmax, state) {
 
   return state;
 };
-},{"./newtons-law":60,"ode45-cash-karp":47}],63:[function(require,module,exports){
+},{"./newtons-law":61,"ode45-cash-karp":48}],64:[function(require,module,exports){
 module.exports = function (regl) {
   return regl({
     vert: '\n      precision mediump float;\n      attribute vec2 xy;\n      varying vec2 uv;\n      void main () {\n        uv = xy * 0.5 + 0.5;\n        gl_Position = vec4(xy, 0, 1);\n      }\n    ',
@@ -12601,7 +12688,7 @@ module.exports = function (regl) {
     count: 3
   });
 };
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function (regl) {
   var wid = 1.5;
   return regl({
@@ -12622,6 +12709,6 @@ module.exports = function (regl) {
     }
   });
 };
-},{}]},{},[58]);
+},{}]},{},[59]);
 </script>
 </html>

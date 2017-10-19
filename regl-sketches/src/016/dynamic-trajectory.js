@@ -20,7 +20,7 @@ module.exports = function (y0, dt, state) {
 
   return {
     step: function () {
-      integrator.steps(Infinity, integrator.t + dt);
+      integrator.steps(10000, integrator.t + dt);
 
       var n = y0.length / 6;
 

@@ -24,6 +24,7 @@ module.exports = function (regl) {
   var ret = {
     updateBuffers: function (data) {
       ret.count = data.length / 3;
+      ret.positions = data;
       ret.xyz = (ret.xyz || regl.buffer)({
         data: data,
       });
