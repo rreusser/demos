@@ -86,7 +86,7 @@ These demos are made using [regl](https://github.com/regl-project/regl), [plotly
     </td>
     <td width="263" valign="top">
       <a href="http://rickyreusser.com/complex-zeros-delves-lyness/zeros.html"><img src="./thumbs/zeros.jpg" alt="" width="290"></a>
-      Computing the zeros of a complex analytic function via contour integration
+      Computing the zeros of a complex analytic function <a href="https://github.com/rreusser/complex-zeros-delves-lyness">via contour integration</a>
     </td>
   </tr>
   <tr>
