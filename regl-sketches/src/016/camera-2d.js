@@ -83,7 +83,7 @@ module.exports = function makeCamera2D (regl, opts) {
 
     ev.preventDefault();
 
-    ev.dtheta = 0;
+    //ev.dtheta = 0;
     var c = Math.cos(ev.dtheta);
     var s = Math.sin(ev.dtheta);
 
