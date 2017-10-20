@@ -61,7 +61,7 @@ function processFiles (pattern) {
 
       console.log('srcUrl', srcUrl);
 
-      var b = browserify();
+      var b = browserify({debug: false});
       b.add(path.join(__dirname, '../', filename));
       b.transform(require('es2040'));
       b.transform(require('brfs'));
@@ -75,8 +75,8 @@ function processFiles (pattern) {
         }))
         .pipe(ghcornerify({
           url: srcUrl,
-          bg: '#fff',
-          fg: '#2a3235',
+          fg: '#fff',
+          bg: '#2a3235',
         }))
         .pipe(htmlstream);
 

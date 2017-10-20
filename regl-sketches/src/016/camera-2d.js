@@ -2,9 +2,11 @@
 
 var interactionEvents = require('interaction-events');
 var extend = require('xtend/mutable');
-var mat4 = require('gl-mat4');
+var identity = require('gl-mat4/identity');
+var invert = require('gl-mat4/invert');
+var multiply = require('gl-mat4/multiply');
 
-mat4.viewport = function viewport(out, x, y, w, h, n, f) {
+function viewport(out, x, y, w, h, n, f) {
   out[0] = w * 0.5;
   out[1] = 0;
   out[2] = 0;
@@ -51,19 +53,19 @@ module.exports = function makeCamera2D (regl, opts) {
   var width = getWidth();
   var height = getHeight();
 
-  var mView = mat4.identity([]);
+  var mView = identity([]);
   mView[0] = 1 / (xmax - xmin);
   mView[5] = 1 / (xmax - xmin) * aspectRatio * width / height
 
-  var mViewport = mat4.identity([]);
-  var mInvViewport = mat4.identity([]);
+  var mViewport = identity([]);
+  var mInvViewport = identity([]);
 
   function computeViewport () {
     width = getWidth();
     height = getHeight();
 
-    mat4.viewport(mViewport, 0, height, width, -height, 0, 1);
-    mat4.invert(mInvViewport, mViewport);
+    viewport(mViewport, 0, height, width, -height, 0, 1);
+    invert(mInvViewport, mViewport);
   }
 
   computeViewport();
@@ -115,9 +117,9 @@ module.exports = function makeCamera2D (regl, opts) {
     dViewport[14] = 0;
     dViewport[15] = 1;
 
-    mat4.multiply(dViewport, dViewport, mViewport);
-    mat4.multiply(dViewport, mInvViewport, dViewport);
-    mat4.multiply(mView, dViewport, mView);
+    multiply(dViewport, dViewport, mViewport);
+    multiply(dViewport, mInvViewport, dViewport);
+    multiply(mView, dViewport, mView);
     dirty = true;
   });
 
