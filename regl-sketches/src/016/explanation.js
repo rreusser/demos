@@ -11,7 +11,7 @@ const css = require('insert-css')(`
   display: inline-block;
   color: #eee;
   max-width: 450px;
-  line-height: 1.4;
+  line-height: 1.6;
 }
 
 .title {
@@ -62,6 +62,7 @@ li a:hover {
 
 .section {
   padding: 15px;
+  margin-bottom: 1em;
 }
 
 .content {

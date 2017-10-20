@@ -3,7 +3,7 @@ const color = require('./color');
 module.exports = function (regl, maxpaths, nmax) {
   var i, n, j;
   const paths = [];
-  nmax = nmax || 15000;
+  nmax = nmax || 20000;
 
   for (i = 0; i < maxpaths; i++) {
     var dir = new Int8Array(nmax * 2);

@@ -3,10 +3,9 @@ const ode45 = require('ode45-cash-karp');
 const dt = 0.01;
 const dtMin = 2e-7;
 const dtMax = 0.1;
-const tol = 1e-11;
 const newtonsLaw = require('./newtons-law');
 
-module.exports = function (y0, tmax, state) {
+module.exports = function (y0, tmax, state, tol) {
   var i, j, k;
   const y = y0.slice();
   const n = y0.length;
@@ -15,7 +14,7 @@ module.exports = function (y0, tmax, state) {
     verbose: true,
     dtMinMag: dtMin,
     dtMaxMag: dtMax,
-    tol: tol
+    tol: tol || 1e-11
   });
 
   k = 0;

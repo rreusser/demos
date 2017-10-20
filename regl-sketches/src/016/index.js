@@ -28,20 +28,33 @@ function run (regl) {
   const uniforms = require('./uniforms')(regl);
   const transfer = require('./transfer-fbo')(regl);
 
-  let y0 = initialConditions.yinyang2b;
+  let y0;
+  let intl;
   let tmax = 60.0;
+  let tol = 1e-11;
   let dt = 0.02;
 
+  function setInitial (name) {
+    intl = initialConditions[name];
+    y0 = intl.y.slice();
+    tmax = intl.tmax === undefined ? 60.0 : intl.tmax;
+    tol = intl.tol === undefined ? 1e-10 : intl.tol;
+    computeStatic(y0, tmax, staticState, tol);
+    if (trajectory) trajectory.setY(y0);
+    camera.taint();
+    window.location.hash = name;
+  }
+
   staticState.setPathCount(3);
-  computeStatic(y0, tmax, staticState);
+
+  setInitial((window.location.hash || '').replace(/^#/,''), 'YinYang2b');
+
+  computeStatic(y0, tmax, staticState, tol);
   var trajectory = computeDynamic(y0, dt, dynamicState);
 
-  document.body.appendChild(require('./explanation')(function (name) {
-    var intl = initialConditions[name];
-    computeStatic(intl, tmax, staticState);
-    trajectory.setY(intl);
-    camera.taint();
-  }));
+
+
+  document.body.appendChild(require('./explanation')(setInitial));
 
   /*
   var staticFbo = regl.framebuffer({
