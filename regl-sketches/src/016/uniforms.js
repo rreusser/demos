@@ -1,5 +1,5 @@
 module.exports = function (regl) {
-  var wid = 1.8;
+  var wid = 2.2;
   return regl({
     uniforms: {
       viewproj: regl.context('view'),
