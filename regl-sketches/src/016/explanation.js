@@ -115,9 +115,9 @@ function render (onChange) {
     var name;
     if ((name = ev.target.getAttribute('data-name'))) {
       onChange(name);
+      ev.stopPropagation();
+      ev.preventDefault();
     }
-    ev.stopPropagation();
-    ev.preventDefault();
   });
 
   title.addEventListener('click', function () {
