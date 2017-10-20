@@ -133,7 +133,7 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
     </td>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/003"><img src="./thumbs/schwarzschild.jpg" alt="" width="290"></a>
-      Integrating GPGPU particle trajectories in Schwarzschild spacetime (a black hole!)
+      GPGPU Integration of geodesics in Schwarzschild spacetime (a black hole!)
     </td>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/002"><img src="./thumbs/flamms-paraboloid.jpg" alt="" width="290"></a>
