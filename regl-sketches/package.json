@@ -64,6 +64,7 @@
     "brfs": "^1.4.3",
     "browserify": "^13.1.1",
     "budo": "^9.3.0",
+    "envify": "^4.1.0",
     "es2040": "^1.2.4",
     "geo-center": "^1.0.1",
     "github-cornerify": "^1.0.6",
@@ -79,6 +80,7 @@
     "query-string": "^4.3.2",
     "screen-projected-lines": "^1.2.0",
     "soundcloud-badge": "^1.1.0",
-    "stanford-dragon": "^1.1.1"
+    "stanford-dragon": "^1.1.1",
+    "uglify-stream": "git+https://github.com/goto-bus-stop/uglify-stream.git#next"
   }
 }

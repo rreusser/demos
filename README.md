@@ -58,6 +58,10 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
 <table >
   <tr>
     <td width="300" valign="top">
+      <a href="http://rickyreusser.com/demos/regl-sketches/016/"><img src="./thumbs/n-body-regl.jpg" alt="N-body gravitational trajectories" width="290"></a>
+      <a href="https://en.wikipedia.org/wiki/N-body_problem">N-body</a> gravitational trajectories using <a href="https://github.com/scijs/ode45-cash-karp">RK4(5) Cash-Karp</a> adaptive integration.
+    </td>
+    <td width="300" valign="top">
       <a href="https://codepen.io/rsreusser/full/rGLRBV/"><img src="./thumbs/disco.jpg" alt="" width="290"></a>
       🕺
     </td>
@@ -65,12 +69,12 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
       <a href="http://rickyreusser.com/demos/regl-sketches/015/"><img src="./thumbs/kelvin-helmholtz.jpg" alt="" width="290"></a>
       <a href="https://en.wikipedia.org/wiki/Rayleigh%E2%80%93Taylor_instability">Rayleigh-Taylor</a> and <a href="https://en.wikipedia.org/wiki/Kelvin%E2%80%93Helmholtz_instability">Kelvin-Helmholtz</a> hydrodynamic instabilities.
     </td>
+  </tr>
+  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/014/"><img src="./thumbs/fluid.jpg" alt="" width="290"></a>
       Classic fluid simulation from <a href="https://graphics.stanford.edu/papers/smoke/smoke.pdf">Visual Simulation of Smoke</a>.
     </td>
-  </tr>
-  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/747-model"><img src="./thumbs/747.png" alt="" width="290"></a>
       747 (modeled with <a href="http://www.wings3d.com/">Wings&nbsp;3D</a>)
@@ -79,12 +83,12 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
       <a href="http://rickyreusser.com/sailplane-model"><img src="./thumbs/sailplane.png" alt="" width="290"></a>
       Sailplane (modeled with <a href="http://www.wings3d.com/">Wings&nbsp;3D</a>)
     </td>
+  </tr>
+  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/013"><img src="./thumbs/vortex.jpg" alt="" width="290"></a>
       <a href="https://en.wikipedia.org/wiki/Vortex">Vortex</a>, rendered as a signed distance function
     </td>
-  </tr>
-  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/012"><img src="./thumbs/torus.jpg" alt="" width="290"></a>
       <a href="https://en.wikipedia.org/wiki/Umbilic_torus">Umbilic Torus</a>
@@ -93,12 +97,12 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
       <a href="http://rickyreusser.com/demos/regl-sketches/011"><img src="./thumbs/reprise.jpg" alt="" width="290"></a>
       Fun with the SoundCloud API, Part 2: this time with <a href="https://github.com/Erkaman/glsl-godrays">godrays</a>
     </td>
+  </tr>
+  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/010"><img src="./thumbs/flow.png" alt="" width="290"></a>
       Analytical fluid flow over an airfoil using the <a href="https://en.wikipedia.org/wiki/Joukowsky_transform#K.C3.A1rm.C3.A1n.E2.80.93Trefftz_transform">Kármán–Trefftz</a> transform. Computed and visualized in a single GPU pass.
     </td>
-  </tr>
-  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/009"><img src="./thumbs/logistic.jpg" alt="" width="290"></a>
       Chaos via the <a href="https://en.wikipedia.org/wiki/Logistic_map">logistic map</a>: <code>x[n+1] = r*x[n]*(1-x[n])</code>
@@ -107,12 +111,12 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
       <a href="http://rickyreusser.com/demos/regl-sketches/008"><img src="./thumbs/roots.jpg" alt="" width="290"></a>
       Roots of a polynomial with random coefficients
     </td>
+  </tr>
+  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/007"><img src="./thumbs/sprites.jpg" alt="" width="290"></a>
       Motion blur the simple way
     </td>
-  </tr>
-  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/006"><img src="./thumbs/ambient-occlusion.jpg" alt="Ambient Occlusion" width="290"></a>
       Screen Space Ambient Occlusion (SSAO)
@@ -121,12 +125,12 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
       <a href="http://rickyreusser.com/demos/regl-sketches/005"><img src="./thumbs/erosion.jpg" alt="" width="290"></a>
       GPGPU <a href="https://gist.github.com/rreusser/b3c4621064c16233591a09541d3e59b7">Erosion</a>
     </td>
+  </tr>
+  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/004"><img src="./thumbs/particles.jpg" alt="" width="290"></a>
       GPU particle simulation
     </td>
-  </tr>
-  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/003"><img src="./thumbs/schwarzschild.jpg" alt="" width="290"></a>
       Integrating GPGPU particle trajectories in Schwarzschild spacetime (a black hole!)
@@ -135,12 +139,12 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
       <a href="http://rickyreusser.com/demos/regl-sketches/002"><img src="./thumbs/flamms-paraboloid.jpg" alt="" width="290"></a>
       <a href="https://en.wikipedia.org/wiki/Schwarzschild_metric#Flamm.27s_paraboloid">Flamm's parabaloid</a> (subject to caveats, a representation of curved spacetime around a black hole)
     </td>
+  </tr>
+  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/001"><img src="./thumbs/blob.jpg" alt="" width="290"></a>
       Fun with the SoundCloud API, Part 1
     </td>
-  </tr>
-  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/lorenz/"><img src="./thumbs/attractors.jpg" alt="Strange attractors computed and displayed on the GPU" width="290"></a>
       Integrating Strange Attractors on the GPU
@@ -149,12 +153,12 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
       <a href="http://rickyreusser.com/demos/gravity/"><img src="./thumbs/gravity.jpg" alt="2D not-particularly-physical gravity as a semi-lagrangian continuum" width="290"></a>
       1M particles interacting as a <a href="https://en.wikipedia.org/wiki/Poisson%27s_equation#Newtonian_gravity">two-dimensional gravitational continuum</a>
     </td>
+  </tr>
+  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/waves/"><img src="./thumbs/waves.jpg" alt="" width="290"></a>
       2D wave equation
     </td>
-  </tr>
-  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/complex-zeros-delves-lyness/lamb.html"><img src="./thumbs/lamb-dispersion.jpg" alt="" width="290"></a>
       The <a href="https://en.wikipedia.org/wiki/Lamb_waves">Lamb wave</a> dispersion relation in the complex plane
@@ -163,12 +167,12 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
       <a href="http://rickyreusser.com/complex-zeros-delves-lyness/zeros.html"><img src="./thumbs/zeros.jpg" alt="" width="290"></a>
       Computing the zeros of a complex analytic function via contour integration
     </td>
+  </tr>
+  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/smooth-life/"><img src="./thumbs/smooth-life.jpg" alt="" width="290"></a>
       <a href="https://arxiv.org/abs/1111.1567">Smooth Life</a> on the GPU
     </td>
-  </tr>
-  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/carpet"><img src="./thumbs/carpet.jpg" alt="" width="290"></a>
       Carpet plots
@@ -177,12 +181,12 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
       <a href="http://rickyreusser.com/demos/schrodinger/"><img src="./thumbs/schrodinger.jpg" alt="Because twitter" width="290"></a>
       Schrodinger
     </td>
+  </tr>
+  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-scan/"><img src="./thumbs/scan.jpg" alt="A scan operation on the GPU" width="290"></a>
       GPGPU <a href="https://en.wikipedia.org/wiki/Prefix_sum">prefix sum</a>
     </td>
-  </tr>
-  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/elastodynamics/"><img src="./thumbs/rayleigh-waves.jpg" alt="" width="290"></a>
       <a href="https://en.wikipedia.org/wiki/Rayleigh_wave">Rayleigh waves</a> in an elastic medium
@@ -191,12 +195,12 @@ This is hopefully one repo to manage all the demos I've been accumulating or at 
       <a href="http://rickyreusser.com/demos/catmull-rom"><img src="./thumbs/catmull-rom.jpg" alt="" width="290"></a>
       Catmull-Rom splines
     </td>
+  </tr>
+  <tr>
     <td width="300" valign="top">
       <a href="http://codepen.io/rsreusser/pen/apbrRg"><img src="./thumbs/recursion.jpg" alt="" width="290"></a>
       Recursion!
     </td>
-  </tr>
-  <tr>
     <td width="300" valign="top">
       <a href="http://demos.rickyreusser.com/ndarray-transfinite-interpolation/volume.html"><img src="./thumbs/transfinite-interpolation.jpg" alt="" width="290"></a>
       <a href="https://en.wikipedia.org/wiki/Transfinite_interpolation">Transfinite interpolation</a>

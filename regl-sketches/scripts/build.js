@@ -9,6 +9,7 @@ var metadataify = require('metadataify');
 var hyperstream = require('hyperstream');
 var humanize = require('humanize-string');
 var es2040 = require('es2040');
+var uglify = require('uglify-stream');
 
 var repoUrl = 'https://github.com/rreusser/demos/tree/master/regl-sketches';
 var webUrlBase = 'http://rickyreusser.com/demos/regl-sketches/';
@@ -62,10 +63,12 @@ function processFiles (pattern) {
 
       var b = browserify();
       b.add(path.join(__dirname, '../', filename));
+      b.transform(require('es2040'));
       b.transform(require('brfs'));
       b.transform(require('glslify'));
-      b.transform(require('es2040'));
+      b.transform(require('envify')({NODE_ENV: 'production'}));
       b.bundle()
+        .pipe(uglify())
         .pipe(indexhtmlify())
         .pipe(metadataify({
           name: humanname
