@@ -66,7 +66,7 @@ function processFiles (pattern) {
       b.transform(require('es2040'));
       b.transform(require('brfs'));
       b.transform(require('glslify'));
-      b.transform(require('envify')({NODE_ENV: 'production'}));
+      b.transform(require('envify/custom')({NODE_ENV: 'production'}));
       b.bundle()
         .pipe(uglify())
         .pipe(indexhtmlify())
