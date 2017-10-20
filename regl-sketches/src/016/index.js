@@ -47,12 +47,10 @@ function run (regl) {
 
   staticState.setPathCount(3);
 
-  setInitial((window.location.hash || '').replace(/^#/,''), 'YinYang2b');
+  setInitial((window.location.hash || '').replace(/^#/,'') || 'YinYang2b');
 
   computeStatic(y0, tmax, staticState, tol);
   var trajectory = computeDynamic(y0, dt, dynamicState);
-
-
 
   document.body.appendChild(require('./explanation')(setInitial));
 
