@@ -15,7 +15,7 @@ module.exports = function (camera, n) {
   var xyz = [0, 0, 0];
 
   var container = document.createElement('div');
-  container.style.position = 'absolute';
+  container.style.position = 'fixed';
   container.style.top = '0';
   container.style.left = '0';
   container.style.width = '100%';
