@@ -90,7 +90,7 @@ li a:hover {
 function render (onChange) {
   //const chevron = h('a', {href: '#', class: 'chevron'}, '▼');
   const title = h('div', {class: 'title'}, [
-    'Periodic N-body Orbits',
+    'Periodic 3-body Orbits',
     //chevron
   ]);
 

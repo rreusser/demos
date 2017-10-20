@@ -36,9 +36,19 @@ function run (regl) {
 
   function setInitial (name) {
     intl = initialConditions[name];
+    if (!intl) return;
     y0 = intl.y.slice();
-    tmax = intl.tmax === undefined ? 60.0 : intl.tmax;
     tol = intl.tol === undefined ? 1e-10 : intl.tol;
+    scale = intl.scale === undefined ? 1 : intl.scale;
+    tmax = (intl.tmax === undefined ? 60.0 : intl.tmax) * Math.pow(scale, 1.5)
+    for (var i = 0; i < y0.length; i+= 6) {
+      y0[i] *= scale;
+      y0[i + 1] *= scale;
+      y0[i + 2] *= scale;
+      y0[i + 3] /= Math.sqrt(scale);
+      y0[i + 4] /= Math.sqrt(scale);
+      y0[i + 5] /= Math.sqrt(scale);
+    }
     computeStatic(y0, tmax, staticState, tol);
     if (trajectory) trajectory.setY(y0);
     camera.taint();
@@ -47,7 +57,11 @@ function run (regl) {
 
   staticState.setPathCount(3);
 
-  setInitial((window.location.hash || '').replace(/^#/,'') || 'YinYang2b');
+  var name = (window.location.hash || '').replace(/^#/,'')
+  if (!initialConditions[name]) {
+    name = 'YinYang2b'
+  }
+  setInitial(name);
 
   computeStatic(y0, tmax, staticState, tol);
   var trajectory = computeDynamic(y0, dt, dynamicState);

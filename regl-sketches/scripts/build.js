@@ -71,7 +71,7 @@ function processFiles (pattern) {
         .pipe(uglify())
         .pipe(indexhtmlify())
         .pipe(metadataify({
-          name: 'Periodic N-body Orbits'
+          name: 'Periodic 3-body Orbits'
         }))
         .pipe(ghcornerify({
           url: srcUrl,
