@@ -7,7 +7,7 @@ const css = require('insert-css')(`
   font-family: ${font}, 'Helvetica', sans-serif;
   z-index: 1;
   position: relative;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(20, 20, 20, 0.8);
   display: inline-block;
   color: #eee;
   max-width: 450px;
@@ -20,7 +20,7 @@ const css = require('insert-css')(`
 
 #panel .title:hover,
 #panel.is-expanded .title  {
-  background-color: rgba(50, 50, 50, 0.6);
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 #panel a {
@@ -31,7 +31,7 @@ const css = require('insert-css')(`
 .title {
   font-style: italic;
   cursor: pointer;
-  padding: 15px;
+  padding: 8px 15px;
   user-select: none;
 }
 
@@ -96,18 +96,18 @@ function render (onChange) {
   const initial = require('./initial-conditions');
 
   const content = h('div', {class: 'content'}, [
+    h('ul', {class: 'section'}, Object.keys(initial).map(key => (
+      h('li', [
+        h('a', {href: '#', 'data-name': key}, key)
+      ])
+    ))),
     h('div', {class: 'section'}, [
-      'The trajectories below are just a few of the ',
+      'The trajectories above are just a few of the ',
       h('a', {href: 'https://phys.org/news/2017-10-scientists-periodic-orbits-famous-three-body.html', target: '_blank'}, 'vast number of periodic solutions'),
       ' of the three-body problem, that is, three particles mutually attracted by gravitational force. They are adapted from the galley at ',
       h('a', {href: 'http://three-body.ipb.ac.rs/', target: '_blank'}, 'http://three-body.ipb.ac.rs/'),
       '. Due to the precision required to solve them (to say nothing of the precision required to locate them!), some of them last longer than others.'
     ]),
-    h('ul', {class: 'section'}, Object.keys(initial).map(key => (
-      h('li', [
-        h('a', {href: '#', 'data-name': key}, key)
-      ])
-    )))
   ]);
   const root = h('div', {id: 'panel'}, [title, content]);
 
