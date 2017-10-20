@@ -7,9 +7,13 @@ canvas {
   position: fixed !important;
 }
 
+.github-corner {
+  position: fixed !important;
+}
+
 #panel {
   font-family: ${font}, 'Helvetica', sans-serif;
-  z-index: 1000;
+  z-index: 20000;
   position: relative;
   background-color: rgba(20, 20, 20, 0.8);
   display: inline-block;
