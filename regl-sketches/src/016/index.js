@@ -19,7 +19,7 @@ function run (regl) {
     rect.xmax *= aspect;
   }
   const camera = require('./camera-2d')(regl, rect);
-  const staticState = require('./state-vector')(regl, 3, 15000);
+  const staticState = require('./state-vector')(regl, 3);
   const dynamicState = require('./dynamic-state')(regl);
   //const drawDynamic = require('./draw-dynamic')(regl);
   const drawElements = require('./draw-elements')(camera, 3);
@@ -28,7 +28,6 @@ function run (regl) {
   const uniforms = require('./uniforms')(regl);
   const transfer = require('./transfer-fbo')(regl);
 
-
   let y0 = initialConditions.yinyang2b;
   let tmax = 60.0;
   let dt = 0.02;
@@ -36,6 +35,13 @@ function run (regl) {
   staticState.setPathCount(3);
   computeStatic(y0, tmax, staticState);
   var trajectory = computeDynamic(y0, dt, dynamicState);
+
+  document.body.appendChild(require('./explanation')(function (name) {
+    var intl = initialConditions[name];
+    computeStatic(intl, tmax, staticState);
+    trajectory.setY(intl);
+    camera.taint();
+  }));
 
   /*
   var staticFbo = regl.framebuffer({

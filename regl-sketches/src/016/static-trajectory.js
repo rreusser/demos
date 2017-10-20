@@ -19,6 +19,7 @@ module.exports = function (y0, tmax, state) {
   });
 
   k = 0;
+  var cnt = 0;
   while (integrator.t < tmax) {
     integrator.steps(5);
 
@@ -40,11 +41,12 @@ module.exports = function (y0, tmax, state) {
       pj.uvwData[k + 4] = y[i + 4];
       pj.uvwData[k + 5] = y[i + 5];
     }
+    cnt++;
 
     k += 6;
   }
 
-  state.updateBuffers();
+  state.updateBuffers(cnt);
 
   return state;
 }

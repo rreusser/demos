@@ -58,7 +58,8 @@ module.exports = function (regl) {
       color: regl.prop('color')
     },
     primitive: 'triangles',
-    elements: regl.prop('els')
+    elements: regl.prop('els'),
+    count: regl.prop('count')
   });
 };
 

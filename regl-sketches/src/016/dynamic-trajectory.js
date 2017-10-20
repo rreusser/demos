@@ -31,6 +31,11 @@ module.exports = function (y0, dt, state) {
       }
 
       state.updateBuffers(data);
+    },
+    setY: function (ynew) {
+      for (var i = 0; i < y.length; i++) {
+        y[i] = ynew[i];
+      }
     }
   }
 }
