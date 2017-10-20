@@ -3,9 +3,13 @@ const font = 'Open Sans'
 const css = require('insert-css')(`
 @import url('https://fonts.googleapis.com/css?family='+${font.replace(/\s/g,'+')});
 
+canvas {
+  position: fixed !important;
+}
+
 #panel {
   font-family: ${font}, 'Helvetica', sans-serif;
-  z-index: 1;
+  z-index: 1000;
   position: relative;
   background-color: rgba(20, 20, 20, 0.8);
   display: inline-block;
@@ -39,8 +43,8 @@ ul {
   margin: 0;
   padding: 10px;
   margin-left: -5px;
-  max-height: 50vh;
-  overflow: scroll;
+  display: block;
+  overflow: hidden;
 }
 
 li {
