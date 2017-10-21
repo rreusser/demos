@@ -111,11 +111,11 @@ function render (onChange) {
       ])
     ))),
     h('div', {class: 'section'}, [
-      'The trajectories above are just a few of the ',
-      h('a', {href: 'https://phys.org/news/2017-10-scientists-periodic-orbits-famous-three-body.html', target: '_blank'}, 'vast number of periodic solutions'),
+      'The trajectories above are just a few of ',
+      h('a', {href: 'https://phys.org/news/2017-10-scientists-periodic-orbits-famous-three-body.html', target: '_blank'}, 'many periodic solutions'),
       ' of the three-body problem, that is, three particles mutually attracted by gravitational force. All the orbits here are two-dimensional orbits adapted from the gallery at ',
       h('a', {href: 'http://three-body.ipb.ac.rs/', target: '_blank'}, 'http://three-body.ipb.ac.rs/'),
-      '. Due to the precision required to solve them (to say nothing of the precision required to locate them!), some of them last longer than others.'
+      '.'
     ]),
   ]);
   const root = h('div', {id: 'panel'}, [title, content]);
