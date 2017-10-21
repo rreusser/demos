@@ -1,48 +1,34 @@
-const integrate = require('ode-rk4');
 const regl = require('regl')({
-  onDone: require('fail-nicely')(run),
+  attributes: {antialias: false},
   pixelRatio: 1,
-  attributes: {
-    antialias: false,
-    depthAlpha: false,
-    preserveDrawingBuffer: true
-  }
+  extensions: [],//['oes_element_index_uint'],
+  onDone: require('fail-nicely')(run),
 });
 
 function run (regl) {
-  const dt = 1 / 60;
-  let time = 0;
-  const skip = 2;
-  const dtInt = 0.1;
-  const p0 = 0.1 * dtInt;
-  const interactions = [];
-  const x = require('./points')(30);
-  const drawPoints = require('./draw-points')(regl);
-  const drawInteractions = require('./draw-interactions')(regl);
-  const derivative = require('./derivative');
-  const integrator = integrate(x, derivative, 0, dt);
-  const interactor = require('./interact')(x, dtInt, p0, dt);
+  const aspect = window.innerWidth / window.innerHeight;
+  const rect = {xmin: -0.65, xmax: 0.65};
+  if (aspect > 1.0) {
+    rect.xmin *= aspect;
+    rect.xmax *= aspect;
+  }
+  const camera = require('./camera-2d')(regl, rect);
+  const points = require('./points')(regl, 40, 40);
+  const uniforms = require('./uniforms')(regl);
+  const draw = require('./draw')(regl, points);
 
-
-  regl.clear({color: [0, 0, 0, 1]});
-  regl.frame(({tick}) => {
-    if (tick > 128 || tick % skip !== 1) return;
-
-    time += dt;
-    integrator.step();
-    interactor.interact(time);
-
-    //regl.clear({color: [0, 0, 0, 1]});
-    drawPoints({x: x, t: time});
-    drawInteractions({
-      time: time,
-      dtInt: dtInt,
-      tInt: interactor.tInt,
-      pSrc: interactor.pSrc,
-      pDst: interactor.pDst,
-      n: interactor.tInt.length
-    });
+  window.addEventListener('resize', function () {
+    camera.taint();
+    camera.resize();
   });
 
-
+  camera.taint();
+  regl.frame(({tick}) => {
+    camera.draw(({dirty}) => {
+      if (!dirty) return;
+      uniforms(() => {
+        draw(points);
+      });
+    });
+  });
 }

@@ -1,37 +1,15 @@
-module.exports = function (n) {
-  var i;
-  var x = new Float32Array(n * 4);
-  var vmag = 0.2;
-
-  for (i = 0; i < n * 4; i+=4) {
-    // Position:
-    var th = i / n / 4 * Math.PI * 2;
-    //var th = Math.random() * Math.PI * 2;
-    var r = 0.2;
-    //var r = Math.random();
-    x[i + 0] = Math.cos(th) * r;
-    x[i + 1] = Math.sin(th) * r;
-
-    // Velocity:
-    x[i + 2] = 0;
-    x[i + 3] = 0;
-    //x[i + 2] = (Math.random() * 2 - 1) * vmag;
-    //x[i + 3] = (Math.random() * 2 - 1) * vmag;
-    //x[i + 2] = 0;//x[i];
-    //x[i + 3] = 0;//x[i + 1];
+module.exports = function (regl, m, n) {
+  var r = 5;
+  var i, j;
+  var xy = new Float32Array(m * n * 2);
+  for (i = 0; i < m; i++) {
+    for (j = 0; j < n; j++) {
+      xy[2 * (i * n + j)] = -r + 2 * r * i / (m - 1);
+      xy[2 * (i * n + j) + 1] = -r + 2 * r * j / (n - 1);
+    }
   }
-
-  //return x;
-  /*return [
-    -0.5, -0.5, 0.25, 0.3,
-    0.5,  -0.5, -0.25, 0.3,
-  ];*/
-
-  return [
-    -0.6, -0.5, 0, 1,
-    -0.3, -0.5, 0, 1,
-    0.0, -0.5, 0, 1,
-    0.3, -0.5, 0, 1,
-    0.6, -0.5, 0, 1,
-  ]
+  return {
+    xy: regl.buffer({data: xy}),
+    count: m * n
+  };
 }
