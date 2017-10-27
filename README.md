@@ -49,8 +49,22 @@ These demos are made using [regl](https://github.com/regl-project/regl), [plotly
   </tr>
   <tr>
     <td width="300" valign="top">
+      <a href="http://rickyreusser.com/minimize-powell/"><img src="./thumbs/powell.jpg" alt="" width="290"></a>
+      Minimize the <a href="https://en.wikipedia.org/wiki/Test_functions_for_optimization">McCormick function</a> using <a href="https://github.com/rreusser/minimize-powell">Powell's method</a> with <a href="https://github.com/scijs/minimize-golden-section-1d">golden section line search</a>.
+    </td>
+    <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/009"><img src="./thumbs/logistic.jpg" alt="" width="290"></a>
       Chaos via the <a href="https://en.wikipedia.org/wiki/Logistic_map">logistic map</a>: <code>x[n+1] = r*x[n]*(1-x[n])</code>
+    </td>
+    <td width="300" valign="top">
+      <a href="http://rickyreusser.com/demos/regl-sketches/007"><img src="./thumbs/sprites.jpg" alt="" width="290"></a>
+      Motion blur the simple way
+    </td>
+  </tr>
+  <tr>
+    <td width="300" valign="top">
+      <a href="http://rickyreusser.com/demos/plots/tinkerbell.html"><img src="./thumbs/tinkerbell.jpg" alt="The tinkerbell map using plotly's point cloud feature" width="290"></a>
+      <a href="https://en.wikipedia.org/wiki/Tinkerbell_map">Tinkerbell map</a>
     </td>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/008"><img src="./thumbs/roots.jpg" alt="" width="290"></a>
@@ -155,8 +169,8 @@ These demos are made using [regl](https://github.com/regl-project/regl), [plotly
       Potential flow over a cylinder conformally mapped into an airfoil via the <a href="https://en.wikipedia.org/wiki/Joukowsky_transform#K.C3.A1rm.C3.A1n.E2.80.93Trefftz_transform">Karman-Trefftz</a> transform
     </td>
     <td width="300" valign="top">
-      <a href="http://rickyreusser.com/demos/regl-sketches/007"><img src="./thumbs/sprites.jpg" alt="" width="290"></a>
-      Motion blur the simple way
+      <a href="http://rickyreusser.com/gaussian-mixture-estimator/"><img src="./thumbs/gaussian-mixture-estimator.jpg" alt="Fitting n-dimensional Gaussian mixture models to scatter data" width="290"></a>
+      Gaussian Mixture estimation via <a href="https://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">Expectation Maximization</a> (EM)
     </td>
   </tr>
   <tr>
@@ -169,8 +183,8 @@ These demos are made using [regl](https://github.com/regl-project/regl), [plotly
       ❄️❄️ Fractals ❄️❄️
     </td>
     <td width="300" valign="top">
-      <a href="http://rickyreusser.com/gaussian-mixture-estimator/"><img src="./thumbs/gaussian-mixture-estimator.jpg" alt="Fitting n-dimensional Gaussian mixture models to scatter data" width="290"></a>
-      Gaussian Mixture estimation via <a href="https://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">Expectation Maximization</a> (EM)
+      <a href="http://rickyreusser.com/demos/schrodinger/"><img src="./thumbs/schrodinger.jpg" alt="Because twitter" width="290"></a>
+      Schrodinger
     </td>
   </tr>
   <tr>
@@ -230,14 +244,6 @@ These demos are made using [regl](https://github.com/regl-project/regl), [plotly
     </td>
   </tr>
   <tr>
-    <td width="300" valign="top">
-      <a href="http://rickyreusser.com/demos/schrodinger/"><img src="./thumbs/schrodinger.jpg" alt="Because twitter" width="290"></a>
-      Schrodinger
-    </td>
-    <td width="300" valign="top">
-      <a href="http://rickyreusser.com/demos/plots/tinkerbell.html"><img src="./thumbs/tinkerbell.jpg" alt="The tinkerbell map using plotly's point cloud feature" width="290"></a>
-      <a href="https://en.wikipedia.org/wiki/Tinkerbell_map">Tinkerbell map</a>
-    </td>
   </tr>
 </table>
 
