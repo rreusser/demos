@@ -7,6 +7,10 @@ These demos are made using [regl](https://github.com/regl-project/regl), [plotly
 <table >
   <tr>
     <td width="300" valign="top">
+      <a href="https://codepen.io/rsreusser/pen/aLgKPq"><img src="./thumbs/kuramoto-sivashinsky.jpg" alt="Kuramoto-Sivashinsky equation in 2D, ∂u/∂t + ∇⁴u + ∇²u + ½ |∇u|² = 0" width="290"></a>
+      2D <a href="https://en.wikipedia.org/wiki/Kuramoto%E2%80%93Sivashinsky_equation">Kuramoto-Sivashinsky</a> equation,<br>∂u/∂t + ∇⁴u + ∇²u + ½ |∇u|² = 0
+    </td>
+    <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/016/"><img src="./thumbs/n-body-regl.jpg" alt="Periodic 3-body gravitational trajectories" width="290"></a>
       Periodic <a href="https://en.wikipedia.org/wiki/N-body_problem">3-body</a> trajectories using <a href="https://github.com/scijs/ode45-cash-karp">RK4(5) Cash-Karp</a> adaptive integration.
     </td>
@@ -14,23 +18,19 @@ These demos are made using [regl](https://github.com/regl-project/regl), [plotly
       <a href="http://rickyreusser.com/demos/regl-sketches/015/"><img src="./thumbs/kelvin-helmholtz.jpg" alt="" width="290"></a>
       <a href="https://en.wikipedia.org/wiki/Rayleigh%E2%80%93Taylor_instability">Rayleigh-Taylor</a> and <a href="https://en.wikipedia.org/wiki/Kelvin%E2%80%93Helmholtz_instability">Kelvin-Helmholtz</a> hydrodynamic instabilities.
     </td>
+  </tr>
+  <tr>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/003"><img src="./thumbs/schwarzschild.jpg" alt="" width="290"></a>
       GPGPU Integration of particle geodesics in Schwarzschild spacetime (a black hole!)
     </td>
-  </tr>
-  <tr>
     <td width="300" valign="top">
-      <a href="http://rickyreusser.com/demos/regl-sketches/014/"><img src="./thumbs/fluid.jpg" alt="" width="290"></a>
-      Classic fluid simulation from <a href="https://graphics.stanford.edu/papers/smoke/smoke.pdf">Visual Simulation of Smoke</a>.
+      <a href="http://rickyreusser.com/demos/regl-sketches/010"><img src="./thumbs/flow.png" alt="" width="290"></a>
+      Analytical fluid flow over an airfoil using the <a href="https://en.wikipedia.org/wiki/Joukowsky_transform#K.C3.A1rm.C3.A1n.E2.80.93Trefftz_transform">Kármán–Trefftz</a> transform. Computed and visualized in a single GPU pass.
     </td>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/gravity/"><img src="./thumbs/gravity.jpg" alt="2D not-particularly-physical gravity as a semi-lagrangian continuum" width="290"></a>
       1M particles interacting as a <a href="https://en.wikipedia.org/wiki/Poisson%27s_equation#Newtonian_gravity">two-dimensional gravitational continuum</a>
-    </td>
-    <td width="300" valign="top">
-      <a href="http://rickyreusser.com/demos/regl-sketches/010"><img src="./thumbs/flow.png" alt="" width="290"></a>
-      Analytical fluid flow over an airfoil using the <a href="https://en.wikipedia.org/wiki/Joukowsky_transform#K.C3.A1rm.C3.A1n.E2.80.93Trefftz_transform">Kármán–Trefftz</a> transform. Computed and visualized in a single GPU pass.
     </td>
   </tr>
   <tr>
@@ -77,8 +77,8 @@ These demos are made using [regl](https://github.com/regl-project/regl), [plotly
   </tr>
   <tr>
     <td width="300" valign="top">
-      <a href="http://rickyreusser.com/demos/waves/"><img src="./thumbs/waves.jpg" alt="" width="290"></a>
-      2D wave equation
+      <a href="http://rickyreusser.com/demos/regl-sketches/014/"><img src="./thumbs/fluid.jpg" alt="" width="290"></a>
+      Classic fluid simulation from <a href="https://graphics.stanford.edu/papers/smoke/smoke.pdf">Visual Simulation of Smoke</a>.
     </td>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/complex-zeros-delves-lyness/lamb.html"><img src="./thumbs/lamb-dispersion.jpg" alt="" width="290"></a>
@@ -91,16 +91,16 @@ These demos are made using [regl](https://github.com/regl-project/regl), [plotly
   </tr>
   <tr>
     <td width="300" valign="top">
-      <a href="http://rickyreusser.com/demos/regl-sketches/007"><img src="./thumbs/sprites.jpg" alt="" width="290"></a>
-      Motion blur the simple way
-    </td>
-    <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/006"><img src="./thumbs/ambient-occlusion.jpg" alt="Ambient Occlusion" width="290"></a>
       Screen Space Ambient Occlusion (SSAO)
     </td>
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/regl-sketches/005"><img src="./thumbs/erosion.jpg" alt="" width="290"></a>
       GPGPU <a href="https://gist.github.com/rreusser/b3c4621064c16233591a09541d3e59b7">Erosion</a>
+    </td>
+    <td width="300" valign="top">
+      <a href="http://rickyreusser.com/demos/waves/"><img src="./thumbs/waves.jpg" alt="" width="290"></a>
+      2D wave equation
     </td>
   </tr>
   <tr>
@@ -155,8 +155,8 @@ These demos are made using [regl](https://github.com/regl-project/regl), [plotly
       Potential flow over a cylinder conformally mapped into an airfoil via the <a href="https://en.wikipedia.org/wiki/Joukowsky_transform#K.C3.A1rm.C3.A1n.E2.80.93Trefftz_transform">Karman-Trefftz</a> transform
     </td>
     <td width="300" valign="top">
-      <a href="http://rickyreusser.com/demos/plots/tinkerbell.html"><img src="./thumbs/tinkerbell.jpg" alt="The tinkerbell map using plotly's point cloud feature" width="290"></a>
-      <a href="https://en.wikipedia.org/wiki/Tinkerbell_map">Tinkerbell map</a>
+      <a href="http://rickyreusser.com/demos/regl-sketches/007"><img src="./thumbs/sprites.jpg" alt="" width="290"></a>
+      Motion blur the simple way
     </td>
   </tr>
   <tr>
@@ -233,6 +233,10 @@ These demos are made using [regl](https://github.com/regl-project/regl), [plotly
     <td width="300" valign="top">
       <a href="http://rickyreusser.com/demos/schrodinger/"><img src="./thumbs/schrodinger.jpg" alt="Because twitter" width="290"></a>
       Schrodinger
+    </td>
+    <td width="300" valign="top">
+      <a href="http://rickyreusser.com/demos/plots/tinkerbell.html"><img src="./thumbs/tinkerbell.jpg" alt="The tinkerbell map using plotly's point cloud feature" width="290"></a>
+      <a href="https://en.wikipedia.org/wiki/Tinkerbell_map">Tinkerbell map</a>
     </td>
   </tr>
 </table>
