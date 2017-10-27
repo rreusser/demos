@@ -7,7 +7,7 @@ These demos are made using [regl](https://github.com/regl-project/regl), [plotly
 <table >
   <tr>
     <td width="300" valign="top">
-      <a href="https://codepen.io/rsreusser/pen/aLgKPq"><img src="./thumbs/kuramoto-sivashinsky.jpg" alt="Kuramoto-Sivashinsky equation in 2D, ∂u/∂t + ∇⁴u + ∇²u + ½ |∇u|² = 0" width="290"></a>
+      <a href="http://rickyreusser.com/demos/regl-sketches/017"><img src="./thumbs/kuramoto-sivashinsky.jpg" alt="Kuramoto-Sivashinsky equation in 2D, ∂u/∂t + ∇⁴u + ∇²u + ½ |∇u|² = 0" width="290"></a>
       2D <a href="https://en.wikipedia.org/wiki/Kuramoto%E2%80%93Sivashinsky_equation">Kuramoto-Sivashinsky</a> equation,<br>∂u/∂t + ∇⁴u + ∇²u + ½ |∇u|² = 0
     </td>
     <td width="300" valign="top">

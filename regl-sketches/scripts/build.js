@@ -71,7 +71,7 @@ function processFiles (pattern) {
         .pipe(uglify())
         .pipe(indexhtmlify())
         .pipe(metadataify({
-          name: 'Periodic 3-body Orbits'
+          name: 'Kuramoto-Sivashinsky Equation, ∂u/∂t + ∇⁴u + ∇²u + ½ |∇u|² = 0'
         }))
         .pipe(ghcornerify({
           url: srcUrl,
