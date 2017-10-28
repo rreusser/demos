@@ -1,3 +1,4 @@
+require('./explanation');
 const regl = require('regl')({
   attributes: {antialias: false},
   pixelRatio: 1,
@@ -15,8 +16,9 @@ function run (regl) {
     randomness: 1e-11 * 0
   });
 
-  const tex = regl.texture({});
+  document.body.appendChild(require('./explanation')());
 
+  const tex = regl.texture({});
   const draw = require('./draw')(regl, tex);
 
   pde.initialize('spot')

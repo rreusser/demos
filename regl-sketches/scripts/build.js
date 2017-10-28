@@ -75,8 +75,8 @@ function processFiles (pattern) {
         }))
         .pipe(ghcornerify({
           url: srcUrl,
-          fg: '#fff',
-          bg: '#2a3235',
+          bg: '#fff',
+          fg: '#2a3235',
         }))
         .pipe(htmlstream);
 
