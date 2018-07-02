@@ -1,6 +1,6 @@
 # frensel
 
-> [Visualizing the boundary conditions that define Fresnel reflection and refraction](http://rickyreusser.com/demos/fresnel)
+> [Visualizing the boundary conditions that define Fresnel reflection and refraction](https://rreusser.github.io/demos/fresnel)
 
 # License
 
