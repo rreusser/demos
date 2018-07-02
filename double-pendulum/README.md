@@ -1,6 +1,6 @@
 # double-pendulum
 
-> [Just a double pendulum](http://rickyreusser.com/demos/double-pendulum/)
+> [Just a double pendulum](https://rreusser.github.io/demos/double-pendulum/)
 
 [![experimental][stability-experimental]][stability-url]
 <!--[![Build Status][travis-image]][travis-url]-->
@@ -8,7 +8,7 @@
 <!--[![Dependency Status][david-dm-image]][david-dm-url]-->
 <!--[![Semistandard Style][semistandard-image]][semistandard-url]-->
 
-[View it!](http://rickyreusser.com/demos/double-pendulum)
+[View it!](https://rreusser.github.io/demos/double-pendulum)
 
 ## License
 
