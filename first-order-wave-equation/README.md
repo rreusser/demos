@@ -1,6 +1,6 @@
 # first-order-wave-equation
 
-> [Simulating the first order wave equation](http://rickyreusser.com/demos/first-order-wave-equation/)
+> [Simulating the first order wave equation](https://rreusser.github.io/demos/first-order-wave-equation/)
 
 Nothing too interesting here. Just wasting time trying to figure out what it means to carry things all the way through and actually use [scijs](http://scijs.net/packages). So this repo implements a simple simulation of the first-order wave equation,
 
@@ -20,14 +20,14 @@ and measures how far the solution moves in a single time step relative to the gr
 
 The demos below should show a wave traveling uniformly to the right. The extent to which the high-frequency waves move more slowly than the low-frequency waves is error calledd dispersion. The tendency for the high-frequency waves to get damped out is error called dissipation. The most accurate method is RK4 + Spectral.
 
-- [Euler, Upwind, CFL = 0.2](http://rickyreusser.com/demos/first-order-wave-equation/?time=euler&space=upwind&cfl=0.2) (dissipative)
-- [Euler, Downwind, CFL = 0.2](http://rickyreusser.com/demos/first-order-wave-equation/?time=euler&space=downwind&cfl=0.2) (unstable)
-- [Euler, Second order central, CFL = 0.2](http://rickyreusser.com/demos/first-order-wave-equation/?time=euler&space=central&cfl=0.2) (unstable)
-- [Midpoint, Second order central, CFL = 0.2](http://rickyreusser.com/demos/first-order-wave-equation/?time=midpoint&space=central&cfl=0.2) (dispersive)
-- [RK4, Sixth-order compact, CFL = 0.2](http://rickyreusser.com/demos/first-order-wave-equation/?time=rk4&space=compact6&cfl=0.2) (stable)
-- [RK4, Eigth-order compact, CFL = 0.2](http://rickyreusser.com/demos/first-order-wave-equation/?time=rk4&space=compact8&cfl=0.2) (dissipative)
-- [RK4, Spectral, CFL = 0.2](http://rickyreusser.com/demos/first-order-wave-equation/?time=rk4&space=spectral&cfl=0.2) (exact wavenumber resolution)
-- [RK4, Spectral, CFL = 0.5](http://rickyreusser.com/demos/first-order-wave-equation/?time=rk4&space=spectral&cfl=0.5) (exact wavenumber resolution; dissipative?)
+- [Euler, Upwind, CFL = 0.2](https://rreusser.github.io/demos/first-order-wave-equation/?time=euler&space=upwind&cfl=0.2) (dissipative)
+- [Euler, Downwind, CFL = 0.2](https://rreusser.github.io/demos/first-order-wave-equation/?time=euler&space=downwind&cfl=0.2) (unstable)
+- [Euler, Second order central, CFL = 0.2](https://rreusser.github.io/demos/first-order-wave-equation/?time=euler&space=central&cfl=0.2) (unstable)
+- [Midpoint, Second order central, CFL = 0.2](https://rreusser.github.io/demos/first-order-wave-equation/?time=midpoint&space=central&cfl=0.2) (dispersive)
+- [RK4, Sixth-order compact, CFL = 0.2](https://rreusser.github.io/demos/first-order-wave-equation/?time=rk4&space=compact6&cfl=0.2) (stable)
+- [RK4, Eigth-order compact, CFL = 0.2](https://rreusser.github.io/demos/first-order-wave-equation/?time=rk4&space=compact8&cfl=0.2) (dissipative)
+- [RK4, Spectral, CFL = 0.2](https://rreusser.github.io/demos/first-order-wave-equation/?time=rk4&space=spectral&cfl=0.2) (exact wavenumber resolution)
+- [RK4, Spectral, CFL = 0.5](https://rreusser.github.io/demos/first-order-wave-equation/?time=rk4&space=spectral&cfl=0.5) (exact wavenumber resolution; dissipative?)
 
 # Methods
 
