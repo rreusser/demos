@@ -5,7 +5,7 @@ var path = require('path');
 var humanize = require('humanize-string');
 var fs = require('fs');
 
-var webUrlBase = 'http://rickyreusser.com/demos/plotly-unsupported/';
+var webUrlBase = 'https://rreusser.github.io/demos/plotly-unsupported/';
 
 glob('*.html', function (err, files) {
   createReadme(files.map(filename => {

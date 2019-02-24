@@ -1,8 +1,8 @@
 # lorenz
 
-> [A 500000 particle Lorenz Attractor, computed and displayed in WebGL](http://rickyreusser.com/demos/lorenz/)
+> [A 500000 particle Lorenz Attractor, computed and displayed in WebGL](https://rreusser.github.io/demos/lorenz/)
 
-All a result of [regl](https://github.com/regl-project/regl), which [you should try!](http://rickyreusser.com/2016/12/07/from-nothing-to-something-in-webgl/)
+All a result of [regl](https://github.com/regl-project/regl), which [you should try!](https://rreusser.github.io/2016/12/07/from-nothing-to-something-in-webgl/)
 
 This demo computes the lorenz attractor on the GPU using a [cwise](https://github.com/scijs/cwise)-inspired library for GPU computation. The syntax is very similar to cwise, except there always must be exactly one output. For example, a simple Euler step of the attractor would look like:
 

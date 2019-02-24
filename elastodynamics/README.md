@@ -1,6 +1,6 @@
 # elastodynamics
 
-> [Rayleigh waves on the GPU!](http://rickyreusser.com/demos/elastodynamics/)
+> [Rayleigh waves on the GPU!](https://rreusser.github.io/demos/elastodynamics/)
 
 ## Introduction
 

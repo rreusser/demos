@@ -1,6 +1,6 @@
 # carpet
 
-> [Experimenting with carpet plots](http://rickyreusser.com/demos/carpet)
+> [Experimenting with carpet plots](https://rreusser.github.io/demos/carpet)
 
 ## License
 

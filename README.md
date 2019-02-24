@@ -189,7 +189,7 @@ These demos are made using [regl](https://github.com/regl-project/regl), [plotly
   </tr>
   <tr>
     <td width="300" valign="top">
-      <a href="http://demos.rickyreusser.com/ndarray-transfinite-interpolation/volume.html"><img src="./thumbs/transfinite-interpolation.jpg" alt="" width="290"></a>
+      <a href="https://rreusser.github.io/ndarray-transfinite-interpolation/volume.html"><img src="./thumbs/transfinite-interpolation.jpg" alt="" width="290"></a>
       <a href="https://en.wikipedia.org/wiki/Transfinite_interpolation">Transfinite interpolation</a>
     </td>
     <td width="300" valign="top">

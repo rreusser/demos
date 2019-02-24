@@ -11,7 +11,7 @@ var humanize = require('humanize-string');
 var es2040 = require('es2040');
 
 var repoUrl = 'https://github.com/rreusser/demos/tree/master/explanations';
-var webUrlBase = 'http://rickyreusser.com/demos/explanations/';
+var webUrlBase = 'https://rreusser.github.io/demos/explanations/';
 var srcUrlBase = 'https://github.com/rreusser/demos/blob/master/explanations';
 
 var ghcornerify = require('github-cornerify')({

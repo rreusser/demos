@@ -12,7 +12,7 @@ var es2040 = require('es2040');
 var uglify = require('uglify-stream');
 
 var repoUrl = 'https://github.com/rreusser/demos/tree/master/regl-sketches';
-var webUrlBase = 'http://rickyreusser.com/demos/regl-sketches/';
+var webUrlBase = 'https://rreusser.github.io/demos/regl-sketches/';
 var srcUrlBase = 'https://github.com/rreusser/demos/blob/master/regl-sketches/';
 
 var ghcornerify = require('github-cornerify')

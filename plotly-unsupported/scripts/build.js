@@ -10,7 +10,7 @@ var hyperstream = require('hyperstream');
 var humanize = require('humanize-string');
 
 var repoUrl = 'https://github.com/rreusser/demos/tree/master/plotly-unsupported';
-var webUrlBase = 'http://rickyreusser.com/demos/plotly-unsupported/';
+var webUrlBase = 'https://rreusser.github.io/demos/plotly-unsupported/';
 var srcUrlBase = 'https://github.com/rreusser/demos/blob/master/plotly-unsupported/';
 
 var ghcornerify = require('github-cornerify')({url: repoUrl});

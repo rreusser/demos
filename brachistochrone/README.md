@@ -1,6 +1,6 @@
 # brachistochrone
 
-> [Visualizing the Brachistochrone (fasted time) problem](http://rickyreusser.com/demos/brachistochrone/)
+> [Visualizing the Brachistochrone (fasted time) problem](https://rreusser.github.io/demos/brachistochrone/)
 
 # License
 

@@ -1,6 +1,6 @@
 # schrodinger-1d
 
-> [The Schrödinger Equation with a potential barrier in 1D](http://rickyreusser.com/demos/schrodinger-1d/)
+> [The Schrödinger Equation with a potential barrier in 1D](https://rreusser.github.io/demos/schrodinger-1d/)
 
 [![experimental][stability-experimental]][stability-url]
 <!--[![Build Status][travis-image]][travis-url]-->
@@ -17,17 +17,17 @@ This simulation uses [RK-4](https://github.com/scijs/ode-rk4) temporal integrati
 
 ## Examples
 
-- [Reflection and transmission across a potential barrier](http://rickyreusser.com/demos/schrodinger-1d/#integration=%7B%22dt%22%3A0.0001%2C%22stepsPerIter%22%3A5%2C%22method%22%3A%22rk4%22%7D&pml=%7B%22width%22%3A0.05%2C%22exponent%22%3A1%2C%22gamma%22%3A1.5707963267948966%7D&potential=%7B%22width%22%3A0.1%2C%22magnitude%22%3A1000%2C%22inverted%22%3Afalse%2C%22center%22%3A1%2C%22exponent%22%3A2%7D&pulse=%7B%22center%22%3A0.5%2C%22width%22%3A0.1%2C%22magnitude%22%3A1%2C%22wavenumber%22%3A200%7D&pulse2=%7B%22center%22%3A1.5%2C%22width%22%3A0.1%2C%22magnitude%22%3A0%2C%22wavenumber%22%3A-200%7D)
-- [Spreading of the wave packet (higher-frequency components move faster)](http://rickyreusser.com/demos/schrodinger-1d/#integration=%7B%22dt%22%3A0.0001%2C%22stepsPerIter%22%3A5%2C%22method%22%3A%22rk4%22%7D&pml=%7B%22width%22%3A0.05%2C%22exponent%22%3A1%2C%22gamma%22%3A1.5707963267948966%7D&potential=%7B%22width%22%3A0.1%2C%22magnitude%22%3A0%2C%22inverted%22%3Afalse%2C%22center%22%3A1%2C%22exponent%22%3A1.98%7D&pulse=%7B%22center%22%3A0.5%2C%22width%22%3A0.012%2C%22magnitude%22%3A1%2C%22wavenumber%22%3A400%7D&pulse2=%7B%22center%22%3A1.5%2C%22width%22%3A0.1%2C%22magnitude%22%3A0%2C%22wavenumber%22%3A-200%7D)
-- [Bouncing in a potential well](http://rickyreusser.com/demos/schrodinger-1d/#integration=%7B%22dt%22%3A0.0001%2C%22stepsPerIter%22%3A5%2C%22method%22%3A%22rk4%22%7D&pml=%7B%22width%22%3A0.05%2C%22exponent%22%3A1%2C%22gamma%22%3A1.5707963267948966%7D&potential=%7B%22width%22%3A0.7%2C%22magnitude%22%3A5000%2C%22inverted%22%3Atrue%2C%22center%22%3A1%2C%22exponent%22%3A50%7D&pulse=%7B%22center%22%3A1%2C%22width%22%3A0.106%2C%22magnitude%22%3A1%2C%22wavenumber%22%3A220%7D&pulse2=%7B%22center%22%3A1.5%2C%22width%22%3A0.1%2C%22magnitude%22%3A0%2C%22wavenumber%22%3A-200%7D)
+- [Reflection and transmission across a potential barrier](https://rreusser.github.io/demos/schrodinger-1d/#integration=%7B%22dt%22%3A0.0001%2C%22stepsPerIter%22%3A5%2C%22method%22%3A%22rk4%22%7D&pml=%7B%22width%22%3A0.05%2C%22exponent%22%3A1%2C%22gamma%22%3A1.5707963267948966%7D&potential=%7B%22width%22%3A0.1%2C%22magnitude%22%3A1000%2C%22inverted%22%3Afalse%2C%22center%22%3A1%2C%22exponent%22%3A2%7D&pulse=%7B%22center%22%3A0.5%2C%22width%22%3A0.1%2C%22magnitude%22%3A1%2C%22wavenumber%22%3A200%7D&pulse2=%7B%22center%22%3A1.5%2C%22width%22%3A0.1%2C%22magnitude%22%3A0%2C%22wavenumber%22%3A-200%7D)
+- [Spreading of the wave packet (higher-frequency components move faster)](https://rreusser.github.io/demos/schrodinger-1d/#integration=%7B%22dt%22%3A0.0001%2C%22stepsPerIter%22%3A5%2C%22method%22%3A%22rk4%22%7D&pml=%7B%22width%22%3A0.05%2C%22exponent%22%3A1%2C%22gamma%22%3A1.5707963267948966%7D&potential=%7B%22width%22%3A0.1%2C%22magnitude%22%3A0%2C%22inverted%22%3Afalse%2C%22center%22%3A1%2C%22exponent%22%3A1.98%7D&pulse=%7B%22center%22%3A0.5%2C%22width%22%3A0.012%2C%22magnitude%22%3A1%2C%22wavenumber%22%3A400%7D&pulse2=%7B%22center%22%3A1.5%2C%22width%22%3A0.1%2C%22magnitude%22%3A0%2C%22wavenumber%22%3A-200%7D)
+- [Bouncing in a potential well](https://rreusser.github.io/demos/schrodinger-1d/#integration=%7B%22dt%22%3A0.0001%2C%22stepsPerIter%22%3A5%2C%22method%22%3A%22rk4%22%7D&pml=%7B%22width%22%3A0.05%2C%22exponent%22%3A1%2C%22gamma%22%3A1.5707963267948966%7D&potential=%7B%22width%22%3A0.7%2C%22magnitude%22%3A5000%2C%22inverted%22%3Atrue%2C%22center%22%3A1%2C%22exponent%22%3A50%7D&pulse=%7B%22center%22%3A1%2C%22width%22%3A0.106%2C%22magnitude%22%3A1%2C%22wavenumber%22%3A220%7D&pulse2=%7B%22center%22%3A1.5%2C%22width%22%3A0.1%2C%22magnitude%22%3A0%2C%22wavenumber%22%3A-200%7D)
 
 <p align="center">
-  <a href="http://rickyreusser.com/demos/schrodinger-1d/">
+  <a href="https://rreusser.github.io/demos/schrodinger-1d/">
     <img src="images/sample.gif" alt="Reflection and transmission from a potential barrier">
   </a>
 </p>
 
-[View demo →](http://rickyreusser.com/demos/schrodinger-1d/)
+[View demo →](https://rreusser.github.io/demos/schrodinger-1d/)
 
 In the demo, the blue and green lines are the real and imaginary components of the wavefunction, with the envelope displayed in black. The red represents the potential barrier with scale displayed on the right, and the gray represents the perfectly matched layer which suppresses reflections.
 
